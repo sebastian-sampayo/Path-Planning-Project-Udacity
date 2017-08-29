@@ -5,19 +5,19 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
+
+#include "path_planner.h"
+#include "utils.h"
+#include "sensor_data.h"
 
 using namespace std;
 
 // for convenience
 using json = nlohmann::json;
-
-// For converting back and forth between radians and degrees.
-constexpr double pi() { return M_PI; }
-double deg2rad(double x) { return x * pi() / 180; }
-double rad2deg(double x) { return x * 180 / pi(); }
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -236,21 +236,43 @@ int main() {
 
           // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
 
-          vector<double> next_x_vals;
-          vector<double> next_y_vals;
-
-          // Straight line test
-          double dist_inc = 0.5;
-          for(int i = 0; i < 50; i++)
+          // vector<double> next_x_vals;
+          // vector<double> next_y_vals;
+          
+          PathPlanner path_planner;
+          path_planner.car_x = car_x;
+          path_planner.car_y = car_y;
+          path_planner.car_s = car_s;
+          path_planner.car_d = car_d;
+          path_planner.car_yaw = car_yaw;
+          path_planner.car_speed = car_speed;
+          path_planner.previous_path_x = previous_path_x;
+          path_planner.previous_path_y = previous_path_y;
+          path_planner.end_path_s = end_path_s;
+          path_planner.end_path_d = end_path_d;
+          // path_planner.sensor_fusion = sensor_fusion;
+          // Convert Sensor fusion data from json to SensorData class:
+          for (const auto& sensed_vehicle : sensor_fusion)
           {
-            next_x_vals.push_back(car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
-            next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
+            SensorData::SensedVehicleData data;
+            data.id = sensed_vehicle[0];
+            data.x = sensed_vehicle[1];
+            data.y= sensed_vehicle[2];
+            data.vx = sensed_vehicle[3];
+            data.vy = sensed_vehicle[4];
+            data.s = sensed_vehicle[5];
+            data.d = sensed_vehicle[6];
+            path_planner.sensor_fusion.sensed_vehicle_list.push_back(data);
           }
+
+          path_planner.GeneratePath();
+          // path_planner.GenerateStraightLine();
+          // path_planner.GenerateCircle();
 
           // JSON message
           json msgJson;
-          msgJson["next_x"] = next_x_vals;
-          msgJson["next_y"] = next_y_vals;
+          msgJson["next_x"] = path_planner.next_x_vals;
+          msgJson["next_y"] = path_planner.next_y_vals;
 
           auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
