@@ -1,0 +1,77 @@
+New classes for the UML diagram:
+--------------------------------
+
+Point (TODO: this must be used with caution, because the XY and SD representation might not be updated all the time. 
+In a future version this should be full OOP, making these attributes private and building get and set methods, 
+with private convertion methods under the hood, making sure that both representations are synchronized all the time)
+  x: double
+  y: double
+  s: double
+  d: double
+
+Trajectory
+  points: array of Point
+  
+KinematicState
+  position: Point
+  speed: double (magnitude, check if that's enough or if we need vx, vy)
+  yaw: double
+  a: double
+  
+TrajectoryStrategy ("https://sourcemaking.com/design_patterns/strategy/cpp/1")
+  start: Point
+  goal: Point
+  cost_functions: array of CostFunction
+  virtual GenerateTrajectory()
+  
+StraightLineStrategy : public TrajectoryStrategy
+  GenerateTrajectory()
+  
+CircleStrategy : public TrajectoryStrategy
+  GenerateTrajectory()
+
+PolynomialStrategy : public TrajectoryStrategy
+  GenerateTrajectory()
+  
+CostFunction
+  ?
+
+Changes in old classes:
+-----------------------
+Vehicle
+  kinematic_state: KinematicState
+  remove state, add state as a member of the FSM class
+  
+PathPlanner
+  ego_data: KinematicState
+  previous_path: Trajectory
+  previous_end_point: Point (old end_path)
+  environment_data: SensorData (old sensor_fusion)
+  next_path: Trajectory (old next_vals)
+  road: Road
+  strategy: TrajectoryStrategy
+  Generate():
+    strategy.goal = road.Advance()
+    next_path = strategy.GenerateTrajectory()
+  
+TrajectoryGenerator: change name to TrajectoryStrategy
+
+Road
+  Advance(): Outputs a "goal point" for the ego vehicle, which will be the input of the TrajectoryStrategy.
+  
+BehavioralFSM: change name to Behavior (https://sourcemaking.com/design_patterns/state)
+  *state: BehaviorState
+  -predictions: Road?
+  UpdateState(predictions)
+  
+BehaviorState
+  virtual KeepLane()
+  virtual ChangeLaneRight() (consider how much duplicated code there will be between both directions, may be there is some way to avoid it)
+  virtual ChangeLaneLeft()
+  virtual PrepareChangeLaneRight()
+  virtual PrepareChangeLaneLeft()
+  
+KeepLaneState : public BehaviorState
+  <implements a transition for each state>
+  
+<a class for each state>
