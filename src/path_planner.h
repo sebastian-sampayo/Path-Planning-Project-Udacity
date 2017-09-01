@@ -5,7 +5,11 @@
 #include <vector>
 #include "json.hpp"
 
+#include "kinematic_state.h"
+#include "point.h"
 #include "sensor_data.h"
+#include "trajectory.h"
+#include "trajectory_strategy.h"
 
 using namespace std;
 
@@ -21,41 +25,35 @@ public:
   static constexpr int SPEED_LIMITS[] = {10, 20, 30};
 
   // Inputs of the Path Planner
-  double car_x;
-  double car_y;
-  double car_s;
-  double car_d;
-  double car_yaw;
-  double car_speed;
-
-  json previous_path_x;
-  json previous_path_y;
-
-  double end_path_s;
-  double end_path_d;
+  KinematicState ego_data;
 
   // The sensor_fusion variable contains all the information about the cars on the right-hand side of the road.
   // The data format for each car is: [ id, x, y, vx, vy, s, d]. The id is a unique identifier for that car. The x, y values are in global map coordinates, and the vx, vy values are the velocity components, also in reference to the global map. Finally s and d are the Frenet coordinates for that car.
-  SensorData sensor_fusion;
+  SensorData environment_data;
 
   // Output of the Path Planner
-  vector<double> next_x_vals;
-  vector<double> next_y_vals;
+  // Trajectory next_path;
+  
+  TrajectoryStrategy* strategy;
+
+  // Constructor and destructor
+  PathPlanner();
+  virtual ~PathPlanner();
 
   // Methods
   //! Process the inputs and generate the output trajectory
-  void GeneratePath();
+  Trajectory Generate();
 
-  // Test methods
-  //! Generates a Straight Line
-  void GenerateStraightLine();
+  // // Test methods
+  // //! Generates a Straight Line
+  // void GenerateStraightLine();
   
-  //! Generates a Circle path
-  void GenerateCircle();
-
-  // Constructor and destructor
-  PathPlanner() {};
-  virtual ~PathPlanner() {};
+  // //! Generates a Circle path
+  // void GenerateCircle();
+  
+  void SetPreviousPath(json previous_path_x, json previous_path_y);
+  
+  void SetPreviousEndPoint(double end_path_s, double end_path_d);
 };
 
 #endif

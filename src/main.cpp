@@ -11,6 +11,7 @@
 #include "json.hpp"
 
 #include "path_planner.h"
+#include "point.h"
 #include "utils.h"
 #include "sensor_data.h"
 
@@ -240,17 +241,17 @@ int main() {
           // vector<double> next_y_vals;
           
           PathPlanner path_planner;
-          path_planner.car_x = car_x;
-          path_planner.car_y = car_y;
-          path_planner.car_s = car_s;
-          path_planner.car_d = car_d;
-          path_planner.car_yaw = car_yaw;
-          path_planner.car_speed = car_speed;
-          path_planner.previous_path_x = previous_path_x;
-          path_planner.previous_path_y = previous_path_y;
-          path_planner.end_path_s = end_path_s;
-          path_planner.end_path_d = end_path_d;
-          // path_planner.sensor_fusion = sensor_fusion;
+          path_planner.ego_data.position.x = car_x;
+          path_planner.ego_data.position.y = car_y;
+          path_planner.ego_data.position.s = car_s;
+          path_planner.ego_data.position.d = car_d;
+          path_planner.ego_data.speed = car_speed;
+          path_planner.ego_data.yaw = car_yaw;
+          
+          // Convert previous path from json to Trajectory class
+          path_planner.SetPreviousPath(previous_path_x, previous_path_y);
+          path_planner.SetPreviousEndPoint(end_path_s, end_path_d);
+
           // Convert Sensor fusion data from json to SensorData class:
           for (const auto& sensed_vehicle : sensor_fusion)
           {
@@ -262,17 +263,18 @@ int main() {
             data.vy = sensed_vehicle[4];
             data.s = sensed_vehicle[5];
             data.d = sensed_vehicle[6];
-            path_planner.sensor_fusion.sensed_vehicle_list.push_back(data);
+            path_planner.environment_data.sensed_vehicle_list.push_back(data);
           }
 
-          path_planner.GeneratePath();
+          path_planner.Generate();
+          // path_planner.GeneratePath();
           // path_planner.GenerateStraightLine();
           // path_planner.GenerateCircle();
 
           // JSON message
           json msgJson;
-          msgJson["next_x"] = path_planner.next_x_vals;
-          msgJson["next_y"] = path_planner.next_y_vals;
+          // msgJson["next_x"] = path_planner.next_x_vals;
+          // msgJson["next_y"] = path_planner.next_y_vals;
 
           auto msg = "42[\"control\","+ msgJson.dump()+"]";
 

@@ -1,0 +1,20 @@
+Tasks
+-----
+
+Design FSM
+  For each State:
+    transition condition
+    transition task
+Code Vehicle
+  minimum:
+    id, kinematic
+Test Vehicle
+  Stub data
+Code Road
+  minimum:
+    lanes, vehicles, ego, Populate, AddEgo
+Test Road
+  Stub data. 2 or 3 vehicles + ego
+Code FSM
+  State Design Pattern
+Test FSM
