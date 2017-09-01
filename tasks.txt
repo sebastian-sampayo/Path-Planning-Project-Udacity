@@ -1,22 +1,16 @@
 Tasks
 -----
 
-Design FSM
-  For each State:
-    transition condition
-    transition task
-  minimum:
-    KL, CLR (naive)
-Code Vehicle
-  minimum:
-    id, kinematic
-Test Vehicle
-  Stub data
-Code Road
-  minimum:
-    lanes, vehicles, ego, Populate, AddEgo
-Test Road
+Code SensorData (environment and ego)
+Code Behavior class (ignore the Road dependency)
+Move Point to Trajectory file.
+Refactor classes (see the draft in my notepad)
+  Remove all the commented-code
+  Only leave the minimum members for each class (At this moment we don't need the acceleration for each vehicle for example)
+Minimum test for the Trajectory generation
+  straight line in x, y
+  straight line in s, d
+  spline line in s, d (Q&A Walkthrough)
+Code PopulateTraffic in the Road class
+Minimum test for PopulateTraffic with stubbed data
   Stub data. 2 or 3 vehicles + ego
-Code FSM
-  State Design Pattern
-Test FSM
