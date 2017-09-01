@@ -6,19 +6,105 @@ ChangeLaneLeft
 PrepareChangeLaneRight
 PrepareChangeLaneLeft
 
+Instead of the State Design Pattern, just use an enum, because the transition is generic for all states (it's always the same:
+calculate de cost for each possible state, get the minimum, set that state)
+So I will better do this:
+Behavior (class)
+  State (enum)
+  state_transitions: vector<set<State>>
+  state : State
+  strategy: TrajectoryStrategy
+  UpdateState(road: Road)
+
+Remove strategy from PathPlanner class
+
+Remove state from Vehicle class
+Add to PathPlanner class:
+  behavior: Behavior
+
+Revert environment data to SensorData and that stuff. I think it is more clear in that way to understand that it is sensor data...
+Also use SensorData for the ego_data member in PathPlanner.
+If you can do that, then, KinematicState can be a struct inside Vehicle class.
+Both EnvironmentSensorData and EgoSensorData can be structs inside the PathPlanner class. Or may be create a file sensor_structs.cpp with them.
+
+
+
+
+---------
 Inputs for all states: (current_environment), prediction_environment
 
 KeepLane
 --------
   Next state:
     KeepLane
+      Input: !WillCollide
+      Output: Follow the vehicle ahead (different strategies)
+    
+    PrepareChangeLaneLeft
+      Input: (WillCollide OR VehicleAheadGoingTooSlow) AND CanChangeLaneLeft
+        CanChangeLaneLeft:
+          we are not in the most left lane
+          there is no vehicle in the left lane (within a safe distance)
+      Output: activate change lane signal + 
+        if there is a vehicle in the left lane ahead:
+          Follow the vehicle in the left lane 
+        else
+          nothing
+    
+    PrepareChangeLaneRight
+      Input: (WillCollide OR VehicleAheadGoingTooSlow) AND !CanChangeLaneLeft AND CanChangeLaneRight
+        CanChangeLaneRight:
+          same as CanChangeLaneLeft but replacing "left" by "right"
+      Output: same output as PrepareChangeLaneLeft but replacing "left" by "right"
+      
+      
+PrepareChangeLaneLeft
+---------------------
+  Next state:
+    KeepLane
+      Input: WillCollide
+      Output: turn off change lane signal
+      
+    PrepareChangeLaneLeft
+      Input: !WillCollide AND !CanChangeLaneLeft
+      Output:
+    
+    ChangeLaneLeft
+      Input: !WillCollide AND CanChangeLaneLeft
+      Output: 
+      
+      
+ChangeLaneLeft
+--------------
+  Next state:
+    KeepLane
+      Input: !WillCollide
+      Output:
+      
+    ChangeLaneLeft
+      Input: 
+      
+    
+    Notes on KeepLane to KeepLane transition
       Possible environment situations:
         There is no vehicle ahead -> KeepLane at max speed
-        There is a vehicle ahead
+        There is a vehicle ahead (in the predicted environment)
+          for v in (vmax to vmin_desired):
+            Predict the ego future position if he goes at v
+            Safe distance -> KeepLane at v
+            Not safe distance
+              going_to_keep_lane = true
+          if going_to_keep_lane == false
+            -> change lane
+          
+          
+         Predict the ego future position at constant speed
           Safe distance -> KeepLane at max speed
           Not safe distance
             heading vehicle is driving at max speed -> KeepLane but speed down to keep a safe distance
+              
             heading vehicle is driving at a low speed (lower than the desired minimum) -> PrepareChangeLane Right/Left
+            
         
           Far (distance is safe) -> KeepLane at max speed
           Near -> PrepareChangeLane Right/Left
