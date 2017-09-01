@@ -75,3 +75,19 @@ KeepLaneState : public BehaviorState
   <implements a transition for each state>
   
 <a class for each state>
+
+
+-----
+
+Refactor environment_data: environment_sensor_data
+  Instead of using SensorData = an array of SensedVehicleData,
+  use a map of pairs <id, KinematicState>
+
+Refactor KinematicState:
+  Velocity
+    x
+    y
+    magnitude
+
+  KinematicState
+    speed: Velocity

@@ -5,6 +5,8 @@ Design FSM
   For each State:
     transition condition
     transition task
+  minimum:
+    KL, CLR (naive)
 Code Vehicle
   minimum:
     id, kinematic
