@@ -1,0 +1,35 @@
+States
+------
+KeepLane
+ChangeLaneRight
+ChangeLaneLeft
+PrepareChangeLaneRight
+PrepareChangeLaneLeft
+
+Inputs for all states: (current_environment), prediction_environment
+
+KeepLane
+--------
+  Next state:
+    KeepLane
+      Possible environment situations:
+        There is no vehicle ahead -> KeepLane at max speed
+        There is a vehicle ahead
+          Safe distance -> KeepLane at max speed
+          Not safe distance
+            heading vehicle is driving at max speed -> KeepLane but speed down to keep a safe distance
+            heading vehicle is driving at a low speed (lower than the desired minimum) -> PrepareChangeLane Right/Left
+        
+          Far (distance is safe) -> KeepLane at max speed
+          Near -> PrepareChangeLane Right/Left
+            speeding down
+            at max speed
+              distance is safe -> KeepLane at max speed
+              distance isn't safe -> KeepLane but speed down
+                
+            
+      Conditions:
+        No other vehicle ahead (within a certain margin TBD)
+      Outputs:
+        
+      
