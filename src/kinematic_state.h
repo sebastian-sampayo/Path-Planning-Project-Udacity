@@ -1,12 +1,18 @@
 #ifndef KINEMATIC_STATE_H
 #define KINEMATIC_STATE_H
 
-#include "point.h"
+#include "trajectory.h"
+
+struct Velocity {
+  double vx;
+  double vy;
+  double magnitude;
+};
 
 class KinematicState {
 public:
   Point position;
-  double speed;
+  Velocity velocity;
   double yaw;
   double accel;
 };

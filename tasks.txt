@@ -1,12 +1,14 @@
 Tasks
 -----
 
-Code SensorData (environment and ego)
-Code Behavior class (ignore the Road dependency)
-Move Point to Trajectory file.
-Refactor classes (see the draft in my notepad)
-  Remove all the commented-code
+DONE Code SensorData (environment and ego)
+DONE Code Behavior class (ignore the Road dependency)
+DONE Move Point to Trajectory file.
+DONE Refactor classes (see the draft in my notepad)
+DONE   Remove all the commented-code
   Only leave the minimum members for each class (At this moment we don't need the acceleration for each vehicle for example)
+Code Map
+Test Map
 Minimum test for the Trajectory generation
   straight line in x, y
   straight line in s, d

@@ -1,12 +1,13 @@
 #ifndef TRAJECTORY_STRATEGY_H
 #define TRAJECTORY_STRATEGY_H
 
-#include "point.h"
+#include "kinematic_state.h"
+#include "road.h"
 #include "trajectory.h"
 
 class TrajectoryStrategy {
 public:
-  Point start;
+  KinematicState start;
   Point goal;
   Trajectory trajectory;
   Trajectory previous_path;

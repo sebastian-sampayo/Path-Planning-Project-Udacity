@@ -5,9 +5,13 @@
 
 class StraightLineStrategy : public TrajectoryStrategy {
 public:
-  StraightLineStrategy() {};
-
   void GenerateTrajectory();
+
+  StraightLineStrategy();
+  
+private:
+  void GenerateXYTrajectory();
+  void GenerateSDTrajectory();
 };
 
 #endif

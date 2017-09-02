@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class SensorData {
+class EnvironmentSensorData {
 public:
   struct SensedVehicleData {
     size_t id;
@@ -18,6 +18,15 @@ public:
   };
   
   vector<SensedVehicleData> sensed_vehicle_list;
+};
+
+struct EgoSensorData {
+  double x;
+  double y;
+  double s;
+  double d;
+  double yaw;
+  double speed;
 };
 
 #endif
