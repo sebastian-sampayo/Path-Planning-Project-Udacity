@@ -17,6 +17,9 @@ public:
   //! Name of the waypoints file
   static constexpr const char* MAP_FILENAME = "../data/highway_map.csv";
   
+  // The max s value before wrapping around the track back to 0
+  static constexp double MAX_S = 6945.554;
+  
   //! Waypoints of the center line of the road in the global map coordinates
   vector<double> map_waypoints_x;
   vector<double> map_waypoints_y;
@@ -41,6 +44,8 @@ private:
   // Splines for the components of the parametric curve q(s) = (qx(s), qy(s))
   tk::spline qx_s_;
   tk::spline qy_s_;
+  
+  double CycleS(double s) {return fmod(s, MAX_S));};
   
   Map();
 };
