@@ -5,7 +5,7 @@
  * 
  * Author: Sebastián Lucas Sampayo
  * e-mail: sebisampayo@gmail.com
- * file: position.cpp
+ * file: point.cpp
  * Description: 
  *  This implementation encapsulate the internal representation of the position
  *  so that we can change it in the future without changing the client code.
@@ -14,29 +14,29 @@
 #include <iostream>
 
 #include "map.h"
-#include "position.h"
+#include "point.h"
 
 // ----------------------------------------------------------------------------
 // PUBLIC
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
-Position::Position() :
-  x_(0), y_(0), s_(0), d_(0), yaw_(0), 
-  valid_cartesian_(false), valid_frenet_(false), valid_yaw_(false)
+Point::Point() :
+  x_(0), y_(0), s_(0), d_(0), 
+  valid_cartesian_(false), valid_frenet_(false)
 {
 }
 
 // ----------------------------------------------------------------------------
-Position::~Position()
+Point::~Point()
 {
 }
 
 // "Get" methods
 // ----------------------------------------------------------------------------
-double Position::GetX() const
+double Point::GetX() const
 {
-  LOG(logDEBUG4) << "Position::GetX()";
+  LOG(logDEBUG4) << "Point::GetX()";
   double x = -1;
   if (valid_cartesian_)
   {
@@ -49,16 +49,16 @@ double Position::GetX() const
   }
   else
   {
-    LOG(logERROR) << "Position::GetX() - no valid representation! Was the Position set?";
+    LOG(logERROR) << "Point::GetX() - no valid representation! Was the Point set?";
   }
   
   return x;
 }
 
 // ----------------------------------------------------------------------------
-double Position::GetY() const
+double Point::GetY() const
 {
-  LOG(logDEBUG4) << "Position::GetY()";
+  LOG(logDEBUG4) << "Point::GetY()";
   double y = -1;
   if (valid_cartesian_)
   {
@@ -71,16 +71,16 @@ double Position::GetY() const
   }
   else
   {
-    LOG(logERROR) << "Position::GetY() - no valid representation! Was the Position set?";
+    LOG(logERROR) << "Point::GetY() - no valid representation! Was the Point set?";
   }
   
   return y;
 }
 
 // ----------------------------------------------------------------------------
-double Position::GetS() const
+double Point::GetS() const
 {
-  LOG(logDEBUG4) << "Position::GetS()";
+  LOG(logDEBUG4) << "Point::GetS()";
   double s = -1;
   if (valid_frenet_)
   {
@@ -88,28 +88,20 @@ double Position::GetS() const
   }
   else if (valid_cartesian_)
   {
-    if (valid_yaw_)
-    {
-      double d;
-      Map::GetInstance().GetFrenet(x_, y_, yaw_, s, d);
-    }
-    else
-    {
-      LOG(logERROR) << "Position::GetS() - Trying to calculate Frenet from Cartesian but yaw was not set properly!";
-    }
+    // TODO: GetFrenet() independent on theta
   }
   else
   {
-    LOG(logERROR) << "Position::GetS() - no valid representation! Was the Position set?";
+    LOG(logERROR) << "Point::GetS() - no valid representation! Was the Point set?";
   }
   
   return s;
 }
 
 // ----------------------------------------------------------------------------
-double Position::GetD() const
+double Point::GetD() const
 {
-  LOG(logDEBUG4) << "Position::GetD()";
+  LOG(logDEBUG4) << "Point::GetD()";
   double d = -1;
   if (valid_frenet_)
   {
@@ -117,52 +109,39 @@ double Position::GetD() const
   }
   else if (valid_cartesian_)
   {
-    if (valid_yaw_)
-    {
-      double s;
-      Map::GetInstance().GetFrenet(x_, y_, yaw_, s, d);
-    }
-    else
-    {
-      LOG(logERROR) << "Position::GetD() - Trying to calculate Frenet from Cartesian but yaw was not set properly!";
-    }
+    // TODO: GetFrenet() independent on theta
   }
   else
   {
-    LOG(logERROR) << "Position::GetD() - no valid representation! Was the Position set?";
+    LOG(logERROR) << "Point::GetD() - no valid representation! Was the Point set?";
   }
   
   return d;
 }
 
-// ----------------------------------------------------------------------------
-double Position::GetYaw() const
-{
-  return yaw_;
-}
-
 // "Set" methods
 // ----------------------------------------------------------------------------
-void Position::SetXY(double x, double y)
+void Point::SetXY(double x, double y)
 {
-  LOG(logDEBUG4) << "Position::SetXY()";
+  LOG(logDEBUG4) << "Point::SetXY()";
   x_ = x;
   y_ = y;
   
   valid_cartesian_ = true;
   
-  if (!valid_frenet_ && valid_yaw_)
+  if (!valid_frenet_)
   {
     // Convert to frenet
-    Map::GetInstance().GetFrenet(x_, y_, yaw_, s_, d_);
+    //Map::GetInstance().GetFrenet(x_, y_, yaw_, s_, d_);
+    //TODO: GetFrenet
     valid_frenet_ = true;
   }
 }
 
 // ----------------------------------------------------------------------------
-void Position::SetFrenet(double s, double d)
+void Point::SetFrenet(double s, double d)
 {
-  LOG(logDEBUG4) << "Position::SetFrenet()";
+  LOG(logDEBUG4) << "Point::SetFrenet()";
   s_ = s;
   d_ = d;
 
@@ -177,20 +156,12 @@ void Position::SetFrenet(double s, double d)
 }
 
 // ----------------------------------------------------------------------------
-void Position::SetYaw(double yaw)
-{
-  yaw_ = yaw;
-  valid_yaw_ = true;
-}
-
-// ----------------------------------------------------------------------------
-ostream& operator<<(ostream& os, const Position& p)
+ostream& operator<<(ostream& os, const Point& p)
 {
   os << "x: " << p.x_ << " | "
     << "y: " << p.y_ << " | "
     << "s: " << p.s_ << " | "
     << "d: " << p.d_ << " | "
-    << "yaw: " << p.yaw_ << " | "
     << endl;
 
   return os;
