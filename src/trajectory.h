@@ -4,13 +4,13 @@
 #include <iostream>
 #include <vector>
 
-#include "position.h"
+#include "point.h"
 
 using namespace std;
 
 class Trajectory {
 public:
-  vector<Position> points;
+  vector<Point> points;
   
   vector<double> GetXvalues();
   vector<double> GetYvalues();
