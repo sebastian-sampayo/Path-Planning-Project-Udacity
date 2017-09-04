@@ -2,7 +2,7 @@
 
 #include "logger.h"
 #include "map.h"
-#include "position.h"
+#include "point.h"
 #include "straight_line_strategy.h"
 #include "trajectory.h"
 #include "utils.h"
@@ -44,7 +44,7 @@ void StraightLineStrategy::GenerateXYTrajectory()
   double dist_inc = 0.5;
   for(int i = 0; i < 50; i++)
   {
-    Position p;
+    Point p;
     double x = car_x + (dist_inc*i) * cos(deg2rad(car_yaw));
     double y = car_y + (dist_inc*i) * sin(deg2rad(car_yaw));
     p.SetXY(x, y);
@@ -67,7 +67,7 @@ void StraightLineStrategy::GenerateSDTrajectory()
   {
     double s = car_s + double(i+1) * dist_inc;
     double d = 2 + 4;
-    Position p;
+    Point p;
     p.SetFrenet(s, d);
     trajectory.points.push_back(p);
     LOG(logDEBUG4) << "StraightLineStrategy::GenerateSDTrajectory() - p : " << p;
