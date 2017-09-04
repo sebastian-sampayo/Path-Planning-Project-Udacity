@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "logger.h"
-#include "position.h"
+#include "point.h"
 #include "trajectory.h"
 
 using namespace std;
@@ -16,7 +16,7 @@ vector<double> Trajectory::GetXvalues()
 {
   vector<double> x_values;
   
-  for (Position& point : points)
+  for (Point& point : points)
   {
     x_values.push_back(point.GetX());
   }
@@ -29,7 +29,7 @@ vector<double> Trajectory::GetYvalues()
 {
   vector<double> y_values;
   
-  for (Position& point : points)
+  for (Point& point : points)
   {
     y_values.push_back(point.GetY());
   }
@@ -43,7 +43,7 @@ ostream& operator<<(ostream& os, const Trajectory& t)
   // Format:
   // x0, y0
   // x1, y1
-  for (const Position& point : t.points)
+  for (const Point& point : t.points)
   {
     os << point.GetX()
       << ", "
