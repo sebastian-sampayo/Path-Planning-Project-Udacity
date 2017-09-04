@@ -1,7 +1,7 @@
 #ifndef KINEMATIC_STATE_H
 #define KINEMATIC_STATE_H
 
-#include "position.h"
+#include "point.h"
 
 class KinematicState {
 public:
@@ -9,7 +9,8 @@ public:
   KinematicState() {};
   virtual ~KinematicState() {};
 
-  Position position;
+  Point position;
+  double yaw;
   double speed;
   double accel;
 };
