@@ -4,24 +4,21 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
+#include "position.h"
 
-struct Point {
-  double x;
-  double y;
-  double s;
-  double d;
-};
+using namespace std;
 
 class Trajectory {
 public:
-  vector<Point> points;
+  vector<Position> points;
   
   vector<double> GetXvalues();
   vector<double> GetYvalues();
   
   //! Overload << to print the trajectory
-  friend ostream& operator<<(ostream& os, const Trajectory& t); 
+  friend ostream& operator<<(ostream& os, const Trajectory& t);
+  
+  size_t size() { return points.size();};
 };
 
 #endif

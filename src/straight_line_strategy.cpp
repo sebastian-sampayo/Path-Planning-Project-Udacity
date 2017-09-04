@@ -1,6 +1,8 @@
 #include <vector>
 
 #include "logger.h"
+#include "map.h"
+#include "position.h"
 #include "straight_line_strategy.h"
 #include "trajectory.h"
 #include "utils.h"
@@ -14,13 +16,14 @@ using namespace std;
 // ----------------------------------------------------------------------------
 void StraightLineStrategy::GenerateTrajectory()
 {
-  GenerateXYTrajectory();
+  // GenerateXYTrajectory();
+  GenerateSDTrajectory();
 }
 
 // ----------------------------------------------------------------------------
 StraightLineStrategy::StraightLineStrategy()
 {
-  LOG(logDEBUG4) << "StraightLineStrategy::StraightLineStrategy()";
+  LOG(logDEBUG3) << "StraightLineStrategy::StraightLineStrategy()";
 }
 
 // ----------------------------------------------------------------------------
@@ -30,17 +33,21 @@ StraightLineStrategy::StraightLineStrategy()
 // ----------------------------------------------------------------------------
 void StraightLineStrategy::GenerateXYTrajectory()
 {
-  double car_x = start.position.x;
-  double car_y = start.position.y;
-  double car_yaw = start.yaw;
+  // Clear previous trajectory
+  trajectory.points.clear();
+  
+  double car_x = start.position.GetX();
+  double car_y = start.position.GetY();
+  double car_yaw = start.position.GetYaw();
   
   // Straight line test
   double dist_inc = 0.5;
   for(int i = 0; i < 50; i++)
   {
-    Point p;
-    p.x = car_x + (dist_inc*i) * cos(deg2rad(car_yaw));
-    p.y = car_y + (dist_inc*i) * sin(deg2rad(car_yaw));
+    Position p;
+    double x = car_x + (dist_inc*i) * cos(deg2rad(car_yaw));
+    double y = car_y + (dist_inc*i) * sin(deg2rad(car_yaw));
+    p.SetXY(x, y);
     trajectory.points.push_back(p);
   }
 }
@@ -48,20 +55,21 @@ void StraightLineStrategy::GenerateXYTrajectory()
 // ----------------------------------------------------------------------------
 void StraightLineStrategy::GenerateSDTrajectory()
 {
-  double car_x = start.position.x;
-  double car_y = start.position.y;
-  double car_yaw = start.yaw;
+  // Clear previous trajectory
+  trajectory.points.clear();
+  
+  double car_s = start.position.GetS();
+  LOG(logDEBUG3) << "StraightLineStrategy::GenerateSDTrajectory() - car_s = " << car_s;
   
   // Straight line test
   double dist_inc = 0.5;
   for(int i = 0; i < 50; i++)
   {
-    double s = 0;
-    double d = 0;
-    Point p;
-    // vector<double> xy = getXY(s, d, );
-    // p.x = xy[0];
-    // p.y = xy[1];
+    double s = car_s + double(i+1) * dist_inc;
+    double d = 2 + 4;
+    Position p;
+    p.SetFrenet(s, d);
     trajectory.points.push_back(p);
+    LOG(logDEBUG4) << "StraightLineStrategy::GenerateSDTrajectory() - p : " << p;
   }
 }

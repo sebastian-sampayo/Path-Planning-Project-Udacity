@@ -21,52 +21,23 @@ using json = nlohmann::json;
 
 int main()
 {
-  SET_LOG_LEVEL(logALL);
+  SET_LOG_LEVEL(logDEBUG3);
   LOG(logINFO) << "----- Test Strategy -----";
   
-  // Load up map values for waypoint's x,y,s and d normalized normal vectors
-  vector<double> map_waypoints_x;
-  vector<double> map_waypoints_y;
-  vector<double> map_waypoints_s;
-  vector<double> map_waypoints_dx;
-  vector<double> map_waypoints_dy;
-
-  // Waypoint map to read from
-  string map_file_ = "../../data/highway_map.csv";
-  // The max s value before wrapping around the track back to 0
-  double max_s = 6945.554;
-
-  ifstream in_map_(map_file_.c_str(), ifstream::in);
-
-  string line;
-  while (getline(in_map_, line)) {
-    istringstream iss(line);
-    double x;
-    double y;
-    float s;
-    float d_x;
-    float d_y;
-    iss >> x;
-    iss >> y;
-    iss >> s;
-    iss >> d_x;
-    iss >> d_y;
-    map_waypoints_x.push_back(x);
-    map_waypoints_y.push_back(y);
-    map_waypoints_s.push_back(s);
-    map_waypoints_dx.push_back(d_x);
-    map_waypoints_dy.push_back(d_y);
-  }
+  Map::GetInstance();
   
   PathPlanner path_planner;
   
   LOG(logINFO) << "Get ego vehicle sensor data";
-  path_planner.ego_data.x = stub_ego_data["x"];
-  path_planner.ego_data.y = stub_ego_data["y"];
-  path_planner.ego_data.s = stub_ego_data["s"];
-  path_planner.ego_data.d = stub_ego_data["d"];
-  path_planner.ego_data.speed = stub_ego_data["speed"];
-  path_planner.ego_data.yaw = stub_ego_data["yaw"];
+  EgoSensorData ego_data;
+  ego_data.x = stub_ego_data["x"];
+  ego_data.y = stub_ego_data["y"];
+  ego_data.s = stub_ego_data["s"];
+  ego_data.d = stub_ego_data["d"];
+  ego_data.speed = stub_ego_data["speed"];
+  ego_data.yaw = stub_ego_data["yaw"];
+  
+  path_planner.SetEgoData(ego_data);
   
     // Convert Sensor fusion data from json to SensorData class:
   LOG(logINFO) << "Get environment sensor data";
@@ -93,7 +64,7 @@ int main()
   next_x_values = next_path.GetXvalues();
   next_y_values = next_path.GetYvalues();
   
-  LOG(logDEBUG2) << "next_path: " << endl << next_path << endl;
+  LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
 
   return 0;
 }

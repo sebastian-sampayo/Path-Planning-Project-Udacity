@@ -8,10 +8,10 @@
 class TrajectoryStrategy {
 public:
   KinematicState start;
-  Point goal;
+  Position goal;
   Trajectory trajectory;
   Trajectory previous_path;
-  Point previous_end_point;
+  Position previous_end_point;
 
   virtual void GenerateTrajectory() = 0;
 };

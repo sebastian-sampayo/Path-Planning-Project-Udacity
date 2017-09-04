@@ -7,11 +7,11 @@ DONE Move Point to Trajectory file.
 DONE Refactor classes (see the draft in my notepad)
 DONE   Remove all the commented-code
   Only leave the minimum members for each class (At this moment we don't need the acceleration for each vehicle for example)
-Code Map
-Test Map
-Minimum test for the Trajectory generation
-  straight line in x, y
-  straight line in s, d
+DONE Code Map
+DONE Test Map
+DONE Minimum test for the Trajectory generation
+DONE   straight line in x, y
+DONE   straight line in s, d
   spline line in s, d (Q&A Walkthrough)
 Code PopulateTraffic in the Road class
 Minimum test for PopulateTraffic with stubbed data

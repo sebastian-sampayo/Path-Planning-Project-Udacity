@@ -2,9 +2,11 @@
 
 #include "behavior.h"
 #include "logger.h"
+#include "road.h"
 #include "trajectory.h"
 #include "trajectory_strategy.h"
 #include "straight_line_strategy.h"
+#include "walkthrough_strategy.h"
 
 using namespace std;
 
@@ -23,7 +25,8 @@ Behavior::Behavior()
   SetPossibleTransitions();
   
   // TODO: this should be set by the client code
-  strategy = new StraightLineStrategy();
+  // strategy = new StraightLineStrategy();
+  strategy = new WalkthroughStrategy();
 }
 
 // ----------------------------------------------------------------------------
@@ -40,8 +43,17 @@ Trajectory Behavior::GetTrajectory()
 }
 
 // ----------------------------------------------------------------------------
-void Behavior::UpdateState()
+void Behavior::UpdateState(Road& road)
 {
+  // Set starting point with the input road (add Road in the input)
+  LOG(logDEBUG3) << "Behavior::UpdateState()";
+  strategy->start = road.ego.kinematic_state;
+  LOG(logDEBUG4) << "Behavior::UpdateState() - road.ego.kinematic_state.position = \n" 
+    << road.ego.kinematic_state.position;
+  LOG(logDEBUG4) << "Behavior::UpdateState() - strategy->start.position = \n"
+    << strategy->start.position;
+  
+  LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
   strategy->GenerateTrajectory();
 }
 

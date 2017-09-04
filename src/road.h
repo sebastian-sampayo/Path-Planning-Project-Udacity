@@ -12,6 +12,7 @@
 #include <string>
 #include <iterator>
 
+#include "sensor_data.h"
 #include "vehicle.h"
 
 using namespace std;
@@ -40,6 +41,7 @@ public:
   // Destructor
   virtual ~Road();
 
+  void UpdateEgoKinematics(EgoSensorData ego_data);
   void populate_traffic();
 };
 

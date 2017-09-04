@@ -11,15 +11,24 @@ set(COMMON_SOURCES
             src/behavior.cpp
             src/map.cpp
             src/path_planner.cpp
+            src/position.cpp
             src/road.cpp
             src/straight_line_strategy.cpp
+            src/walkthrough_strategy.cpp
             src/trajectory.cpp
             src/utils.cpp
             src/vehicle.cpp)
 
 set(MAIN_SOURCE src/main.cpp)
 
+set(POSITION_SRC
+            src/position.cpp
+            src/trajectory.cpp
+            src/utils.cpp
+            src/map.cpp)
+
 set(TEST_STRATEGY_SRC src/tests/strategy.cpp)
+set(TEST_POSITION_SRC src/tests/position.cpp)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
@@ -33,6 +42,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
 add_executable(path_planning ${MAIN_SOURCE} ${COMMON_SOURCES})
-add_executable(test_strategy ${TEST_STRATEGY_SRC} ${COMMON_SOURCES})
+add_executable(strategy_test ${TEST_STRATEGY_SRC} ${COMMON_SOURCES})
+add_executable(position_test ${TEST_POSITION_SRC} ${POSITION_SRC})
 
 target_link_libraries(path_planning z ssl uv uWS)

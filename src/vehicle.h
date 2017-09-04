@@ -18,7 +18,7 @@ using namespace std;
 class Vehicle {
 public:
 
-  double L = 1;
+  double L = 5;
   KinematicState kinematic_state;
   int lane;
   int lanes_available;
@@ -29,7 +29,7 @@ public:
   /**
   * Constructors
   */
-  Vehicle() {};
+  Vehicle();
   Vehicle(int lane, double s, double v, double a);
 
   /**

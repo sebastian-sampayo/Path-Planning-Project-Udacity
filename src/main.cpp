@@ -10,6 +10,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 
+#include "logger.h"
 #include "path_planner.h"
 #include "sensor_data.h"
 #include "trajectory.h"
@@ -38,41 +39,11 @@ string hasData(string s) {
 int main() {
   uWS::Hub h;
 
-  // Load up map values for waypoint's x,y,s and d normalized normal vectors
-  vector<double> map_waypoints_x;
-  vector<double> map_waypoints_y;
-  vector<double> map_waypoints_s;
-  vector<double> map_waypoints_dx;
-  vector<double> map_waypoints_dy;
+  SET_LOG_LEVEL(logDEBUG3);
+  // SET_LOG_LEVEL(logERROR);
+  PathPlanner path_planner;
 
-  // Waypoint map to read from
-  string map_file_ = "../data/highway_map.csv";
-  // The max s value before wrapping around the track back to 0
-  double max_s = 6945.554;
-
-  ifstream in_map_(map_file_.c_str(), ifstream::in);
-
-  string line;
-  while (getline(in_map_, line)) {
-    istringstream iss(line);
-    double x;
-    double y;
-    float s;
-    float d_x;
-    float d_y;
-    iss >> x;
-    iss >> y;
-    iss >> s;
-    iss >> d_x;
-    iss >> d_y;
-    map_waypoints_x.push_back(x);
-    map_waypoints_y.push_back(y);
-    map_waypoints_s.push_back(s);
-    map_waypoints_dx.push_back(d_x);
-    map_waypoints_dy.push_back(d_y);
-  }
-
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&path_planner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -111,16 +82,14 @@ int main() {
 
           // TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
 
-          // vector<double> next_x_vals;
-          // vector<double> next_y_vals;
-          
-          PathPlanner path_planner;
-          path_planner.ego_data.x = car_x;
-          path_planner.ego_data.y = car_y;
-          path_planner.ego_data.s = car_s;
-          path_planner.ego_data.d = car_d;
-          path_planner.ego_data.speed = car_speed;
-          path_planner.ego_data.yaw = car_yaw;
+          EgoSensorData ego_data;
+          ego_data.x = car_x;
+          ego_data.y = car_y;
+          ego_data.s = car_s;
+          ego_data.d = car_d;
+          ego_data.speed = car_speed;
+          ego_data.yaw = car_yaw;
+          path_planner.SetEgoData(ego_data);
           
           // Convert previous path from json to Trajectory class
           path_planner.SetPreviousPath(previous_path_x, previous_path_y);

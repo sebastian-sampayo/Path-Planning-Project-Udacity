@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 
+#include "road.h"
 #include "trajectory.h"
 #include "trajectory_strategy.h"
 
@@ -32,7 +33,7 @@ public:
   //! Get the generated trajectory
   Trajectory GetTrajectory();
   
-  void UpdateState();
+  void UpdateState(Road& road);
   
 private:
   void SetPossibleTransitions();

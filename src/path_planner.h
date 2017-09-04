@@ -7,6 +7,7 @@
 
 #include "behavior.h"
 #include "kinematic_state.h"
+#include "road.h"
 #include "sensor_data.h"
 #include "trajectory.h"
 #include "trajectory_strategy.h"
@@ -31,6 +32,8 @@ public:
   // The data format for each car is: [ id, x, y, vx, vy, s, d]. The id is a unique identifier for that car. The x, y values are in global map coordinates, and the vx, vy values are the velocity components, also in reference to the global map. Finally s and d are the Frenet coordinates for that car.
   EnvironmentSensorData environment_data;
   
+  Road road;
+  
   Behavior behavior;
 
   // Output of the Path Planner
@@ -51,6 +54,7 @@ public:
   // //! Generates a Circle path
   // void GenerateCircle();
 
+  void SetEgoData(EgoSensorData data);
   void SetPreviousPath(json previous_path_x, json previous_path_y);
   void SetPreviousEndPoint(double end_path_s, double end_path_d);
 };
