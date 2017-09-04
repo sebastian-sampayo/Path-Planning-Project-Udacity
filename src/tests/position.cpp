@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../map.h"
-#include "../position.h"
+#include "../point.h"
 #include "../kinematic_state.h"
 #include "../trajectory.h"
 
@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-  Position p;
+  Point p;
   
   p.SetXY(1,1);
   p.GetX();
@@ -17,9 +17,6 @@ int main()
   p.SetFrenet(2,2);
   p.GetY();
   p.GetD();
-  p.SetYaw(1);
-  p.GetX();
-  p.GetS();
 
   KinematicState k;
 
