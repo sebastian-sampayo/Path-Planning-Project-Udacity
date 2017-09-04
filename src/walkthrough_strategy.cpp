@@ -3,7 +3,7 @@
 
 #include "logger.h"
 #include "map.h"
-#include "position.h"
+#include "point.h"
 #include "walkthrough_strategy.h"
 #include "spline.h"
 #include "trajectory.h"
@@ -42,7 +42,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   double car_s = start.position.GetS();
   double car_x = start.position.GetX();
   double car_y = start.position.GetY();
-  double car_yaw = start.position.GetYaw();
+  double car_yaw = start.yaw;
   double ref_x = car_x;
   double ref_y = car_y;
   double ref_yaw = deg2rad(car_yaw);
@@ -81,7 +81,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   
   // In Frenet add evenly 30m spaced points ahead of the starting reference
   int lane = 1;
-  Position next_wp0, next_wp1, next_wp2;
+  Point next_wp0, next_wp1, next_wp2;
   next_wp0.SetFrenet(car_s+30, 2+4*lane);
   next_wp1.SetFrenet(car_s+60, 2+4*lane);
   next_wp2.SetFrenet(car_s+90, 2+4*lane);
@@ -116,7 +116,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   // Start with all of the previous path points from the last time
   for(int i = 0; i < previous_path.size(); i++)
   {
-    Position p;
+    Point p;
     p.SetXY(previous_path_x[i], previous_path_y[i]);
     trajectory.points.push_back(p);
   }
@@ -148,7 +148,7 @@ void WalkthroughStrategy::GenerateTrajectory()
     x_point += ref_x;
     y_point += ref_y;
     
-    Position p;
+    Point p;
     p.SetXY(x_point, y_point);
     trajectory.points.push_back(p);
   }
