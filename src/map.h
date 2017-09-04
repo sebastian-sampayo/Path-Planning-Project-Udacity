@@ -38,9 +38,9 @@ public:
   void operator=(Map const&)    = delete;
 
 private:
-  // Splines for the components of the parametric curve (x(s), y(s))
-  tk::spline x_s_;
-  tk::spline y_s_;
+  // Splines for the components of the parametric curve q(s) = (qx(s), qy(s))
+  tk::spline qx_s_;
+  tk::spline qy_s_;
   
   Map();
 };
