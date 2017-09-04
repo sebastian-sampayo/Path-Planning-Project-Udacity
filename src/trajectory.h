@@ -19,6 +19,7 @@ public:
   friend ostream& operator<<(ostream& os, const Trajectory& t);
   
   size_t size() { return points.size();};
+  size_t push_back(Point& p) { return points.push_back(p);};
 };
 
 #endif
