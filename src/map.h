@@ -26,8 +26,8 @@ public:
   static Map& GetInstance();
 
   //! Convert back and forth between Frenet and Cartesian coordinates
-  void GetFrenet(double x, double y, double theta, double &s, double &d);
-  void GetXY(double s, double d, double &x, double &y);
+  void ToFrenet(double x, double y, double &s, double &d);
+  void ToCartesian(double s, double d, double &x, double &y);
   
   //! Load the waypoints from file
   void SetWaypoints(string map_filename);
