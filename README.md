@@ -1,6 +1,22 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
    
+---
+
+[//]: # (Image References)
+[UML]: ./img/UML-diagram.png
+[arch]: ./img/software-architecture.png
+
+## UML - *In progress*
+
+![UML diagram][UML]
+
+
+## Software Architecture - *In progress*
+
+![Software Architecture][arch]
+
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases).
 

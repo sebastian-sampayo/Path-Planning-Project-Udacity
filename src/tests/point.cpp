@@ -6,7 +6,10 @@
 // #include "../kinematic_state.h"
 #include "../trajectory.h"
 
+#include "../matplotlibcpp.h"
+
 using namespace std;
+namespace plt = matplotlibcpp;
 
 int main()
 {
@@ -47,6 +50,17 @@ int main()
   }
 
   cout << "Trajectory t: \n" << t;
+  
+  
+  // Matplotlibcpp
+  // plt::subplot(2, 2, 1);
+  plt::title("Red = Waypoints, Black=x(s)+y(s)");
+  //plt::axis("equal");
+  plt::xlim(0, 2500);
+  // plt::plot(Map::, maps_y_, "r."
+           // , xs, ys, "k-");
+
+  plt::show();
 
   return 0;
 }
