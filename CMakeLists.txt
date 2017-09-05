@@ -47,5 +47,5 @@ add_executable(path_planning ${MAIN_SOURCE} ${COMMON_SOURCES})
 add_executable(strategy_test ${TEST_STRATEGY_SRC} ${COMMON_SOURCES})
 add_executable(point_test ${TEST_POINT_SRC} ${POINT_SRC})
 
-target_link_libraries(path_planning z ssl uv uWS python2.7)
+target_link_libraries(path_planning z ssl uv uWS python)
 target_link_libraries(point_test z ssl uv uWS python2.7)

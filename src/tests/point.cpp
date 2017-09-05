@@ -53,14 +53,17 @@ int main()
   
   
   // Matplotlibcpp
+  plt::plot({1,2,3,4});
+  plt::save("../img/test.png");
+  // plt::show();
   // plt::subplot(2, 2, 1);
-  plt::title("Red = Waypoints, Black=x(s)+y(s)");
+  // plt::title("Red = Waypoints, Black=x(s)+y(s)");
   //plt::axis("equal");
-  plt::xlim(0, 2500);
+  // plt::xlim(0, 2500);
   // plt::plot(Map::, maps_y_, "r."
            // , xs, ys, "k-");
 
-  plt::show();
+  // plt::show();
 
   return 0;
 }
