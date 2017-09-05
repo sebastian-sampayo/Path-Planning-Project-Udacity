@@ -5,20 +5,20 @@
 
 #include <vector>
 #include <string>
+#include <math.h>
 
 #include "logger.h"
 #include "spline.h"
 
 using namespace std;
 
-  
 class Map {
 public:
   //! Name of the waypoints file
   static constexpr const char* MAP_FILENAME = "../data/highway_map.csv";
   
   // The max s value before wrapping around the track back to 0
-  static constexp double MAX_S = 6945.554;
+  static constexpr double MAX_S = 6945.554;
   
   //! Waypoints of the center line of the road in the global map coordinates
   vector<double> map_waypoints_x;
@@ -42,10 +42,12 @@ public:
 
 private:
   // Splines for the components of the parametric curve q(s) = (qx(s), qy(s))
-  tk::spline qx_s_;
-  tk::spline qy_s_;
+  tk::spline qx_s_; // qx(s)
+  tk::spline qy_s_; // qy(s)
+  tk::spline dx_s_; // dx(s)
+  tk::spline dy_s_; // dy(s)
   
-  double CycleS(double s) {return fmod(s, MAX_S));};
+  double CycleS(double s) { return fmod(s, MAX_S); }
   
   Map();
 };

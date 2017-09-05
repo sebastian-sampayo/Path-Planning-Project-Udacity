@@ -8,18 +8,13 @@
 
 using namespace std;
 
-class Trajectory {
+class Trajectory : public vector<Point> {
 public:
-  vector<Point> points;
-  
   vector<double> GetXvalues();
   vector<double> GetYvalues();
   
   //! Overload << to print the trajectory
   friend ostream& operator<<(ostream& os, const Trajectory& t);
-  
-  size_t size() { return points.size();};
-  size_t push_back(Point& p) { return points.push_back(p);};
 };
 
 #endif

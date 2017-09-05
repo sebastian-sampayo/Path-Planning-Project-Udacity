@@ -32,7 +32,6 @@ public:
   
   //! Get the generated trajectory
   Trajectory GetTrajectory();
-  
   void UpdateState(Road& road);
   
 private:

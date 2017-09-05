@@ -5,6 +5,7 @@
 
 #include "map.h"
 #include "utils.h"
+#include "spline.h"
 
 using namespace std;
 
@@ -27,21 +28,23 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
   // q'(s) = (cos(theta), sin(theta))
   // The condition (1) could have multiple roots in a global domain, but only one is
   // the closest point to p. 
-  // However, it can be shown that if we constrain to a local domain around
+  // However, it can be shown that if s* is unique and we constrain to a local domain around
   // the closest waypoint to p, then (1) is sufficient to find a unique s*.
   
   // Start at the closest waypoint
-  int wp = ClosestWaypoint(x,y, map_waypoints_x,map_waypoints_y);
-  double s = map_waypoints_s[wp];
-  double qx0 = map_waypoints_x[wp];
-  double qy0 = map_waypoints_y[wp];
+  const int wp = ClosestWaypoint(x,y, map_waypoints_x,map_waypoints_y);
+  s = map_waypoints_s[wp];
   
   // Define an increment size to calculate theta at some point s
-  double ds = 0.001;
+  const double ds = 0.001;
+  const double tolerance = 0.001;
   
-  // This variables will contain: p - q(s)
+  // This variables will contain: p - q(s*)
   double pq_dist_x = -1;
   double pq_dist_y = -1;
+  // This variables will contain q'(s*)
+  double rx = -1;
+  double ry = -1;
   
   double p_proj_r = 0;
   
@@ -49,21 +52,21 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
   {
     // Gradient-descent search
     s = CycleS(s+p_proj_r);
-    s1 = CycleS(s+ds);
-    double qx0 = qx_s_(s);
-    double qy0 = qy_s_(s);
-    double qx1 = qx_s_(s1);
-    double qy1 = qy_s_(s1);
-    double theta = atan2(qy1-qy0, qx1-qx0);
+    const double s1 = CycleS(s+ds);
+    const double qx0 = qx_s_(s);
+    const double qy0 = qy_s_(s);
+    const double qx1 = qx_s_(s1);
+    const double qy1 = qy_s_(s1);
+    const double theta = atan2(qy1-qy0, qx1-qx0);
     // Let r(s) = q'(s) = (rx(s), ry(s))
-    double rx = cos(theta);
-    double ry = sin(theta);
+    rx = cos(theta);
+    ry = sin(theta);
     // p - q(s)
     pq_dist_x = x - qx0;
     pq_dist_y = y - qy0;
     // (p - q) q'. This must be 0 for orthogonality
     p_proj_r = pq_dist_x*rx + pq_dist_y*ry;
-  } while (p_proj_r > 0.01)
+  } while (p_proj_r > tolerance);
   
   d = pq_dist_x*ry - pq_dist_y*rx;
 }
@@ -72,32 +75,14 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
 // Transform from Frenet s,d coordinates to Cartesian x,y
 void Map::ToCartesian(double s, double d, double& x, double& y)
 {
-  LOG(logDEBUG4) << "Map::GetXY()";
-  int prev_wp = -1;
+  // p = q(s) + d
+  x = qx_s_(s);
+  y = qy_s_(s);
+  const double dx = d * dx_s_(s);
+  const double dy = d * dy_s_(s);
   
-  double a = GetInstance().map_waypoints_s[0];
-
-  while(s > map_waypoints_s[prev_wp+1] && (prev_wp < (int)(map_waypoints_s.size()-1) ))
-  {
-    prev_wp++;
-  }
-  LOG(logDEBUG4) << "Map::GetXY() - found prev_wp = " << prev_wp;
-
-  int wp2 = (prev_wp+1)%map_waypoints_x.size();
-
-  double heading = atan2((map_waypoints_y[wp2]-map_waypoints_y[prev_wp]),(map_waypoints_x[wp2]-map_waypoints_x[prev_wp]));
-  // the x,y,s along the segment
-  double seg_s = (s-map_waypoints_s[prev_wp]);
-
-  double seg_x = map_waypoints_x[prev_wp]+seg_s*cos(heading);
-  double seg_y = map_waypoints_y[prev_wp]+seg_s*sin(heading);
-
-  double perp_heading = heading-pi()/2;
-
-  x = seg_x + d*cos(perp_heading);
-  y = seg_y + d*sin(perp_heading);
-  
-  LOG(logDEBUG4) << "Map::GetXY() - end";
+  x += dx;
+  y += dy;
 }
 
 // ----------------------------------------------------------------------------
@@ -130,12 +115,11 @@ void Map::SetWaypoints(string map_filename)
   
   qx_s_.set_points(map_waypoints_s, map_waypoints_x);
   qy_s_.set_points(map_waypoints_s, map_waypoints_y);
+  dx_s_.set_points(map_waypoints_s, map_waypoints_dx);
+  dy_s_.set_points(map_waypoints_s, map_waypoints_dy);
   
   LOG(logDEBUG4) << "Map::SetWaypoints() - map_waypoints_s.size() = " << map_waypoints_s.size();
 }
-// ----------------------------------------------------------------------------
-// PRIVATE
-// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 Map& Map::GetInstance()
@@ -145,6 +129,10 @@ Map& Map::GetInstance()
   
   return instance;
 }
+
+// ----------------------------------------------------------------------------
+// PRIVATE
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 Map::Map()

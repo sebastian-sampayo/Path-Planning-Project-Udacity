@@ -38,7 +38,7 @@ void Road::UpdateEgoKinematics(EgoSensorData data)
 {
   ego.kinematic_state.position.SetXY(data.x, data.y);
   ego.kinematic_state.position.SetFrenet(data.s, data.d);
-  ego.kinematic_state.position.SetYaw(data.yaw);
+  ego.kinematic_state.yaw = data.yaw;
   ego.kinematic_state.speed = data.speed;
 }
 

@@ -12,7 +12,11 @@ DONE Test Map
 DONE Minimum test for the Trajectory generation
 DONE   straight line in x, y
 DONE   straight line in s, d
-  spline line in s, d (Q&A Walkthrough)
+DONE   spline line in s, d (Q&A Walkthrough)
+
 Code PopulateTraffic in the Road class
 Minimum test for PopulateTraffic with stubbed data
   Stub data. 2 or 3 vehicles + ego
+Design a generic SplineStrategy for the trajectory generator, so that it generates a trajectory given the starting kinematics, goal point and a reference velocity (add the latter to TrajectoryStrategy). Think about the perturbed goals... who is going to calculate several trajectories and get the best one? Behavior or TrajectoryStrategy? Consider also previous path, we shouldn't stomp on it before getting the next best path...
+Code it
+Add d_desired[state] in Behavior class, so that we can set the goal point in the trajectory strategy. Also s_desired ??

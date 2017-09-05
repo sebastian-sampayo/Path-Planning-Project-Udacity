@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "map.h"
+#include "logger.h"
 #include "point.h"
 
 // ----------------------------------------------------------------------------
@@ -21,147 +22,103 @@
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
-Point::Point() :
-  x_(0), y_(0), s_(0), d_(0), 
-  valid_cartesian_(false), valid_frenet_(false)
-{
-}
+// Constructors / Destructors
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+Point::Point() { SetFrenet(0,0); }
+
+// ----------------------------------------------------------------------------
+Point::Point(const PointCartesian& p) { SetXY(p.x, p.y); }
+
+// ----------------------------------------------------------------------------
+Point::Point(const PointFrenet& p) { SetFrenet(p.s, p.d); }
 
 // ----------------------------------------------------------------------------
 Point::~Point()
-{
-}
-
-// "Get" methods
-// ----------------------------------------------------------------------------
-double Point::GetX() const
-{
-  LOG(logDEBUG4) << "Point::GetX()";
-  double x = -1;
-  if (valid_cartesian_)
-  {
-    x = x_;
-  }
-  else if (valid_frenet_)
-  {
-    double y;
-    Map::GetInstance().GetXY(s_, d_, x, y);
-  }
-  else
-  {
-    LOG(logERROR) << "Point::GetX() - no valid representation! Was the Point set?";
-  }
-  
-  return x;
-}
+{ LOG(logDEBUG4) << "Point::~Point()"; }
 
 // ----------------------------------------------------------------------------
-double Point::GetY() const
-{
-  LOG(logDEBUG4) << "Point::GetY()";
-  double y = -1;
-  if (valid_cartesian_)
-  {
-    y = y_;
-  }
-  else if (valid_frenet_)
-  {
-    double x;
-    Map::GetInstance().GetXY(s_, d_, x, y);
-  }
-  else
-  {
-    LOG(logERROR) << "Point::GetY() - no valid representation! Was the Point set?";
-  }
-  
-  return y;
-}
+// Getters
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
-double Point::GetS() const
-{
-  LOG(logDEBUG4) << "Point::GetS()";
-  double s = -1;
-  if (valid_frenet_)
-  {
-    s = s_;
-  }
-  else if (valid_cartesian_)
-  {
-    // TODO: GetFrenet() independent on theta
-  }
-  else
-  {
-    LOG(logERROR) << "Point::GetS() - no valid representation! Was the Point set?";
-  }
-  
-  return s;
-}
+double Point::GetX() const { return point_cartesian_.x; }
+double Point::GetY() const { return point_cartesian_.y; }
+double Point::GetS() const { return point_frenet_.s; }
+double Point::GetD() const { return point_frenet_.d; }
 
 // ----------------------------------------------------------------------------
-double Point::GetD() const
-{
-  LOG(logDEBUG4) << "Point::GetD()";
-  double d = -1;
-  if (valid_frenet_)
-  {
-    d = d_;
-  }
-  else if (valid_cartesian_)
-  {
-    // TODO: GetFrenet() independent on theta
-  }
-  else
-  {
-    LOG(logERROR) << "Point::GetD() - no valid representation! Was the Point set?";
-  }
-  
-  return d;
-}
+// Setters
+// ----------------------------------------------------------------------------
 
-// "Set" methods
 // ----------------------------------------------------------------------------
 void Point::SetXY(double x, double y)
 {
-  LOG(logDEBUG4) << "Point::SetXY()";
-  x_ = x;
-  y_ = y;
+  point_cartesian_ = PointCartesian(x, y);
   
-  valid_cartesian_ = true;
-  
-  if (!valid_frenet_)
-  {
-    // Convert to frenet
-    //Map::GetInstance().GetFrenet(x_, y_, yaw_, s_, d_);
-    //TODO: GetFrenet
-    valid_frenet_ = true;
-  }
+  // Also set the other representation
+  point_frenet_ = PointFrenet(point_cartesian_);
 }
 
 // ----------------------------------------------------------------------------
 void Point::SetFrenet(double s, double d)
 {
-  LOG(logDEBUG4) << "Point::SetFrenet()";
-  s_ = s;
-  d_ = d;
-
-  valid_frenet_ = true;
-
-  if (!valid_cartesian_)
-  {
-    // Convert to cartesian
-    Map::GetInstance().GetXY(s_, d_, x_, y_);
-    valid_cartesian_ = true;
-  }
+  point_frenet_ = PointFrenet(s, d);
+  
+  // Also set the other representation
+  point_cartesian_ = PointCartesian(point_frenet_);
 }
+
+// ----------------------------------------------------------------------------
+// Converters
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+// Constructor: Convert from Frenet to Cartesian
+PointCartesian::PointCartesian(const PointFrenet& p)
+{
+  Map::GetInstance().ToCartesian(p.s, p.d, x, y);
+}
+
+// ----------------------------------------------------------------------------
+// Constructor: Convert from Cartesian to Frenet
+PointFrenet::PointFrenet(const PointCartesian& p)
+{
+  Map::GetInstance().ToFrenet(p.x, p.y, s, d);
+}
+
+// ----------------------------------------------------------------------------
+// Printers
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 ostream& operator<<(ostream& os, const Point& p)
 {
-  os << "x: " << p.x_ << " | "
-    << "y: " << p.y_ << " | "
-    << "s: " << p.s_ << " | "
-    << "d: " << p.d_ << " | "
+  os << "x: " << p.point_cartesian_.x << " | "
+    << "y: " << p.point_cartesian_.y << " | "
+    << "s: " << p.point_frenet_.s << " | "
+    << "d: " << p.point_frenet_.d << " | "
+    << endl;
+
+  return os;
+}
+
+// ----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, const PointCartesian& p)
+{
+  os << "x: " << p.x << " | "
+    << "y: " << p.y << " | "
+    << endl;
+
+  return os;
+}
+
+// ----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, const PointFrenet& p)
+{
+  os << "s: " << p.s << " | "
+    << "d: " << p.d << " | "
     << endl;
 
   return os;

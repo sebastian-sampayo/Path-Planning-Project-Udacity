@@ -16,7 +16,7 @@ vector<double> Trajectory::GetXvalues()
 {
   vector<double> x_values;
   
-  for (Point& point : points)
+  for (Point& point : *this)
   {
     x_values.push_back(point.GetX());
   }
@@ -29,7 +29,7 @@ vector<double> Trajectory::GetYvalues()
 {
   vector<double> y_values;
   
-  for (Point& point : points)
+  for (Point& point : *this)
   {
     y_values.push_back(point.GetY());
   }
@@ -43,7 +43,8 @@ ostream& operator<<(ostream& os, const Trajectory& t)
   // Format:
   // x0, y0
   // x1, y1
-  for (const Point& point : t.points)
+  // ...
+  for (const Point& point : t)
   {
     os << point.GetX()
       << ", "

@@ -34,11 +34,11 @@ StraightLineStrategy::StraightLineStrategy()
 void StraightLineStrategy::GenerateXYTrajectory()
 {
   // Clear previous trajectory
-  trajectory.points.clear();
+  trajectory.clear();
   
   double car_x = start.position.GetX();
   double car_y = start.position.GetY();
-  double car_yaw = start.position.GetYaw();
+  double car_yaw = start.yaw;
   
   // Straight line test
   double dist_inc = 0.5;
@@ -48,7 +48,7 @@ void StraightLineStrategy::GenerateXYTrajectory()
     double x = car_x + (dist_inc*i) * cos(deg2rad(car_yaw));
     double y = car_y + (dist_inc*i) * sin(deg2rad(car_yaw));
     p.SetXY(x, y);
-    trajectory.points.push_back(p);
+    trajectory.push_back(p);
   }
 }
 
@@ -56,7 +56,7 @@ void StraightLineStrategy::GenerateXYTrajectory()
 void StraightLineStrategy::GenerateSDTrajectory()
 {
   // Clear previous trajectory
-  trajectory.points.clear();
+  trajectory.clear();
   
   double car_s = start.position.GetS();
   LOG(logDEBUG3) << "StraightLineStrategy::GenerateSDTrajectory() - car_s = " << car_s;
@@ -69,7 +69,7 @@ void StraightLineStrategy::GenerateSDTrajectory()
     double d = 2 + 4;
     Point p;
     p.SetFrenet(s, d);
-    trajectory.points.push_back(p);
+    trajectory.push_back(p);
     LOG(logDEBUG4) << "StraightLineStrategy::GenerateSDTrajectory() - p : " << p;
   }
 }

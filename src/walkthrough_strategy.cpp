@@ -21,7 +21,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   LOG(logDEBUG3) << "WalkthroughStrategy::GenerateTrajectory()";
 
   // Clear previous trajectory
-  trajectory.points.clear();
+  trajectory.clear();
   
   double ref_vel = 49.5;
   
@@ -118,7 +118,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   {
     Point p;
     p.SetXY(previous_path_x[i], previous_path_y[i]);
-    trajectory.points.push_back(p);
+    trajectory.push_back(p);
   }
   
   // Calculate how to break up spline points so that we travel at our desired reference velocity
@@ -150,7 +150,7 @@ void WalkthroughStrategy::GenerateTrajectory()
     
     Point p;
     p.SetXY(x_point, y_point);
-    trajectory.points.push_back(p);
+    trajectory.push_back(p);
   }
 }
 

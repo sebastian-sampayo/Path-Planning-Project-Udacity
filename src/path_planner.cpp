@@ -58,20 +58,20 @@ void PathPlanner::SetEgoData(EgoSensorData data)
   // Under the hood also set the start point of the trajectory with this data
   road.ego.kinematic_state.position.SetXY(data.x, data.y);
   road.ego.kinematic_state.position.SetFrenet(data.s, data.d);
-  road.ego.kinematic_state.position.SetYaw(data.yaw);
+  road.ego.kinematic_state.yaw = data.yaw;
   road.ego.kinematic_state.speed = data.speed;
 }
 
 void PathPlanner::SetPreviousPath(json previous_path_x, json previous_path_y)
 {
-  behavior.strategy->previous_path.points.clear();
+  behavior.strategy->previous_path.clear();
 
   int path_size = previous_path_x.size();
   for (int i = 0; i < path_size; ++i)
   {
-    Position p;
+    Point p;
     p.SetXY(previous_path_x[i], previous_path_y[i]);
-    behavior.strategy->previous_path.points.push_back(p);
+    behavior.strategy->previous_path.push_back(p);
   }
 }
 
