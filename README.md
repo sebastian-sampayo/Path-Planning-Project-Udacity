@@ -1,20 +1,64 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
-   
+# Path Planning Project
+In this project I designed and developed the software and the algorithms of a path planner for an autonomous driving car.
+The code is written in C++ and the program communicates with a simulator provided by Udacity where there are several vehicles driving on a three lanes road.
+This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity.
+
 ---
 
 [//]: # (Image References)
 [UML]: ./img/UML-diagram.png
 [arch]: ./img/software-architecture.png
+[u]: ./img/u.gif
 
-## UML - *In progress*
-
-![UML diagram][UML]
+*Project in progress*
 
 
 ## Software Architecture - *In progress*
 
+In the following picture we can see a high-level diagram of the modules required and the way they relate to each other:
+
 ![Software Architecture][arch]
+
+Basically, the simulator sends sensor data of the ego vehicle and the surrounding environment. With this I model the road with the kinematic state of each vehicle sensed and predict how this is going to change in the near future using a kinematic model. Based on that, the behavior model loops over several goal points and generates trajectories. For each trajectory, it calculates a cost, which represents how safe it is. The best one is sent back to the simulator
+
+
+## UML - *In progress*
+
+Here we can see the classes that are implemented (*in progress*) to accomplish the mission.
+
+![UML diagram][UML]
+
+
+## Map
+
+A series of waypoints are also provided which allow as to create a global map of the road. 
+
+Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
+
+The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
+
+### Coordinate Transform
+
+In order to convert from Cartesian to Frenet coordinate system and vice-versa, a new algorithm is designed.
+
+Let ![u][u] p = (x,y) 
+be the point in cartesian coordinates, and 
+q = (qx(s), qy(s))
+the parametric formula of the curve.
+Also, let s* be the parameter for which q(s*) is closest to p, then the
+following condition must be satisfied:
+(p - q(s*)) q'(s*) = 0  (1)
+which means that the distance between p and q(s*) is perpendicular to q'(s*)
+where q'(s*) is actually the tangent vector of the curve at point s*.
+Let theta be the curve angle at point s, then
+q'(s) = (cos(theta), sin(theta))
+The condition (1) could have multiple roots in a global domain, but only one is
+the closest point to p. 
+However, it can be shown that if s* is unique and we constrain to a local domain around
+the closest waypoint to p, then (1) is sufficient to find a unique s*.
+
+
+
 
 
 ### Simulator.
