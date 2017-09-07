@@ -25,7 +25,7 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
   // which means that the distance between p and q(s*) is perpendicular to q'(s*)
   // where q'(s*) is actually the tangent vector of the curve at point s*.
   // Let theta be the curve angle at point s, then
-  // q'(s) = (cos(theta), sin(theta))
+  // q'(s) = (cos(theta), sin(theta)) (2)
   // The condition (1) could have multiple roots in a global domain, but only one is
   // the closest point to p. 
   // However, it can be shown that if s* is unique and we constrain to a local domain around
