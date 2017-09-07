@@ -43,6 +43,7 @@ void Road::UpdateEgoKinematics(EgoSensorData data)
 }
 
 // ----------------------------------------------------------------------------
-void Road::populate_traffic() {
-
+void Road::PopulateTraffic()
+{
+  
 }
