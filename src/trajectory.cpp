@@ -41,13 +41,18 @@ vector<double> Trajectory::GetYvalues()
 ostream& operator<<(ostream& os, const Trajectory& t)
 {
   // Format:
-  // x0, y0
-  // x1, y1
-  // ...
+  // s | d | x | y
+  os << "|s\t|d\t|x\t|y" << endl;
+  
   for (const Point& point : t)
   {
-    os << point.GetX()
-      << ", "
+    os << "|"
+      << point.GetS()
+      << "\t|"
+      << point.GetD()
+      << "\t|"
+      << point.GetX()
+      << "\t|"
       << point.GetY()
       << endl;
   }

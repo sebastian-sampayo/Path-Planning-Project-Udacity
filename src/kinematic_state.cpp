@@ -10,6 +10,11 @@
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
+KinematicState::KinematicState() :
+  position(Point()), speed(0), yaw(0), accel(0)
+{}
+
+// ----------------------------------------------------------------------------
 KinematicState::KinematicState(const EnvironmentSensorData::SensedVehicleData& data)
 {
   PointCartesian pc(data.x, data.y);

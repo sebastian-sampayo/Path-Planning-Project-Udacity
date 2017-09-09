@@ -8,7 +8,7 @@ class KinematicState {
 public:
   // Constructors and destructors
   //! Default Constructor
-  KinematicState() {};
+  KinematicState();
 
   //! Converts from SensedVehicleData (x,y,s,d,vx,vy). Doesn't set accel. Assumes the heading is in the same direction as the velocity: yaw = atan2(vy,xy).
   KinematicState(const EnvironmentSensorData::SensedVehicleData& data);
