@@ -40,9 +40,19 @@ struct PointFrenet
 class Point {
 public:
   // Constructors and destructors
+  //! Default constructor. Creates a point in s=0, d=0
   Point();
+
+  //! Convert from a Cartesian point
   Point(const PointCartesian& p);
+
+  //! Convert from a Frenet point
   Point(const PointFrenet& p);
+
+  //! Sets both Cartesian and Frenet coordinates without making any conversion
+  Point(const PointCartesian& pc, const PointFrenet& pf);
+
+  //! Destructor
   virtual ~Point();
 
   // "Get" methods

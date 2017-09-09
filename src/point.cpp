@@ -35,6 +35,15 @@ Point::Point(const PointCartesian& p) { SetXY(p.x, p.y); }
 Point::Point(const PointFrenet& p) { SetFrenet(p.s, p.d); }
 
 // ----------------------------------------------------------------------------
+Point::Point(const PointCartesian& pc, const PointFrenet& pf)
+{
+  point_cartesian_.x = pc.x;
+  point_cartesian_.y = pc.y;
+  point_frenet_.s = pf.s;
+  point_frenet_.d = pf.d;
+}
+
+// ----------------------------------------------------------------------------
 Point::~Point()
 { LOG(logDEBUG4) << "Point::~Point()"; }
 

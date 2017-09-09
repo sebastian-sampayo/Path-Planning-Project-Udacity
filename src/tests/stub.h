@@ -18,5 +18,13 @@ json stub_ego_data = {
 
 json stub_environment_data = json::array({
   {0, 0, 0, 0, 0, 0, 0},
-  {1, 0, 0, 0, 0, 0, 0}
+  {1, 1, 1, 0, 0, 0, 0},
+  {8, 8, 8, 0, 0, 0, 0},
+  {5, 5, 5, 0, 0, 0, 0}
+});
+
+json stub_environment_data2 = json::array({
+  {0, 0, 0, 0, 0, 0, 0},
+  {1, 1, 2, 0, 0, 0, 0},
+  {5, 5, 6, 0, 0, 0, 0}
 });

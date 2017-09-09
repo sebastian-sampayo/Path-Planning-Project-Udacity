@@ -12,13 +12,14 @@
 #include <iterator>
 
 #include "kinematic_state.h"
+#include "sensor_data.h"
 
 using namespace std;
 
 class Vehicle {
 public:
 
-  double L = 5;
+  double lenght = 5;
   KinematicState kinematic_state;
   int lane;
   int lanes_available;
@@ -30,6 +31,7 @@ public:
   * Constructors
   */
   Vehicle();
+  Vehicle(const EnvironmentSensorData::SensedVehicleData& data);
   Vehicle(int lane, double s, double v, double a);
 
   /**

@@ -1,10 +1,12 @@
 #include <iostream>
 #include <iostream>
-#include <math.h>
+#include <list>
 #include <map>
+#include <math.h>
 #include <string>
 #include <iterator>
 
+#include "kinematic_state.h"
 #include "logger.h"
 #include "road.h"
 #include "vehicle.h"
@@ -43,7 +45,66 @@ void Road::UpdateEgoKinematics(EgoSensorData data)
 }
 
 // ----------------------------------------------------------------------------
-void Road::PopulateTraffic()
+void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
 {
+  // For each vehicle on the current road (this->vehicles), check if it is still in the environment.
+  //   if it is, update it with the sensed vehicle data.
+  //   else, erase it.
+  // Then, for each sensed vehicle in the environment data, check if it is already in the current road (this->vehicles)
+  //    if it is not, add it
   
+  LOG(logDEBUG3) << "Road::PopulateTraffic() - Fill a map with the environment data";
+  // First fill a map with the environment vehicles in order to search easily.
+  map<int, EnvironmentSensorData::SensedVehicleData> environment_sensed_vehicles;
+  
+  for (auto& sensed_vehicle : environment_data.sensed_vehicle_list)
+  {
+    auto sensed_vehicle_pair = make_pair(sensed_vehicle.id, sensed_vehicle);
+    environment_sensed_vehicles.insert(sensed_vehicle_pair);
+  }
+  
+  LOG(logDEBUG3) << "Road::PopulateTraffic() - Update/Erase vehicles on the current road";
+  // First create a list with the vehicles that will be erased
+  list<int> old_vehicles;
+  
+  // Update/Erase vehicles on the current road
+  for (auto& vehicle_pair : vehicles)
+  {
+    const int id = vehicle_pair.first;
+    Vehicle& vehicle = vehicle_pair.second;
+    const auto it = environment_sensed_vehicles.find(id);
+    const bool still_in_environment = (it != environment_sensed_vehicles.end()); // found
+    
+    if (still_in_environment)
+    {
+      // Update it
+      vehicle.kinematic_state = KinematicState(it->second);
+    }
+    else
+    {
+      // Mark it for erase
+      old_vehicles.push_back(id);
+    }
+  }
+  
+  // Erase old vehicles
+  for (int id : old_vehicles)
+  {
+    vehicles.erase(id);
+  }
+  
+  LOG(logDEBUG3) << "Road::PopulateTraffic() - Add new vehicles in the environment onto the road";
+  for (const auto& sensed_vehicle : environment_sensed_vehicles)
+  {
+    const int id = sensed_vehicle.first;
+    const auto it = vehicles.find(id);
+    const bool is_on_the_road = (it != vehicles.end()); // found
+    
+    if (!is_on_the_road)
+    {
+      // Add it
+      auto vehicle_pair = make_pair(id, Vehicle(sensed_vehicle.second));
+      vehicles.insert(vehicle_pair);
+    }
+  }
 }

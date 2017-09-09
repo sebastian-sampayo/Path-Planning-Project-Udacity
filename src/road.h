@@ -46,7 +46,7 @@ public:
   //! Updates the current state of the traffic. If there is a new vehicle in the environmet data,
   // it is added to the vehicles array. If a vehicle in the new data was already in the vehicles array
   // it updates its state.
-  void PopulateTraffic(EnvironmentSensorData environment_data);
+  void PopulateTraffic(EnvironmentSensorData& environment_data);
 };
 
 #endif
