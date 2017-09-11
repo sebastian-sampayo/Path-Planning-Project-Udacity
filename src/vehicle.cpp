@@ -56,23 +56,6 @@ void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& d
     yaw = 0;
   }
   
-  // Update current Lane (lane width is kind of hardcoded. It would be better if the vehicle could see the current road, so that he can ask the lane width)
-  double d = p.GetD();
-  
-  if (0 < d && d < 4)
-  {
-    lane = 0;
-  }
-  else if (4 < d && d < 8)
-  {
-    lane = 1;
-  }
-  else if (8 < d && d < 12)
-  {
-    lane = 2;
-  }
-  else 
-  {
-    lane = -1; // out of lane. may be keep the same logic (as if there were more lanes on the sides)
-  }
+  // Update current Lane
+  lane = int(p.GetD() / road_ptr->LANE_WIDTH);
 }
