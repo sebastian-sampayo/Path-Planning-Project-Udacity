@@ -25,7 +25,6 @@ Behavior::Behavior()
   // Set allowed state transitions:
   SetPossibleTransitions();
   
-  // TODO: this should be set by the client code
   // strategy = new StraightLineStrategy();
   // strategy = new WalkthroughStrategy();
   strategy = new SplineStrategy();
@@ -55,7 +54,15 @@ void Behavior::UpdateState(Road& road)
     << road.ego.position;
   LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->start.position = \n"
     << strategy->start_point;
-    
+  
+  int N_lanes = road.GetNumberOfLanes();
+  double d_desired[N_lanes];
+  
+  for (int lane = 0; lane < N_lanes; ++lane)
+  {
+    d_desired[lane] = road.LANE_WIDTH/2.0 + lane * road.LANE_WIDTH;
+  }
+  
   // ---- DEBUG for lane change with splines -----
   // Set goal
   // strategy->goal_point = PointFrenet(strategy->start_point.GetS() + 30, strategy->start_point.GetD());
