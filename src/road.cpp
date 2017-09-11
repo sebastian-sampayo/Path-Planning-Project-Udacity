@@ -126,7 +126,7 @@ void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
 }
 
 // ----------------------------------------------------------------------------
-void Road::UpdateEgoKinematics(EgoSensorData data)
+void Road::UpdateEgoKinematics(EgoSensorData& data)
 {
   ego.position = PointCartesian(data.x, data.y);
   // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
