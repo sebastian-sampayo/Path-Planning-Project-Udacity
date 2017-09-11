@@ -6,7 +6,6 @@
 #include "json.hpp"
 
 #include "behavior.h"
-#include "kinematic_state.h"
 #include "road.h"
 #include "sensor_data.h"
 #include "trajectory.h"
@@ -55,6 +54,7 @@ public:
   // void GenerateCircle();
 
   void SetEgoData(EgoSensorData data);
+  void SetPointsAlreadyPassed(int n);
   void SetPreviousPath(json previous_path_x, json previous_path_y);
   void SetPreviousEndPoint(double end_path_s, double end_path_d);
 };

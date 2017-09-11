@@ -98,6 +98,29 @@ PointFrenet::PointFrenet(const PointCartesian& p)
 }
 
 // ----------------------------------------------------------------------------
+// Adds a point in Frenet Coordinates
+Point& Point::operator+=(const PointFrenet& rhs)
+{
+  double s = point_frenet_.s + rhs.s;
+  double d = point_frenet_.d + rhs.d;
+  SetFrenet(s, d);
+  
+  return *this;
+}
+
+
+// ----------------------------------------------------------------------------
+// Adds a point in Frenet Coordinates
+Point& Point::operator-=(const PointFrenet& rhs)
+{
+  double s = point_frenet_.s - rhs.s;
+  double d = point_frenet_.d - rhs.d;
+  SetFrenet(s, d);
+  
+  return *this;
+}
+
+// ----------------------------------------------------------------------------
 // Printers
 // ----------------------------------------------------------------------------
 

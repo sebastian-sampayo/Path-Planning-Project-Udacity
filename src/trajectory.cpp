@@ -11,31 +11,12 @@ using namespace std;
 // PUBLIC
 // ----------------------------------------------------------------------------
 
+// Get values methods
 // ----------------------------------------------------------------------------
-vector<double> Trajectory::GetXvalues()
-{
-  vector<double> x_values;
-  
-  for (Point& point : *this)
-  {
-    x_values.push_back(point.GetX());
-  }
-
-  return x_values;
-}
-
-// ----------------------------------------------------------------------------
-vector<double> Trajectory::GetYvalues()
-{
-  vector<double> y_values;
-  
-  for (Point& point : *this)
-  {
-    y_values.push_back(point.GetY());
-  }
-  
-  return y_values;
-}
+vector<double> Trajectory::GetXvalues() { return GetValues(&Point::GetX); }
+vector<double> Trajectory::GetYvalues() { return GetValues(&Point::GetY); }
+vector<double> Trajectory::GetSvalues() { return GetValues(&Point::GetS); }
+vector<double> Trajectory::GetDvalues() { return GetValues(&Point::GetD); }
 
 // ----------------------------------------------------------------------------
 ostream& operator<<(ostream& os, const Trajectory& t)
@@ -58,4 +39,21 @@ ostream& operator<<(ostream& os, const Trajectory& t)
   }
   
   return os;
+}
+
+// ----------------------------------------------------------------------------
+// PRIVATE
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+vector<double> Trajectory::GetValues(double (Point::*getValue)() const)
+{
+  vector<double> values;
+  
+  for (Point& point : *this)
+  {
+    values.push_back((point.*getValue)());
+  }
+
+  return values;
 }

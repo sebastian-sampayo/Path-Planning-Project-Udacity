@@ -39,10 +39,10 @@ void WalkthroughStrategy::GenerateTrajectory()
   
   // reference x, y, yaw states
   // either we will reference the starting point as where the car is or at the previous path end point
-  double car_s = start.position.GetS();
-  double car_x = start.position.GetX();
-  double car_y = start.position.GetY();
-  double car_yaw = start.yaw;
+  double car_s = start_point.GetS();
+  double car_x = start_point.GetX();
+  double car_y = start_point.GetY();
+  double car_yaw = start_yaw;
   double ref_x = car_x;
   double ref_y = car_y;
   double ref_yaw = deg2rad(car_yaw);

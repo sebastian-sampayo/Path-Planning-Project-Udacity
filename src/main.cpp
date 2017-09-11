@@ -93,7 +93,8 @@ int main() {
           
           // Convert previous path from json to Trajectory class
           path_planner.SetPreviousPath(previous_path_x, previous_path_y);
-          path_planner.SetPreviousEndPoint(end_path_s, end_path_d);
+          // path_planner.SetPreviousEndPoint(end_path_s, end_path_d);
+          // path_planner.SetPointsAlreadyPassed()
 
           // Convert Sensor fusion data from json to SensorData class:
           for (const auto& sensed_vehicle : sensor_fusion)

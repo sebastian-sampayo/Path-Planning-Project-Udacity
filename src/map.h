@@ -32,6 +32,7 @@ public:
   //! Convert back and forth between Frenet and Cartesian coordinates
   void ToFrenet(double x, double y, double &s, double &d);
   void ToCartesian(double s, double d, double &x, double &y);
+  double CycleS(double s) { return fmod(s, MAX_S); }
   
   //! Load the waypoints from file
   void SetWaypoints(string map_filename);
@@ -46,8 +47,6 @@ private:
   tk::spline qy_s_; // qy(s)
   tk::spline dx_s_; // dx(s)
   tk::spline dy_s_; // dy(s)
-  
-  double CycleS(double s) { return fmod(s, MAX_S); }
   
   Map();
 };

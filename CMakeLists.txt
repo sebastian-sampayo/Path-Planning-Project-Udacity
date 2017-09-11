@@ -9,12 +9,12 @@ set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
 set(COMMON_SOURCES
             src/behavior.cpp
-            src/kinematic_state.cpp
             src/map.cpp
             src/path_planner.cpp
             src/point.cpp
             src/road.cpp
             src/spline.cpp
+            src/spline_strategy.cpp
             src/straight_line_strategy.cpp
             src/walkthrough_strategy.cpp
             src/trajectory.cpp
@@ -24,7 +24,6 @@ set(COMMON_SOURCES
 set(MAIN_SOURCE src/main.cpp)
 
 set(STRATEGY_SRC
-            src/kinematic_state.cpp
             src/point.cpp
             src/spline.cpp
             src/trajectory.cpp
@@ -35,7 +34,6 @@ set(STRATEGY_SRC
             src/map.cpp)
 
 set(POINT_SRC
-            src/kinematic_state.cpp
             src/point.cpp
             src/spline.cpp
             src/trajectory.cpp
@@ -43,7 +41,6 @@ set(POINT_SRC
             src/map.cpp)
 
 set(ROAD_SRC
-            src/kinematic_state.cpp
             src/point.cpp
             src/road.cpp
             src/spline.cpp
@@ -75,6 +72,7 @@ add_executable(road_test ${TEST_ROAD_SRC} ${ROAD_SRC})
 
 target_link_libraries(path_planning z ssl uv uWS python2.7)
 target_link_libraries(point_test z ssl uv uWS python2.7)
+target_link_libraries(strategy_test z ssl uv uWS python2.7)
 
 
 # Add an option for debug version. Allows gdb debugging and defines macro DEBUG.

@@ -6,7 +6,6 @@
 #include <string>
 #include <iterator>
 
-#include "kinematic_state.h"
 #include "logger.h"
 #include "road.h"
 #include "vehicle.h"
@@ -38,10 +37,10 @@ Road::~Road() {}
 // ----------------------------------------------------------------------------
 void Road::UpdateEgoKinematics(EgoSensorData data)
 {
-  ego.kinematic_state.position.SetXY(data.x, data.y);
-  ego.kinematic_state.position.SetFrenet(data.s, data.d);
-  ego.kinematic_state.yaw = data.yaw;
-  ego.kinematic_state.speed = data.speed;
+  ego.position = PointCartesian(data.x, data.y);
+  // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
+  ego.yaw = data.yaw;
+  ego.speed = data.speed;
 }
 
 // ----------------------------------------------------------------------------
@@ -78,7 +77,7 @@ void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
     if (still_in_environment)
     {
       // Update it
-      vehicle.kinematic_state = KinematicState(it->second);
+      vehicle.UpdateKinematics(it->second);
     }
     else
     {

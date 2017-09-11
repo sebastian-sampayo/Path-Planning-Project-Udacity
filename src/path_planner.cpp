@@ -48,6 +48,9 @@ Trajectory PathPlanner::Generate()
 void PathPlanner::SetEgoData(EgoSensorData data)
 {
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.s = " << data.s;
+  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.d = " << data.d;
+  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.x = " << data.x;
+  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.y = " << data.y;
   this->ego_data.x = data.x;
   this->ego_data.y = data.y;
   this->ego_data.s = data.s;
@@ -56,10 +59,18 @@ void PathPlanner::SetEgoData(EgoSensorData data)
   this->ego_data.yaw = data.yaw;
   
   // Under the hood also set the start point of the trajectory with this data
-  road.ego.kinematic_state.position.SetXY(data.x, data.y);
-  road.ego.kinematic_state.position.SetFrenet(data.s, data.d);
-  road.ego.kinematic_state.yaw = data.yaw;
-  road.ego.kinematic_state.speed = data.speed;
+  PointCartesian pc(data.x, data.y);
+  // PointFrenet pf(data.s, data.d); // Let's ignore the Frenet data, because it is an untrusted conversion from the Cartesian data. It's better if I use my own conversion from Cartesian to Frenet.
+  road.ego.position = Point(pc);
+  road.ego.yaw = data.yaw;
+  road.ego.speed = data.speed;
+  
+  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - ego position = " << road.ego.position;
+}
+
+void PathPlanner::SetPointsAlreadyPassed(int n)
+{
+  behavior.strategy->N_points_passed = n;
 }
 
 void PathPlanner::SetPreviousPath(json previous_path_x, json previous_path_y)

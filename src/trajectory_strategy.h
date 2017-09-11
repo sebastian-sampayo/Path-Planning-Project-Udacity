@@ -1,10 +1,11 @@
 #ifndef TRAJECTORY_STRATEGY_H
 #define TRAJECTORY_STRATEGY_H
 
-#include "kinematic_state.h"
 #include "point.h"
 #include "road.h"
 #include "trajectory.h"
+
+#include "spline.h"
 
 class TrajectoryStrategy {
 public:
@@ -12,10 +13,11 @@ public:
   int N_points = 50;
   
   //! Starting point
-  KinematicState start;
+  Point start_point;
+  double start_yaw;
   
   //! Goal point
-  Point goal;
+  Point goal_point;
   
   //! Reference speed (defines the space between points)
   double reference_speed = 40; // mph
@@ -28,9 +30,15 @@ public:
   
   //! Previous car position
   Point previous_end_point;
+  
+  //! Number of points already passed
+  int N_points_passed = 0;
 
   //! Generates the trajectory
   virtual void GenerateTrajectory() = 0;
+  
+  // DEBUG
+  tk::spline debug_spline;
 };
 
 #endif

@@ -11,7 +11,7 @@
 #include <string>
 #include <iterator>
 
-#include "kinematic_state.h"
+#include "point.h"
 #include "sensor_data.h"
 
 using namespace std;
@@ -19,26 +19,25 @@ using namespace std;
 class Vehicle {
 public:
 
-  double lenght = 5;
-  KinematicState kinematic_state;
+  double lenght = 5; // [m]
+  Point position;
+  double yaw;
+  double speed;
   int lane;
-  int lanes_available;
-  double target_speed;
-  int goal_lane;
-  double goal_s;
+  // int lanes_available;
+  // double target_speed;
+  // int goal_lane;
+  // double goal_s;
 
-  /**
-  * Constructors
-  */
+  // Constructors
   Vehicle();
   Vehicle(const EnvironmentSensorData::SensedVehicleData& data);
   Vehicle(int lane, double s, double v, double a);
 
-  /**
-  * Destructor
-  */
+  // Destructor
   virtual ~Vehicle();
   
+  void UpdateKinematics(const EnvironmentSensorData::SensedVehicleData& data);
   // void predict(double deltaT);
 
 };

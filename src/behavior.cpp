@@ -6,6 +6,7 @@
 #include "trajectory.h"
 #include "trajectory_strategy.h"
 #include "straight_line_strategy.h"
+#include "spline_strategy.h"
 #include "walkthrough_strategy.h"
 
 using namespace std;
@@ -26,7 +27,8 @@ Behavior::Behavior()
   
   // TODO: this should be set by the client code
   // strategy = new StraightLineStrategy();
-  strategy = new WalkthroughStrategy();
+  // strategy = new WalkthroughStrategy();
+  strategy = new SplineStrategy();
 }
 
 // ----------------------------------------------------------------------------
@@ -47,11 +49,17 @@ void Behavior::UpdateState(Road& road)
 {
   // Set starting point with the input road (add Road in the input)
   LOG(logDEBUG3) << "Behavior::UpdateState()";
-  strategy->start = road.ego.kinematic_state;
-  LOG(logDEBUG4) << "Behavior::UpdateState() - road.ego.kinematic_state.position = \n" 
-    << road.ego.kinematic_state.position;
-  LOG(logDEBUG4) << "Behavior::UpdateState() - strategy->start.position = \n"
-    << strategy->start.position;
+  strategy->start_point = road.ego.position;
+  strategy->start_yaw = road.ego.yaw;
+  LOG(logDEBUG3) << "Behavior::UpdateState() - road.ego.position = \n" 
+    << road.ego.position;
+  LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->start.position = \n"
+    << strategy->start_point;
+  
+  // Set goal
+  strategy->goal_point = PointFrenet(strategy->start_point.GetS() + 30, strategy->start_point.GetD());
+  LOG(logDEBUG4) << "Behavior::UpdateState() - strategy->goal = \n"
+    << strategy->goal_point;
   
   LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
   strategy->GenerateTrajectory();

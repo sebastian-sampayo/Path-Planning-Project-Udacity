@@ -73,16 +73,30 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
 
 // ----------------------------------------------------------------------------
 // Transform from Frenet s,d coordinates to Cartesian x,y
-void Map::ToCartesian(double s, double d, double& x, double& y)
+void Map::ToCartesian(double s_in, double d, double& x, double& y)
 {
+  double s = CycleS(s_in);
   // p = q(s) + d
   x = qx_s_(s);
   y = qy_s_(s);
-  const double dx = d * dx_s_(s);
-  const double dy = d * dy_s_(s);
   
-  x += dx;
-  y += dy;
+  // Algorithm 1 (has more error than Algorithm 2)
+  // const double dx = d * dx_s_(s);
+  // const double dy = d * dy_s_(s);
+  
+  // x += dx;
+  // y += dy;
+  
+  // Algorithm 2
+  double ds = 0.001;
+  double s1 = CycleS(s+ds);
+  double dx = qx_s_(s1)-x;
+  double dy = qy_s_(s1)-y;
+
+  double theta = atan2(dy, dx);
+
+  x += d*sin(theta);
+  y -= d*cos(theta);
 }
 
 // ----------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 #include "../logger.h"
 #include "../map.h"
 #include "../point.h"
-// #include "../kinematic_state.h"
 #include "../trajectory.h"
 
 #include "../matplotlibcpp.h"
@@ -21,7 +20,7 @@ int main()
   
   PointFrenet pf(pc);
   
-  for (int i = 0; i<1; ++i)
+  for (int i = 0; i<5; ++i)
   {
     pf = PointFrenet(pc);
     pc = PointCartesian(pf);
@@ -35,10 +34,6 @@ int main()
   // p.SetFrenet(2,2);
   // p.GetY();
   // p.GetD();
-
-  // KinematicState k;
-
-  // k.GetX();
 
   Trajectory t;
   

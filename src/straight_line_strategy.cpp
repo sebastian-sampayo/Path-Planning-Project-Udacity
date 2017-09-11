@@ -36,9 +36,9 @@ void StraightLineStrategy::GenerateXYTrajectory()
   // Clear previous trajectory
   trajectory.clear();
   
-  double car_x = start.position.GetX();
-  double car_y = start.position.GetY();
-  double car_yaw = start.yaw;
+  double car_x = start_point.GetX();
+  double car_y = start_point.GetY();
+  double car_yaw = start_yaw;
   
   // Straight line test
   double dist_inc = 0.5;
@@ -58,7 +58,7 @@ void StraightLineStrategy::GenerateSDTrajectory()
   // Clear previous trajectory
   trajectory.clear();
   
-  double car_s = start.position.GetS();
+  double car_s = start_point.GetS();
   LOG(logDEBUG3) << "StraightLineStrategy::GenerateSDTrajectory() - car_s = " << car_s;
   
   // Straight line test

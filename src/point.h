@@ -65,6 +65,13 @@ public:
   void SetXY(double x, double y);
   void SetFrenet(double s, double d);
 
+  // Arithmetic operations
+  Point& operator+=(const PointFrenet& rhs);
+  Point& operator-=(const PointFrenet& rhs);
+  // friend Point operator+(const Point& lhs, const Point& rhs);
+  // friend Point operator+(const Point& lhs, const PointFrenet& rhs);
+  // friend Point operator+(const PointFrenet& lhs, const Point& lhs);
+
   // Printer
   friend ostream& operator<<(ostream& os, const Point& p);
 

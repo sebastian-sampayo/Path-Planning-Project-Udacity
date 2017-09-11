@@ -48,8 +48,8 @@ int main()
     int id = vehicle_pair.first;
     Vehicle& vehicle = vehicle_pair.second;
     
-    double x = vehicle.kinematic_state.position.GetX();
-    double y = vehicle.kinematic_state.position.GetY();
+    double x = vehicle.position.GetX();
+    double y = vehicle.position.GetY();
     
     cout << "id: " << id << " | x: " << x << " | y: " << y << endl;
   }
@@ -82,8 +82,8 @@ int main()
     int id = vehicle_pair.first;
     Vehicle& vehicle = vehicle_pair.second;
     
-    double x = vehicle.kinematic_state.position.GetX();
-    double y = vehicle.kinematic_state.position.GetY();
+    double x = vehicle.position.GetX();
+    double y = vehicle.position.GetY();
     
     cout << "id: " << id << " | x: " << x << " | y: " << y << endl;
   }
