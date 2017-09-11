@@ -19,11 +19,12 @@ DONE   Stub data. 2 or 3 vehicles + ego
 
 DONE Design a generic SplineStrategy for the trajectory generator, so that it generates a trajectory given the starting kinematics, goal point and a reference velocity (add the latter to TrajectoryStrategy). Think about the perturbed goals... who is going to calculate several trajectories and get the best one? Behavior or TrajectoryStrategy? Consider also previous path, we shouldn't stomp on it before getting the next best path...
 DONE Code it
+DONE Vehicle::UpdateKinematics -> UpdateState? 
+DONE  Who should set the current lane for each vehicle? The vehicle itself? or the Road?... Yes, the vehicle can see the road, so the vehicle itself!
 
 Modify stub so that it has frenet data in the environment vehicles
-Vehicle::UpdateKinematics -> UpdateState? 
-DONE  Who should set the current lane for each vehicle? The vehicle itself? or de Road?...
-  Code the lane and lanes_available detection inside Vehicle::UpdateState()
-Code a simple logic to test the lane change with the spline generator
+Code the lane and lanes_available detection inside Vehicle::UpdateState()
+Code road.IsEmpty(s_down, s_up, d_left, d_right)
+Code a simple logic to test the lane change with the spline generator (see behavior.cpp UpdateState())
 Add d_desired[state] in Behavior class, so that we can set the goal point in the trajectory strategy. Also s_desired ??
 Update UML

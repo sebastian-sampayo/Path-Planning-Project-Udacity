@@ -55,6 +55,10 @@ void Behavior::UpdateState(Road& road)
     << road.ego.position;
   LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->start.position = \n"
     << strategy->start_point;
+    
+  // if (!road.IsEmpty(s_down, s_up, d_left, d_right))
+  //   change lane (ego.lane available)
+  //
   
   // Set goal
   strategy->goal_point = PointFrenet(strategy->start_point.GetS() + 30, strategy->start_point.GetD());
