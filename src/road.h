@@ -18,13 +18,12 @@
 using namespace std;
 
 struct Lane {
-  double width;
   int speed_limit;
 };
 
 class Road {
 public:
-
+  double LANE_WIDTH = 4;
   vector<Lane> lanes;
   map<int, Vehicle> vehicles;
   Vehicle ego;

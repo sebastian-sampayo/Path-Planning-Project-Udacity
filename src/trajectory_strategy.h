@@ -20,7 +20,7 @@ public:
   Point goal_point;
   
   //! Reference speed (defines the space between points)
-  double reference_speed = 40; // mph
+  double reference_speed = 49.5; // mph
   
   //! Generated trajectory
   Trajectory trajectory;

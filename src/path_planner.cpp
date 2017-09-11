@@ -13,17 +13,20 @@ using namespace std;
 // Static attributes
 constexpr int PathPlanner::SPEED_LIMITS[];
 
+// ----------------------------------------------------------------------------
 PathPlanner::PathPlanner()
 {
   LOG(logDEBUG4) << "PathPlanner::PathPlanner()";
   // behavior = Behavior();
 }
 
+// ----------------------------------------------------------------------------
 PathPlanner::~PathPlanner()
 {
   LOG(logDEBUG4) << "PathPlanner::~PathPlanner()";
 }
 
+// ----------------------------------------------------------------------------
 Trajectory PathPlanner::Generate()
 {
   behavior.UpdateState(road);
@@ -45,6 +48,7 @@ Trajectory PathPlanner::Generate()
   
 // }
 
+// ----------------------------------------------------------------------------
 void PathPlanner::SetEgoData(EgoSensorData data)
 {
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.s = " << data.s;
@@ -68,11 +72,19 @@ void PathPlanner::SetEgoData(EgoSensorData data)
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - ego position = " << road.ego.position;
 }
 
+// ----------------------------------------------------------------------------
+void SetEnvironmentData(const EnvironmentSensorData& data)
+{
+  road.PopulateTraffic(data);
+}
+
+// ----------------------------------------------------------------------------
 void PathPlanner::SetPointsAlreadyPassed(int n)
 {
   behavior.strategy->N_points_passed = n;
 }
 
+// ----------------------------------------------------------------------------
 void PathPlanner::SetPreviousPath(json previous_path_x, json previous_path_y)
 {
   behavior.strategy->previous_path.clear();
@@ -86,6 +98,7 @@ void PathPlanner::SetPreviousPath(json previous_path_x, json previous_path_y)
   }
 }
 
+// ----------------------------------------------------------------------------
 void PathPlanner::SetPreviousEndPoint(double end_path_s, double end_path_d)
 {
   behavior.strategy->previous_end_point.SetFrenet(end_path_s, end_path_d);

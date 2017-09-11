@@ -54,6 +54,7 @@ public:
   // void GenerateCircle();
 
   void SetEgoData(EgoSensorData data);
+  void SetEnvironmentData(const EnvironmentSensorData& data);
   void SetPointsAlreadyPassed(int n);
   void SetPreviousPath(json previous_path_x, json previous_path_y);
   void SetPreviousEndPoint(double end_path_s, double end_path_d);

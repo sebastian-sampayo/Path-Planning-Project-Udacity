@@ -97,6 +97,7 @@ int main() {
           // path_planner.SetPointsAlreadyPassed()
 
           // Convert Sensor fusion data from json to SensorData class:
+          EnvironmentSensorData environment_data;
           for (const auto& sensed_vehicle : sensor_fusion)
           {
             EnvironmentSensorData::SensedVehicleData data;
@@ -107,8 +108,9 @@ int main() {
             data.vy = sensed_vehicle[4];
             data.s = sensed_vehicle[5];
             data.d = sensed_vehicle[6];
-            path_planner.environment_data.sensed_vehicle_list.push_back(data);
+            environment_data.sensed_vehicle_list.push_back(data);
           }
+          path_planner.SetEnvironmentData(environment_data);
 
           Trajectory next_path = path_planner.Generate();
 

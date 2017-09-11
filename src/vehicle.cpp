@@ -1,10 +1,11 @@
 #include "point.h"
+#include "road.h"
+#include "vehicle.h"
 
 #include "logger.h"
 #include "utils.h"
 
 #include <iostream>
-#include "vehicle.h"
 #include <iostream>
 #include <math.h>
 #include <map>
@@ -22,25 +23,22 @@ Vehicle::Vehicle()
   LOG(logDEBUG4) << "Vehicle::Vehicle()";
   speed = 0;
   yaw = 0;
+  
+  road_ptr = NULL;
 }
 
 // ----------------------------------------------------------------------------
-Vehicle::Vehicle(const EnvironmentSensorData::SensedVehicleData& data)
+Vehicle::Vehicle(const EnvironmentSensorData::SensedVehicleData& data, Road* road)
 {
-  UpdateKinematics(data);
-}
-
-// ----------------------------------------------------------------------------
-Vehicle::Vehicle(int lane, double s, double v, double a)
-{
-  LOG(logDEBUG4) << "Vehicle::Vehicle(int lane, double s, double v, double a)";
+  this->road_ptr = road;
+  UpdateSensorData(data);
 }
 
 // ----------------------------------------------------------------------------
 Vehicle::~Vehicle() {}
 
 // ----------------------------------------------------------------------------
-void Vehicle::UpdateKinematics(const EnvironmentSensorData::SensedVehicleData& data)
+void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& data)
 {
   PointCartesian pc(data.x, data.y);
   // PointFrenet pf(data.s, data.d); // Let's ignore frenet coordinates. I trust cartesian!
@@ -57,4 +55,7 @@ void Vehicle::UpdateKinematics(const EnvironmentSensorData::SensedVehicleData& d
   {
     yaw = 0;
   }
+  
+  // Update current Lane (lane width is kind of hardcoded. It would be better if the vehicle could see the current road, so that he can ask the lane width)
+  
 }

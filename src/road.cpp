@@ -22,10 +22,11 @@ Road::Road(double width, vector<int> lane_speeds)
 {
   LOG(logDEBUG4) << "Road::Road()";
 
+  LANE_WIDTH = width;
+
   for (const int speed_limit : lane_speeds)
   {
     Lane lane;
-    lane.width = width;
     lane.speed_limit = speed_limit;
     lanes.push_back(lane);
   }
@@ -77,7 +78,7 @@ void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
     if (still_in_environment)
     {
       // Update it
-      vehicle.UpdateKinematics(it->second);
+      vehicle.UpdateSensorData(it->second);
     }
     else
     {
@@ -102,7 +103,7 @@ void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
     if (!is_on_the_road)
     {
       // Add it
-      auto vehicle_pair = make_pair(id, Vehicle(sensed_vehicle.second));
+      auto vehicle_pair = make_pair(id, Vehicle(sensed_vehicle.second, this));
       vehicles.insert(vehicle_pair);
     }
   }
