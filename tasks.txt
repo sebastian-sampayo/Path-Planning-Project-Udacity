@@ -21,10 +21,17 @@ DONE Design a generic SplineStrategy for the trajectory generator, so that it ge
 DONE Code it
 DONE Vehicle::UpdateKinematics -> UpdateState? 
 DONE  Who should set the current lane for each vehicle? The vehicle itself? or the Road?... Yes, the vehicle can see the road, so the vehicle itself!
+DONE Modify stub so that it has frenet data in the environment vehicles
+DONE Code road.IsEmpty(s_down, s_up, d_left, d_right)
+DONE Code a simple logic to test the lane change with the spline generator (see behavior.cpp UpdateState())
+DONE Add d_desired[state] in Behavior class, so that we can set the goal point in the trajectory strategy. Also s_desired ??
+DONE Code the lane inside Vehicle::UpdateState()
 
-Modify stub so that it has frenet data in the environment vehicles
-Code the lane and lanes_available detection inside Vehicle::UpdateState()
-Code road.IsEmpty(s_down, s_up, d_left, d_right)
-Code a simple logic to test the lane change with the spline generator (see behavior.cpp UpdateState())
-Add d_desired[state] in Behavior class, so that we can set the goal point in the trajectory strategy. Also s_desired ??
+Code lanes_available detection inside Vehicle::UpdateState()
 Update UML
+Design high level of the loop of the trajectory generation: 
+  Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
+Design CostFunction
+Code CostFunction
+Code some example of cost function
+Test the algorithm
