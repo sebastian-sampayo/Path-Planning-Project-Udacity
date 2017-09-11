@@ -17,14 +17,10 @@
 
 using namespace std;
 
-struct Lane {
-  int speed_limit;
-};
-
 class Road {
 public:
   double LANE_WIDTH = 4;
-  vector<Lane> lanes;
+  vector<double> lane_speeds;
   map<int, Vehicle> vehicles;
   Vehicle ego;
 
@@ -54,7 +50,7 @@ public:
   // it updates its state.
   void PopulateTraffic(EnvironmentSensorData& environment_data);
   
-  void UpdateEgoKinematics(EgoSensorData ego_data);
+  void UpdateEgoKinematics(EgoSensorData& ego_data);
 };
 
 #endif
