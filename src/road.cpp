@@ -45,6 +45,30 @@ void Road::UpdateEgoKinematics(EgoSensorData data)
 }
 
 // ----------------------------------------------------------------------------
+vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const
+{
+  vector<int> ids;
+  
+  for (auto& vehicle_pair : vehicles)
+  {
+    const int id = vehicle_pair.first;
+    Vehicle& vehicle = vehicle_pair.second;
+    const double s = vehicle.position.GetS();
+    const double d = vehicle.position.GetD();
+    
+    if (s_down < s && s < s_up && d_left < d && d < d_right)
+    {
+      ids.push_back(id);
+    }
+  }
+}
+// ----------------------------------------------------------------------------
+bool IsEmptySpace(double s_down, double s_up, double d_left, double d_right) const
+{
+  return GetVehiclesInSpace(s_down, s_up, d_left, d_right).empty();
+}
+
+// ----------------------------------------------------------------------------
 void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
 {
   // For each vehicle on the current road (this->vehicles), check if it is still in the environment.
