@@ -42,6 +42,13 @@ void Road::UpdateEgoKinematics(EgoSensorData data)
   // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
   ego.yaw = data.yaw;
   ego.speed = data.speed;
+  
+  // TODO: Update ego lane
+  // lane = { 0 if ego_d is in [0, LANE_WIDTH)
+  //          1 if ego_d is in [LANE_WIDTH, LANE_WIDTH*2)
+  //          2 if ego_d is in [LANE_WIDTH*2, LANE_WIDTH*3)
+  const double ego_d = ego.position.GetD();
+  ego.lane = int(ego_d / LANE_WIDTH);
 }
 
 // ----------------------------------------------------------------------------
