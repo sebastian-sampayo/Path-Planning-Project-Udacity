@@ -1,3 +1,8 @@
+#include "road.h"
+#include "vehicle.h"
+
+#include "logger.h"
+
 #include <iostream>
 #include <iostream>
 #include <list>
@@ -5,10 +10,6 @@
 #include <math.h>
 #include <string>
 #include <iterator>
-
-#include "logger.h"
-#include "road.h"
-#include "vehicle.h"
 
 using namespace std;
 
@@ -23,32 +24,16 @@ Road::Road(double width, vector<int> lane_speeds)
   LOG(logDEBUG4) << "Road::Road()";
 
   LANE_WIDTH = width;
-
-  for (const int speed_limit : lane_speeds)
-  {
-    Lane lane;
-    lane.speed_limit = speed_limit;
-    lanes.push_back(lane);
-  }
+  this->lane_speeds = lane_speeds;
 }
 
 // ----------------------------------------------------------------------------
 Road::~Road() {}
 
 // ----------------------------------------------------------------------------
-void Road::UpdateEgoKinematics(EgoSensorData data)
+int GetNumberOfLanes() const
 {
-  ego.position = PointCartesian(data.x, data.y);
-  // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
-  ego.yaw = data.yaw;
-  ego.speed = data.speed;
-  
-  // TODO: Update ego lane
-  // lane = { 0 if ego_d is in [0, LANE_WIDTH)
-  //          1 if ego_d is in [LANE_WIDTH, LANE_WIDTH*2)
-  //          2 if ego_d is in [LANE_WIDTH*2, LANE_WIDTH*3)
-  const double ego_d = ego.position.GetD();
-  ego.lane = int(ego_d / LANE_WIDTH);
+  return lanes.size();
 }
 
 // ----------------------------------------------------------------------------
@@ -138,4 +123,20 @@ void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
       vehicles.insert(vehicle_pair);
     }
   }
+}
+
+// ----------------------------------------------------------------------------
+void Road::UpdateEgoKinematics(EgoSensorData data)
+{
+  ego.position = PointCartesian(data.x, data.y);
+  // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
+  ego.yaw = data.yaw;
+  ego.speed = data.speed;
+  
+  // TODO: Update ego lane
+  // lane = { 0 if ego_d is in [0, LANE_WIDTH)
+  //          1 if ego_d is in [LANE_WIDTH, LANE_WIDTH*2)
+  //          2 if ego_d is in [LANE_WIDTH*2, LANE_WIDTH*3)
+  const double ego_d = ego.position.GetD();
+  ego.lane = int(ego_d / LANE_WIDTH);
 }
