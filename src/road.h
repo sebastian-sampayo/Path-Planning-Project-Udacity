@@ -39,6 +39,9 @@ public:
 
   // Destructor
   virtual ~Road();
+  
+  //! Get number of lanes
+  int GetNumberOfLanes() const;
  
   //! Get a vector of ids of the vehicles that are currently in the specified space.
   vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const;
