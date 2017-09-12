@@ -19,7 +19,7 @@ using namespace std;
 
 // ----------------------------------------------------------------------------
 // Initializes Road
-Road::Road(double width, vector<int> lane_speeds)
+Road::Road(double width, vector<double> lane_speeds)
 {
   LOG(logDEBUG4) << "Road::Road()";
 
@@ -31,20 +31,20 @@ Road::Road(double width, vector<int> lane_speeds)
 Road::~Road() {}
 
 // ----------------------------------------------------------------------------
-int GetNumberOfLanes() const
+int Road::GetNumberOfLanes() const
 {
-  return lanes.size();
+  return lane_speeds.size();
 }
 
 // ----------------------------------------------------------------------------
-vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const
+vector<int> Road::GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const
 {
   vector<int> ids;
   
   for (auto& vehicle_pair : vehicles)
   {
     const int id = vehicle_pair.first;
-    Vehicle& vehicle = vehicle_pair.second;
+    const Vehicle& vehicle = vehicle_pair.second;
     const double s = vehicle.position.GetS();
     const double d = vehicle.position.GetD();
     
@@ -53,15 +53,17 @@ vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double
       ids.push_back(id);
     }
   }
+  
+  return ids;
 }
 // ----------------------------------------------------------------------------
-bool IsEmptySpace(double s_down, double s_up, double d_left, double d_right) const
+bool Road::IsEmptySpace(double s_down, double s_up, double d_left, double d_right) const
 {
   return GetVehiclesInSpace(s_down, s_up, d_left, d_right).empty();
 }
 
 // ----------------------------------------------------------------------------
-void Road::PopulateTraffic(EnvironmentSensorData& environment_data)
+void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
 {
   // For each vehicle on the current road (this->vehicles), check if it is still in the environment.
   //   if it is, update it with the sensed vehicle data.

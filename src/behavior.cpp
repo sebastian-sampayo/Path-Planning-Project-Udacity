@@ -46,6 +46,7 @@ Trajectory Behavior::GetTrajectory()
 // ----------------------------------------------------------------------------
 void Behavior::UpdateState(Road& road)
 {
+  // Road& road = *road_ptr; // alias
   // Set starting point with the input road (add Road in the input)
   LOG(logDEBUG3) << "Behavior::UpdateState()";
   strategy->start_point = road.ego.position;
@@ -60,7 +61,7 @@ void Behavior::UpdateState(Road& road)
   
   for (int lane = 0; lane < N_lanes; ++lane)
   {
-    d_desired[lane] = road.LANE_WIDTH/2.0 + lane * road.LANE_WIDTH;
+    d_desired[lane] = road.LANE_WIDTH/2.0 + double(lane) * (road.LANE_WIDTH);
   }
   
   // ---- DEBUG for lane change with splines -----
@@ -78,13 +79,19 @@ void Behavior::UpdateState(Road& road)
   double goal_d = ego_d;
   
   if (!road.IsEmptySpace(s_down, s_up, d_left, d_right))
+  {
+    LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Trying to change lane...";
+    LOG(logDEBUG2) << "Behavior::UpdateState() - Current lane: " << road.ego.lane;
   //   // change lane (ego.lane available)
   //   // int goal_lane = road.ego.lanes_available[0];
   //   int goal_lane = 0;
   //   strategy->goal_point = PointFrenet(ego_s + 30, d_desired[goal_lane]);
-    strategy->goal_point = PointFrenet(ego_s + 30, 2);
+    goal_d = (road.ego.lane == 0) ? 6 : 2;
+  }
   
-  LOG(logDEBUG4) << "Behavior::UpdateState() - strategy->goal_point = \n"
+  strategy->goal_point = Point(PointFrenet(goal_s, goal_d));
+  
+  LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
     << strategy->goal_point;
   // -----------------------------------------------
   

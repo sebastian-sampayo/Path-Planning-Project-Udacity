@@ -18,6 +18,14 @@ PathPlanner::PathPlanner()
 {
   LOG(logDEBUG4) << "PathPlanner::PathPlanner()";
   // behavior = Behavior();
+  // Convert from int[] to vector<int>
+  vector<double> speed_limits;
+  for (int i = 0; i < NUM_LANES; ++i)
+  {
+    speed_limits.push_back(double(SPEED_LIMITS[i]));
+  }
+  
+  road = Road(LANE_WIDTH, speed_limits);
 }
 
 // ----------------------------------------------------------------------------
@@ -32,21 +40,6 @@ Trajectory PathPlanner::Generate()
   behavior.UpdateState(road);
   return behavior.GetTrajectory();
 }
-
-// void PathPlanner::GeneratePath()
-// {
-  // Vehicle ego();
-  
-  // // Convert from int[] to vector<int>
-  // // TODO: encapsulate in a function
-  // vector<int> speed_limits;
-  // for (int i = 0; i < NUM_LANES; ++i)
-  // {
-    // speed_limits.push_back(SPEED_LIMITS[i]);
-  // }
-  // Road road(LANE_WIDTH, speed_limits);
-  
-// }
 
 // ----------------------------------------------------------------------------
 void PathPlanner::SetEgoData(EgoSensorData data)
@@ -63,17 +56,18 @@ void PathPlanner::SetEgoData(EgoSensorData data)
   this->ego_data.yaw = data.yaw;
   
   // Under the hood also set the start point of the trajectory with this data
-  PointCartesian pc(data.x, data.y);
+  // PointCartesian pc(data.x, data.y);
   // PointFrenet pf(data.s, data.d); // Let's ignore the Frenet data, because it is an untrusted conversion from the Cartesian data. It's better if I use my own conversion from Cartesian to Frenet.
-  road.ego.position = Point(pc);
-  road.ego.yaw = data.yaw;
-  road.ego.speed = data.speed;
+  // road.ego.position = Point(pc);
+  // road.ego.yaw = data.yaw;
+  // road.ego.speed = data.speed;
+  road.UpdateEgoKinematics(data);
   
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - ego position = " << road.ego.position;
 }
 
 // ----------------------------------------------------------------------------
-void SetEnvironmentData(const EnvironmentSensorData& data)
+void PathPlanner::SetEnvironmentData(const EnvironmentSensorData& data)
 {
   road.PopulateTraffic(data);
 }
