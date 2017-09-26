@@ -47,7 +47,7 @@ public:
   int GetNumberOfLanes() const;
  
   //! Get a vector of ids of the vehicles that are currently in the specified space.
-  vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const;
+  vector<int> GetVehiclesInSpace(RoadSpace space) const;
   
   //! Check if the specified space on the road is empty (no vehicles)
   bool IsEmptySpace(RoadSpace space) const;
