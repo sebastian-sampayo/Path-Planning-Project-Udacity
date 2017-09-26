@@ -12,7 +12,7 @@ using namespace std;
 
 class Behavior {
 public:
-  enum BehaviorState {
+  enum class BehaviorState {
     KEEP_LANE,
     PREPARE_CHANGE_LANE_LEFT,
     PREPARE_CHANGE_LANE_RIGHT,
