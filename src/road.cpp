@@ -37,7 +37,7 @@ int Road::GetNumberOfLanes() const
 }
 
 // ----------------------------------------------------------------------------
-vector<int> Road::GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const
+vector<int> Road::GetVehiclesInSpace(RoadSpace space) const
 {
   vector<int> ids;
   
@@ -48,7 +48,7 @@ vector<int> Road::GetVehiclesInSpace(double s_down, double s_up, double d_left, 
     const double s = vehicle.position.GetS();
     const double d = vehicle.position.GetD();
     
-    if (s_down < s && s < s_up && d_left < d && d < d_right)
+    if (space.s_down < s && s < space.s_up && space.d_left < d && d < space.d_right)
     {
       ids.push_back(id);
     }
@@ -57,9 +57,9 @@ vector<int> Road::GetVehiclesInSpace(double s_down, double s_up, double d_left, 
   return ids;
 }
 // ----------------------------------------------------------------------------
-bool Road::IsEmptySpace(double s_down, double s_up, double d_left, double d_right) const
+bool Road::IsEmptySpace(RoadSpace space) const
 {
-  return GetVehiclesInSpace(s_down, s_up, d_left, d_right).empty();
+  return GetVehiclesInSpace(space).empty();
 }
 
 // ----------------------------------------------------------------------------
