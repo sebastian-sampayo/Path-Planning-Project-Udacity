@@ -17,6 +17,13 @@
 
 using namespace std;
 
+struct RoadSpace {
+  double s_down;
+  double s_up;
+  double d_left;
+  double d_right;
+};
+
 class Road {
 public:
   double LANE_WIDTH = 4;
@@ -43,7 +50,7 @@ public:
   vector<int> GetVehiclesInSpace(double s_down, double s_up, double d_left, double d_right) const;
   
   //! Check if the specified space on the road is empty (no vehicles)
-  bool IsEmptySpace(double s_down, double s_up, double d_left, double d_right) const;
+  bool IsEmptySpace(RoadSpace space) const;
   
   //! Updates the current state of the traffic. If there is a new vehicle in the environmet data,
   // it is added to the vehicles array. If a vehicle in the new data was already in the vehicles array
