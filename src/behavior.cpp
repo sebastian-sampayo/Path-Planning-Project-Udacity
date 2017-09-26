@@ -93,10 +93,19 @@ void Behavior::UpdateState(Road& road)
   
   LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
     << strategy->goal_point;
-  // -----------------------------------------------
   
   LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
   strategy->GenerateTrajectory();
+  // -----------------------------------------------
+  
+  // For each possible state, perturb the goal point associated with it, 
+  //   generate the trajectory
+  //   calculate the cost associated with it
+  //   keep track of the best one (state, trajectory and cost)
+  for (BehaviorState possible_state : state_transitions[state])
+  {
+    //
+  }
 }
 
 // ----------------------------------------------------------------------------
