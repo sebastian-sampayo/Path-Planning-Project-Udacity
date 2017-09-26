@@ -20,7 +20,7 @@ Behavior::Behavior()
 {
   LOG(logDEBUG4) << "Behavior::Behavior()";
   // Init state
-  state = KEEP_LANE;
+  state = BehaviorState::KEEP_LANE;
   
   // Set allowed state transitions:
   SetPossibleTransitions();
@@ -109,16 +109,16 @@ void Behavior::SetPossibleTransitions()
   LOG(logDEBUG4) << "Behavior::SetPossibleTransitions()";
   
   // Init the vector with each state
-  for (int i = 0; i < NUM_BEHAVIOR_STATES; ++i)
+  for (int i = 0; i < BehaviorState::NUM_BEHAVIOR_STATES; ++i)
   {
     set<BehaviorState> aux_set;
     state_transitions.push_back(aux_set);
   }
 
   // Keep Lane transitions allowed
-  state_transitions[KEEP_LANE].insert(KEEP_LANE);
-  state_transitions[KEEP_LANE].insert(PREPARE_CHANGE_LANE_LEFT);
-  state_transitions[KEEP_LANE].insert(PREPARE_CHANGE_LANE_RIGHT);
+  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::KEEP_LANE);
+  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_LEFT);
+  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_RIGHT);
 
   // ...
 }
