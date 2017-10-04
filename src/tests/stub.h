@@ -8,8 +8,8 @@ using namespace std;
 using json = nlohmann::json;
 
 json stub_ego_data = {
-  {"x", 0},
-  {"y", 0},
+  {"x", 784.6001},
+  {"y", 1135.571},
   {"s", 0},
   {"d", 6},
   {"yaw", 0},

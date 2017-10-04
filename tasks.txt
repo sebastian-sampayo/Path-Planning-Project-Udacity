@@ -26,11 +26,10 @@ DONE Code road.IsEmpty(s_down, s_up, d_left, d_right)
 DONE Code a simple logic to test the lane change with the spline generator (see behavior.cpp UpdateState())
 DONE Add d_desired[state] in Behavior class, so that we can set the goal point in the trajectory strategy. Also s_desired ??
 DONE Code the lane inside Vehicle::UpdateState()
-
-SetPossibleTransitions(lane)
+DONE SetPossibleTransitions(lane)
   if we are on the most right lane we can change lane right for example
   set possible transitions on each UpdateState() call based on the current lane
-GetDesiredD(lane, state)
+DONE GetDesiredD(lane, state)
   d_by_lane_and_state[lane][state]
     d_by_lane_and_state[0][KL] = d_by_lane[0]
     d_by_lane_and_state[0][PCLR] = d_by_lane[0] + LANE_WIDTH/4
@@ -45,12 +44,14 @@ GetDesiredD(lane, state)
     d_by_lane_and_state[2][KL] = d_by_lane[2]
     d_by_lane_and_state[2][PCLL] = d_by_lane[2] - LANE_WIDTH/4
     d_by_lane_and_state[2][CLL] = d_by_lane[1]
-    
-Code lanes_available detection inside Vehicle::UpdateState()
+
+Move CostFunction out of TrajectoryStrategy, into Behavior.
+  CalculateCost(Trajectory t)
 Update UML
-Design high level of the loop of the trajectory generation: 
-  Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
 Design CostFunction
 Code CostFunction
 Code some example of cost function
+Design high level of the loop of the trajectory generation: 
+  Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
+Code lanes_available detection inside Vehicle::UpdateState()
 Test the algorithm

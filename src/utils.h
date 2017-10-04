@@ -21,5 +21,17 @@ int ClosestWaypoint(double x, double y, vector<double> maps_x, vector<double> ma
 
 int NextWaypoint(double x, double y, double theta
   , vector<double> maps_x, vector<double> maps_y);
+  
+template<class Tin, class Tout>
+vector<Tout> CArrayToVector(const Tin* c_array, const int length)
+{
+  vector<Tout> output_vector;
+  for (int i = 0; i < length; ++i)
+  {
+    output_vector.push_back(Tout(c_array[i]));
+  }
+  
+  return output_vector;
+}
 
 #endif

@@ -15,17 +15,10 @@ constexpr int PathPlanner::SPEED_LIMITS[];
 
 // ----------------------------------------------------------------------------
 PathPlanner::PathPlanner()
+  : road(Road(LANE_WIDTH, CArrayToVector<int, double>(SPEED_LIMITS, NUM_LANES))), 
+    behavior(Behavior(&road))
 {
   LOG(logDEBUG4) << "PathPlanner::PathPlanner()";
-  // behavior = Behavior();
-  // Convert from int[] to vector<int>
-  vector<double> speed_limits;
-  for (int i = 0; i < NUM_LANES; ++i)
-  {
-    speed_limits.push_back(double(SPEED_LIMITS[i]));
-  }
-  
-  road = Road(LANE_WIDTH, speed_limits);
 }
 
 // ----------------------------------------------------------------------------
@@ -37,7 +30,7 @@ PathPlanner::~PathPlanner()
 // ----------------------------------------------------------------------------
 Trajectory PathPlanner::Generate()
 {
-  behavior.UpdateState(road);
+  behavior.UpdateState();
   return behavior.GetTrajectory();
 }
 

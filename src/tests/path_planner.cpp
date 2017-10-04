@@ -61,10 +61,10 @@ int main()
   vector<double> next_y_values;
 
   LOG(logINFO) << "Setting next_values ";
-  next_x_values = next_path.GetXvalues();
-  next_y_values = next_path.GetYvalues();
+  // next_x_values = next_path.GetXvalues();
+  // next_y_values = next_path.GetYvalues();
   
-  LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
+  // LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
 
   return 0;
 }

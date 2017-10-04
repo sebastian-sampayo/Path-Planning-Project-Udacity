@@ -31,8 +31,8 @@ public:
   map<int, Vehicle> vehicles;
   Vehicle ego;
 
-  // Default Constructor
-  Road() {};
+  // Default Constructor (Not implemented yet)
+  Road();
   
   // Constructor with lanes: Builds the specified number of lanes at initialization.
   // @param width Width of each lane
@@ -42,6 +42,9 @@ public:
 
   // Destructor
   virtual ~Road();
+  
+  //! Get the d-coordinate for the center of the specified lane
+  double GetCenterDByLane(int lane) const;
   
   //! Get number of lanes
   int GetNumberOfLanes() const;

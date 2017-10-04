@@ -1,8 +1,9 @@
 #ifndef BEHAVIOR_H
 #define BEHAVIOR_H
 
-#include <vector>
 #include <set>
+#include <utility>      // std::pair, std::make_pair
+#include <vector>
 
 #include "road.h"
 #include "trajectory.h"
@@ -23,19 +24,33 @@ public:
   };
   
   BehaviorState state;
-  vector<set<BehaviorState>> state_transitions;
+  map<BehaviorState, set<BehaviorState> > state_transitions;
   TrajectoryStrategy* strategy;
   
+  // The behavior model can see the road in which it is being applied.
+  Road* road_ptr;
+  
   // Constructor and destructor
-  Behavior();
+  Behavior();  // Not implemented yet
+  Behavior(Road*);
   virtual ~Behavior();
+  
+  //! Get the desired d-coordinate based on the current lane and the behavior state
+  double GetDDesired(int lane, BehaviorState state) const;
   
   //! Get the generated trajectory
   Trajectory GetTrajectory();
-  void UpdateState(Road& road);
+  void UpdateState();
   
 private:
+  void SetDDesired();
   void SetPossibleTransitions();
+  
+  // A double-key type definition
+  typedef pair<int, BehaviorState> LaneStateKey;
+  
+  // A double-key map to store the desired d-coordinate for each combination of lane-state
+  map<LaneStateKey, double> d_desired_by_lane_and_state;
 };
 
 #endif

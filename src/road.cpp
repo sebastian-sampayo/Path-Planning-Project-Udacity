@@ -18,10 +18,17 @@ using namespace std;
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
+Road::Road()
+{
+  // Not implemented yet
+  LOG(logERROR) << "Road::Road() - Not implemented yet!";
+}
+
+// ----------------------------------------------------------------------------
 // Initializes Road
 Road::Road(double width, vector<double> lane_speeds)
 {
-  LOG(logDEBUG4) << "Road::Road()";
+  LOG(logDEBUG4) << "Road::Road(width, speeds)";
 
   LANE_WIDTH = width;
   this->lane_speeds = lane_speeds;
@@ -29,6 +36,14 @@ Road::Road(double width, vector<double> lane_speeds)
 
 // ----------------------------------------------------------------------------
 Road::~Road() {}
+
+// ----------------------------------------------------------------------------
+double Road::GetCenterDByLane(int lane) const
+{
+  // Note: "lane" starts (is 0) at the left most lane on the road.
+  // LANE_WIDTH/2.0 + double(lane) * (LANE_WIDTH)
+  return LANE_WIDTH * (0.5 + double(lane));
+}
 
 // ----------------------------------------------------------------------------
 int Road::GetNumberOfLanes() const
