@@ -8,6 +8,7 @@
 #include "road.h"
 #include "trajectory.h"
 #include "trajectory_strategy.h"
+#include "trajectory_cost.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ public:
   BehaviorState state;
   map<BehaviorState, set<BehaviorState> > state_transitions;
   TrajectoryStrategy* strategy;
+  TrajectoryCost cost;
   
   // The behavior model can see the road in which it is being applied.
   Road* road_ptr;

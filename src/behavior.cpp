@@ -26,12 +26,10 @@ Behavior::Behavior()
 
 // ----------------------------------------------------------------------------
 Behavior::Behavior(Road* road)
+  : road_ptr(road), cost(road)
 {
   LOG(logDEBUG4) << "Behavior::Behavior(Road*)";
-  
-  // Set road pointer
-  this->road_ptr = road;
-  
+
   // Init state
   state = BehaviorState::KEEP_LANE;
   
@@ -133,12 +131,17 @@ void Behavior::UpdateState()
   //   generate the trajectory
   //   calculate the cost associated with it
   //   keep track of the best one (state, trajectory and cost)
+  double min_cost = 10000;
+  Trajectory best_trajectory;
+  BehaviorState best_state;
+  
   for (BehaviorState next_possible_state : state_transitions[state])
   {
     LOG(logDEBUG3) << "Behavior::UpdateState() - Next possible state = " << int(next_possible_state);
     goal_d = GetDDesired(road.ego.lane, next_possible_state);
 
     // Don't get off the road!
+    // TODO: move this condition to a helper function IsGoalDValid(d)
     if (goal_d < 0 || goal_d > (road.GetNumberOfLanes()*road.LANE_WIDTH))
     {
       // this state is invalid
@@ -146,13 +149,27 @@ void Behavior::UpdateState()
     }
 
     // TODO: perturb goal
-    strategy->goal_point = Point(PointFrenet(goal_s, goal_d));
+    // for (each perturbed goal)
+    {
+      strategy->goal_point = Point(PointFrenet(goal_s, goal_d));
 
-    LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
-      << strategy->goal_point;
-    
-    LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
-    strategy->GenerateTrajectory();
+      LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
+        << strategy->goal_point;
+      
+      LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
+      strategy->GenerateTrajectory();
+      
+      double temp_cost = cost.CalculateCost(strategy->trajectory);
+      LOG(logDEBUG3) << "Behavior::UpdateState() - temp_cost = " << temp_cost;
+      
+      // Update best values
+      if (temp_cost < min_cost)
+      {
+        min_cost = temp_cost;
+        best_trajectory = strategy->trajectory;
+        best_state = next_possible_state;
+      }
+    }
   }
 }
 

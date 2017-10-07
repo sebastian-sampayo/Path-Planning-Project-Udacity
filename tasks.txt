@@ -44,14 +44,25 @@ DONE GetDesiredD(lane, state)
     d_by_lane_and_state[2][KL] = d_by_lane[2]
     d_by_lane_and_state[2][PCLL] = d_by_lane[2] - LANE_WIDTH/4
     d_by_lane_and_state[2][CLL] = d_by_lane[1]
-
-Move CostFunction out of TrajectoryStrategy, into Behavior.
-  CalculateCost(Trajectory t)
-Update UML
-Design CostFunction
-Code CostFunction
-Code some example of cost function
-Design high level of the loop of the trajectory generation: 
+DONE Move CostFunction out of TrajectoryStrategy, into Behavior.
+DONE   CalculateCost(Trajectory t)
+DONE Design CostFunction
+DONE Design high level of the loop of the trajectory generation: 
   Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
+
+Code some cost functions
+Test behavior algorithm without perturbed goal
+
+Design road prediction
+Integrate road prediction
+
+Add perturbed goals logic
+Test behavior
+Code more cost functions
+Set weights
+Update UML
 Code lanes_available detection inside Vehicle::UpdateState()
 Test the algorithm
+
+Refactor: TrajectoryStrategy -> TrajectoryGenerator
+Refactor: TrajectoryStratgy::GenerateTrajectory() : returns Trajectory

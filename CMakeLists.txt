@@ -18,6 +18,7 @@ set(COMMON_SOURCES
             src/straight_line_strategy.cpp
             src/walkthrough_strategy.cpp
             src/trajectory.cpp
+            src/trajectory_cost.cpp
             src/utils.cpp
             src/vehicle.cpp)
 
