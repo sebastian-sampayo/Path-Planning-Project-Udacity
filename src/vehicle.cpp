@@ -38,6 +38,19 @@ Vehicle::Vehicle(const EnvironmentSensorData::SensedVehicleData& data, Road* roa
 Vehicle::~Vehicle() {}
 
 // ----------------------------------------------------------------------------
+Point Vehicle::PredictPosition(double delta_t) const
+{
+  const double current_x = this->position.GetX();
+  const double current_y = this->position.GetY();
+  const double current_vx = speed * cos(yaw);
+  const double current_vy = speed * sin(yaw);
+  const double future_x = current_x + current_vx * delta_t;
+  const double future_y = current_y + current_vy * delta_t;
+  
+  return PointCartesian(future_x, future_y);
+}
+
+// ----------------------------------------------------------------------------
 void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& data)
 {
   PointCartesian pc(data.x, data.y);

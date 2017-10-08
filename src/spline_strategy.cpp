@@ -23,7 +23,7 @@ void SplineStrategy::GenerateTrajectory()
   double start_d = start_point.GetD();
   const double goal_s = goal_point.GetS();
   const double goal_d = goal_point.GetD();
-  const double T_simulator = 0.02;
+  const double T_simulator = 0.02; // TODO: Move to a configuration file
   const double MPH2MS = 0.44704;
   const double safe_distance = 30; // This should depend on the speed. We might think of a safe "time" distance better.
   const double spline_mid_point = 1;

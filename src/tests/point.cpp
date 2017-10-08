@@ -13,8 +13,20 @@ namespace plt = matplotlibcpp;
 int main()
 {
   SET_LOG_LEVEL(logDEBUG3);
-  PointCartesian pc(784.6001, 1130.571);
+  // {1, 804.479, 1129.09, 0, 0, 20, 6},
+  // {2, 834.597, 1132.9, 0, 0, 50, 2},
+  // {3, 789.336, 1125.44, 10, 0, 5, 10},
+  // PointCartesian pc(784.6001, 1130.571); // 
+  // PointCartesian pc(804.479, 1129.09); // 20, 6
+  // PointCartesian pc(834.597, 1132.9); // 50, 2
+  // PointCartesian pc(789.336, 1125.44); // 5, 10
+  PointFrenet pf0(18, 0);
+  PointCartesian pc(pf0);
   Point p(pc);
+  
+  cout << pc << endl;
+  cout << pf0 << endl;
+  cout << p << endl;
   
   cout << "p.GetS() = " << p.GetS() << endl;
   

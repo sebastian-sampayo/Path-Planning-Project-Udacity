@@ -35,16 +35,18 @@ public:
   // The vehicle can see the road in which it is driving.
   Road* road_ptr;
 
-  // Constructors
+  //! Constructors
   Vehicle();
   Vehicle(const EnvironmentSensorData::SensedVehicleData& data, Road* road);
 
-  // Destructor
+  //! Destructor
   virtual ~Vehicle();
   
+  //! Predicts position of vehicle in delta_t seconds (assuming constant speed)
+  Point PredictPosition(double delta_t) const;
+  
+  //! Updates sensor data from the environment
   void UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& data);
-  // void predict(double deltaT);
-
 };
 
 #endif

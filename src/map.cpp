@@ -66,7 +66,7 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
     pq_dist_y = y - qy0;
     // (p - q) q'. This must be 0 for orthogonality
     p_proj_r = pq_dist_x*rx + pq_dist_y*ry;
-  } while (p_proj_r > tolerance);
+  } while (fabs(p_proj_r) > tolerance);
   
   d = pq_dist_x*ry - pq_dist_y*rx;
 }

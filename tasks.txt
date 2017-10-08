@@ -49,8 +49,9 @@ DONE   CalculateCost(Trajectory t)
 DONE Design CostFunction
 DONE Design high level of the loop of the trajectory generation: 
   Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
+DONE Code some cost functions (collision detection)
 
-Code some cost functions
+Design how to pass the best trajectory detected to the path planner
 Test behavior algorithm without perturbed goal
 
 Design road prediction
@@ -66,3 +67,4 @@ Test the algorithm
 
 Refactor: TrajectoryStrategy -> TrajectoryGenerator
 Refactor: TrajectoryStratgy::GenerateTrajectory() : returns Trajectory
+Refactor: remove "using namespace std" from all header files.

@@ -24,7 +24,12 @@ int main()
   SET_LOG_LEVEL(logDEBUG3);
   LOG(logINFO) << "----- Test Path Planner -----";
   
-  Map::GetInstance();
+  // Some frenet to cartesian conversions for stubbed data
+  LOG(logDEBUG3) << Point(PointFrenet(0, 6));
+  LOG(logDEBUG3) << Point(PointFrenet(20, 6));
+  LOG(logDEBUG3) << Point(PointFrenet(50, 2));
+  LOG(logDEBUG3) << Point(PointFrenet(5, 10));
+  LOG(logDEBUG3) << Point(PointFrenet(5, 6));
   
   PathPlanner path_planner;
   
@@ -41,7 +46,9 @@ int main()
   
     // Convert Sensor fusion data from json to SensorData class:
   LOG(logINFO) << "Get environment sensor data";
-  for (const auto& sensed_vehicle : stub_environment_data)
+  EnvironmentSensorData environment_data;
+
+  for (const auto& sensed_vehicle : stub_environment_cost_function)
   {
     EnvironmentSensorData::SensedVehicleData data;
     data.id = sensed_vehicle[0];
@@ -51,8 +58,10 @@ int main()
     data.vy = sensed_vehicle[4];
     data.s = sensed_vehicle[5];
     data.d = sensed_vehicle[6];
-    path_planner.environment_data.sensed_vehicle_list.push_back(data);
+    environment_data.sensed_vehicle_list.push_back(data);
   }
+
+  path_planner.SetEnvironmentData(environment_data);
 
   LOG(logINFO) << "Generate next path";
   Trajectory next_path = path_planner.Generate();

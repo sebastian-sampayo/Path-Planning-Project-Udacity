@@ -20,6 +20,7 @@ public:
   //! These are the cost functions available. The constructor must initialize weights and function pointers
   enum class CostFunctions
   {
+    DETECT_COLLISION,
     MAX_JERK,
     
     NUM_COST_FUNCTIONS
@@ -38,6 +39,9 @@ public:
   
   //! Penalize maximum jerk
   double MaxJerk();
+  
+  //! Binary cost function which penalizes collisions. Return 0 if no collision, else 1
+  double DetectCollision();
 
 private:
   Trajectory trajectory;
