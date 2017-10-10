@@ -302,10 +302,11 @@ Road Road::PredictRoadTraffic(double t) const
 // ----------------------------------------------------------------------------
 void Road::UpdateEgoKinematics(EgoSensorData& data)
 {
+  const double MPH2MPS = 0.44704;
   ego.position = PointCartesian(data.x, data.y);
   // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
-  ego.yaw = deg2rad(data.yaw); // Sensor data is in degrees
-  ego.speed = data.speed;
+  ego.yaw = deg2rad(data.yaw); // Sensor data is in degrees, convert it to radians
+  ego.speed = data.speed * MPH2MPS; // Sensor data is in MPH, convert it to m/s
   
   // TODO: Update ego lane
   // lane = { 0 if ego_d is in [0, LANE_WIDTH)
