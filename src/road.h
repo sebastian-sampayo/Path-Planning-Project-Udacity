@@ -39,7 +39,7 @@ public:
   // Constructor with lanes: Builds the specified number of lanes at initialization.
   // @param width Width of each lane
   // @param lane_speeds Speed limit for each lane, starting from the right lane
-  Road(double width, vector<double> lane_speeds);
+  Road(double width, const vector<double>& lane_speeds);
   // Road(int speed_limit, double traffic_density, vector<int> lane_speeds);
 
   // Destructor
@@ -55,13 +55,13 @@ public:
   int GetNumberOfLanes() const;
  
   //! Get a vector of ids of the vehicles that are currently in the specified space.
-  vector<int> GetVehiclesInSpace(RoadSpace space) const;
+  vector<int> GetVehiclesInSpace(const RoadSpace& space) const;
   
   //! Check if the ego vehicle is colliding with other vehicle
   bool IsEgoColliding() const;
   
   //! Check if the specified space on the road is empty (no vehicles)
-  bool IsEmptySpace(RoadSpace space) const;
+  bool IsEmptySpace(const RoadSpace& space) const;
   
   //! Check if there is any vehicle in the right hand of the ego vehicle
   bool IsEgoRightSideEmpty() const;
@@ -83,7 +83,7 @@ public:
   //! Predicts the state of the road in the future. (does not predicts ego motion, only traffic)
   Road PredictRoadTraffic(double t) const;
   
-  void UpdateEgoKinematics(EgoSensorData& ego_data);
+  void UpdateEgoKinematics(const EgoSensorData& ego_data);
 };
 
 #endif
