@@ -35,7 +35,7 @@ Trajectory PathPlanner::Generate()
 }
 
 // ----------------------------------------------------------------------------
-void PathPlanner::SetEgoData(EgoSensorData data)
+void PathPlanner::SetEgoData(const EgoSensorData& data)
 {
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.s = " << data.s;
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.d = " << data.d;
@@ -66,7 +66,7 @@ void PathPlanner::SetPointsAlreadyPassed(int n)
 }
 
 // ----------------------------------------------------------------------------
-void PathPlanner::SetPreviousPath(json previous_path_x, json previous_path_y)
+void PathPlanner::SetPreviousPath(const json& previous_path_x, const json& previous_path_y)
 {
   behavior.strategy->previous_path.clear();
 
