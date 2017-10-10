@@ -199,13 +199,14 @@ void Behavior::UpdateState()
 
     const int N_s_steps = 6;
     
+    // Store strategy temporary as we are going to stomp on it
+    TrajectoryStrategy* strategy_copy = new SplineStrategy();
+    *strategy_copy = *strategy;
+    
     for (int j = 0; j < N_s_steps; ++j)
     {
       for (int i = 0; i < N_speed_steps; ++i)
       {
-        // Store strategy temporary as we are going to stomp on it
-        TrajectoryStrategy* strategy_copy = new SplineStrategy();
-        *strategy_copy = *strategy;
         LOG(logDEBUG5) << "Behavior::UpdateState() - strategy->trajectory = " << strategy->trajectory;
         
         strategy->reference_speed += i*speed_increment;
@@ -240,9 +241,10 @@ void Behavior::UpdateState()
         
         // Reset strategy with the copy
         *strategy = *strategy_copy;
-        delete strategy_copy;
       }
     }
+    
+    delete strategy_copy;
   }
   
   // Update object state and best trajectory
