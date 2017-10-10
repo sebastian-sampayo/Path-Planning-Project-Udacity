@@ -59,6 +59,8 @@ DONE Test behavior algorithm without perturbed goal
 DONE Design road prediction
 DONE Integrate road prediction
 
+Potential BUG: velocity of vehicles in MPH o MPS? reference_speed in MPH!
+Test adding more waypoints to the spline strategy
 Add perturbed goals logic
 Test behavior
 Code more cost functions
