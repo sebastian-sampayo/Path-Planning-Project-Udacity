@@ -28,7 +28,7 @@ Road::Road()
 
 // ----------------------------------------------------------------------------
 // Initializes Road
-Road::Road(double width, vector<double> lane_speeds)
+Road::Road(double width, const vector<double>& lane_speeds)
 {
   LOG(logDEBUG4) << "Road::Road(width, speeds)";
 
@@ -60,7 +60,7 @@ int Road::GetNumberOfLanes() const
 }
 
 // ----------------------------------------------------------------------------
-vector<int> Road::GetVehiclesInSpace(RoadSpace space) const
+vector<int> Road::GetVehiclesInSpace(const RoadSpace& space) const
 {
   vector<int> ids;
   
@@ -134,7 +134,7 @@ bool Road::IsEgoColliding() const
 }
 
 // ----------------------------------------------------------------------------
-bool Road::IsEmptySpace(RoadSpace space) const
+bool Road::IsEmptySpace(const RoadSpace& space) const
 {
   return GetVehiclesInSpace(space).empty();
 }
@@ -300,7 +300,7 @@ Road Road::PredictRoadTraffic(double t) const
 }
 
 // ----------------------------------------------------------------------------
-void Road::UpdateEgoKinematics(EgoSensorData& data)
+void Road::UpdateEgoKinematics(const EgoSensorData& data)
 {
   const double MPH2MPS = 0.44704;
   ego.position = PointCartesian(data.x, data.y);
