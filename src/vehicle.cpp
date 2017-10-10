@@ -57,7 +57,7 @@ Point Vehicle::PredictPosition(double delta_t) const
 }
 
 // ----------------------------------------------------------------------------
-void Vehicle::Translate(Point new_pos)
+void Vehicle::Translate(const Point& new_pos)
 {
   double dy = new_pos.GetY() - position.GetY();
   double dx = new_pos.GetX() - position.GetX();
