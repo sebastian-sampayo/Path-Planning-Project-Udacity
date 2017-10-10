@@ -45,7 +45,7 @@ Point::Point(const PointCartesian& pc, const PointFrenet& pf)
 
 // ----------------------------------------------------------------------------
 Point::~Point()
-{ LOG(logDEBUG4) << "Point::~Point()"; }
+{ LOG(logDEBUG5) << "Point::~Point()"; }
 
 // ----------------------------------------------------------------------------
 // Getters
@@ -130,8 +130,8 @@ ostream& operator<<(ostream& os, const Point& p)
   os << "x: " << p.point_cartesian_.x << " | "
     << "y: " << p.point_cartesian_.y << " | "
     << "s: " << p.point_frenet_.s << " | "
-    << "d: " << p.point_frenet_.d << " | "
-    << endl;
+    << "d: " << p.point_frenet_.d << " | ";
+    // << endl;
 
   return os;
 }
@@ -140,8 +140,8 @@ ostream& operator<<(ostream& os, const Point& p)
 ostream& operator<<(ostream& os, const PointCartesian& p)
 {
   os << "x: " << p.x << " | "
-    << "y: " << p.y << " | "
-    << endl;
+    << "y: " << p.y << " | ";
+    // << endl;
 
   return os;
 }
@@ -150,8 +150,8 @@ ostream& operator<<(ostream& os, const PointCartesian& p)
 ostream& operator<<(ostream& os, const PointFrenet& p)
 {
   os << "s: " << p.s << " | "
-    << "d: " << p.d << " | "
-    << endl;
+    << "d: " << p.d << " | ";
+    // << endl;
 
   return os;
 }

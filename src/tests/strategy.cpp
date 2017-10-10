@@ -63,7 +63,7 @@ int main()
   strategy->GenerateTrajectory();
   
   // Simulate second cycle
-  strategy->trajectory.erase(strategy->trajectory.begin(), strategy->trajectory.begin()+3);
+  // strategy->trajectory.erase(strategy->trajectory.begin(), strategy->trajectory.begin()+3);
   strategy->previous_path = strategy->trajectory;
   strategy->GenerateTrajectory();
 

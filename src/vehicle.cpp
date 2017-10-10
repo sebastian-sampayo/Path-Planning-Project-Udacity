@@ -38,6 +38,12 @@ Vehicle::Vehicle(const EnvironmentSensorData::SensedVehicleData& data, Road* roa
 Vehicle::~Vehicle() {}
 
 // ----------------------------------------------------------------------------
+void Vehicle::Move(double delta_t)
+{
+  position = PredictPosition(delta_t);
+}
+
+// ----------------------------------------------------------------------------
 Point Vehicle::PredictPosition(double delta_t) const
 {
   const double current_x = this->position.GetX();
@@ -48,6 +54,15 @@ Point Vehicle::PredictPosition(double delta_t) const
   const double future_y = current_y + current_vy * delta_t;
   
   return PointCartesian(future_x, future_y);
+}
+
+// ----------------------------------------------------------------------------
+void Vehicle::Translate(Point new_pos)
+{
+  double dy = new_pos.GetY() - position.GetY();
+  double dx = new_pos.GetX() - position.GetX();
+  yaw = atan2(dy, dx);
+  position = new_pos;
 }
 
 // ----------------------------------------------------------------------------

@@ -1,6 +1,11 @@
 #ifndef ROAD_H
 #define ROAD_H
 
+#include "sensor_data.h"
+#include "vehicle.h"
+
+#include "logger.h"
+
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -11,9 +16,6 @@
 #include <map>
 #include <string>
 #include <iterator>
-
-#include "sensor_data.h"
-#include "vehicle.h"
 
 using namespace std;
 
@@ -43,6 +45,9 @@ public:
   // Destructor
   virtual ~Road();
   
+  //! Get the lane for the specified d-coordinate
+  int DToLane(double d) const;
+  
   //! Get the d-coordinate for the center of the specified lane
   double GetCenterDByLane(int lane) const;
   
@@ -52,13 +57,31 @@ public:
   //! Get a vector of ids of the vehicles that are currently in the specified space.
   vector<int> GetVehiclesInSpace(RoadSpace space) const;
   
+  //! Check if the ego vehicle is colliding with other vehicle
+  bool IsEgoColliding() const;
+  
   //! Check if the specified space on the road is empty (no vehicles)
   bool IsEmptySpace(RoadSpace space) const;
+  
+  //! Check if there is any vehicle in the right hand of the ego vehicle
+  bool IsEgoRightSideEmpty() const;
+  
+  //! Check if there is any vehicle in the left hand of the ego vehicle
+  bool IsEgoLeftSideEmpty() const;
+  
+  //! Print vehicles in stdout when debug log mode is active
+  void LogVehicles(TLogLevel log_level = logDEBUG4) const;
+  
+  //! Plot vehicles and save to an image
+  void PlotVehicles(const char* filename) const;
   
   //! Updates the current state of the traffic. If there is a new vehicle in the environmet data,
   // it is added to the vehicles array. If a vehicle in the new data was already in the vehicles array
   // it updates its state.
   void PopulateTraffic(const EnvironmentSensorData& environment_data);
+  
+  //! Predicts the state of the road in the future. (does not predicts ego motion, only traffic)
+  Road PredictRoadTraffic(double t) const;
   
   void UpdateEgoKinematics(EgoSensorData& ego_data);
 };

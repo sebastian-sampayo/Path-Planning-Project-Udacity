@@ -13,6 +13,13 @@ namespace plt = matplotlibcpp;
 int main()
 {
   SET_LOG_LEVEL(logDEBUG3);
+  
+  // Print some points
+  cout << Point(PointCartesian(1105, 1180.27));
+  cout << Point(PointCartesian(1109.98, 1178.01));
+  cout << Point(PointFrenet(328.072, 6));
+  cout << Point(PointFrenet(332.78, 9));
+  
   // {1, 804.479, 1129.09, 0, 0, 20, 6},
   // {2, 834.597, 1132.9, 0, 0, 50, 2},
   // {3, 789.336, 1125.44, 10, 0, 5, 10},
@@ -60,17 +67,16 @@ int main()
   
   
   // Matplotlibcpp
-  plt::plot({1,2,3,4});
-  plt::save("../img/test.png");
-  // plt::show();
-  // plt::subplot(2, 2, 1);
-  // plt::title("Red = Waypoints, Black=x(s)+y(s)");
-  //plt::axis("equal");
-  // plt::xlim(0, 2500);
-  // plt::plot(Map::, maps_y_, "r."
-           // , xs, ys, "k-");
+  // plt::plot({1,2,3,4});
+  // plt::save("../img/test.png");
+  // // plt::subplot(2, 2, 1);
+  // // plt::title("Red = Waypoints, Black=x(s)+y(s)");
+  // //plt::axis("equal");
+  // // plt::xlim(0, 2500);
+  // // plt::plot(Map::, maps_y_, "r."
+           // // , xs, ys, "k-");
 
-  // plt::show();
+  // // plt::show();
 
   return 0;
 }

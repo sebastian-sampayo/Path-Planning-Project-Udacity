@@ -1,3 +1,4 @@
+#include <math.h>
 #include <utility>      // std::pair, std::make_pair
 #include <vector>
 
@@ -8,6 +9,7 @@
 #include "trajectory_strategy.h"
 #include "straight_line_strategy.h"
 #include "spline_strategy.h"
+#include "utils.h"
 #include "walkthrough_strategy.h"
 
 using namespace std;
@@ -42,6 +44,7 @@ Behavior::Behavior(Road* road)
   // strategy = new StraightLineStrategy();
   // strategy = new WalkthroughStrategy();
   strategy = new SplineStrategy();
+  // strategy->reference_speed = 20;
 }
 
 // ----------------------------------------------------------------------------
@@ -71,13 +74,13 @@ double Behavior::GetDDesired(int lane, BehaviorState state) const
 // ----------------------------------------------------------------------------
 Trajectory Behavior::GetTrajectory()
 {
-  return strategy->trajectory;
+  return best_trajectory_;
 }
 
 // ----------------------------------------------------------------------------
 void Behavior::UpdateState()
 {
-  LOG(logDEBUG3) << "Behavior::UpdateState()";
+  LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
 
   Road& road = *road_ptr; // alias
 
@@ -90,42 +93,50 @@ void Behavior::UpdateState()
   LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->start.position = \n"
     << strategy->start_point;
   
-  // int N_lanes = road.GetNumberOfLanes();
-  // double d_desired[N_lanes];
-  
-  // for (int lane = 0; lane < N_lanes; ++lane)
-  // {
-    // d_desired[lane] = road.LANE_WIDTH/2.0 + double(lane) * (road.LANE_WIDTH);
-  // }
-  
-  // ---- DEBUG for lane change with splines -----
-  // Set goal
-  // strategy->goal_point = PointFrenet(strategy->start_point.GetS() + 30, strategy->start_point.GetD());
-  
   // Define the space ahead
+  // const double safe_distance = 30; // This should depend on the speed. We might think of a safe "time" distance better.
+  const double safe_time = 2; // seconds
+  const double safe_distance = 30; //safe_time * strategy->reference_speed; // meters
   const double ego_s = road.ego.position.GetS();
   const double ego_d = road.ego.position.GetD();
-  // RoadSpace space_ahead;
-  // space_ahead.s_down = ego_s;
-  // space_ahead.s_up = space_ahead.s_down + 30;
-  // space_ahead.d_left = ego_d - 2;
-  // space_ahead.d_right = space_ahead.d_left + 8;
-  double goal_s = ego_s + 30;
+  
+  RoadSpace space_ahead;
+  space_ahead.s_down = ego_s;
+  space_ahead.s_up = space_ahead.s_down + safe_distance;
+  space_ahead.d_left = ego_d - 2;
+  space_ahead.d_right = space_ahead.d_left + 4;
+  double goal_s = ego_s + 60; // TODO: design carefully goal_s
   double goal_d = ego_d;
   
-  // if (!road.IsEmptySpace(space_ahead))
-  // {
-    // LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Trying to change lane...";
-    // LOG(logDEBUG2) << "Behavior::UpdateState() - Current lane: " << road.ego.lane;
-  // //   // change lane (ego.lane available)
-  // //   // int goal_lane = road.ego.lanes_available[0];
-  // //   int goal_lane = 0;
-  // //   strategy->goal_point = PointFrenet(ego_s + 30, d_desired[goal_lane]);
-    // goal_d = (road.ego.lane == 0) ? 6 : 2;
-  // }
-  // -----------------------------------------------
+  LOG(logDEBUG3) << "Behavior::UpdateState() - Current state = " << state;
+  road.LogVehicles(logDEBUG3);
   
-  LOG(logDEBUG3) << "Behavior::UpdateState() - Current state = " << int(state);
+  double max_speed = road.lane_speeds[road.ego.lane];
+  const double speed_increment = 2; //.224; // MPH
+  
+  // Vehicle ahead detection - slow down
+  if (!road.IsEmptySpace(space_ahead))
+  {
+    // Match front vehicle's speed using a proportional control
+    auto id_vector = road.GetVehiclesInSpace(space_ahead);
+    strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
+    LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
+      << " strategy->reference_speed: " << strategy->reference_speed;
+    // TODO: try to make the transitions smoother (why not use a PID?)
+  }
+  else if (strategy->reference_speed < max_speed)
+  {
+    strategy->reference_speed += speed_increment;
+  }
+  else
+  {
+    strategy->reference_speed -= speed_increment;
+  }
+  
+  if (strategy->reference_speed < speed_increment || road.ego.speed < speed_increment)
+  {
+    LOG(logWARNING) << "Behavior::UpdateState() - Vehicle stopped!";
+  }
   
   // For each possible state, perturb the goal point associated with it, 
   //   generate the trajectory
@@ -133,11 +144,12 @@ void Behavior::UpdateState()
   //   keep track of the best one (state, trajectory and cost)
   double min_cost = 10000;
   Trajectory best_trajectory;
-  BehaviorState best_state;
+  BehaviorState best_state = BehaviorState::KEEP_LANE;
+  TrajectoryStrategy* best_strategy = new SplineStrategy();
   
   for (BehaviorState next_possible_state : state_transitions[state])
   {
-    LOG(logDEBUG3) << "Behavior::UpdateState() - Next possible state = " << int(next_possible_state);
+    LOG(logDEBUG3) << "Behavior::UpdateState() - Next possible state = " << next_possible_state;
     goal_d = GetDDesired(road.ego.lane, next_possible_state);
 
     // Don't get off the road!
@@ -147,30 +159,110 @@ void Behavior::UpdateState()
       // this state is invalid
       continue;
     }
+    
+    // Manually avoid changing lanes if there is a vehicle on the side
+    if ((next_possible_state == BehaviorState::CHANGE_LANE_LEFT &&  !road.IsEgoLeftSideEmpty()) ||
+        (next_possible_state == BehaviorState::CHANGE_LANE_RIGHT && !road.IsEgoRightSideEmpty()))
+    {
+      LOG(logDEBUG2) << "Behavior::UpdateState() - Avoiding changing lane: Vehicle on the side";
+      continue;
+    }
 
     // TODO: perturb goal
     // for (each perturbed goal)
+    double best_speed = strategy->reference_speed;
+    int N_speed_steps = 5; //min(5, int((max_speed - strategy->reference_speed) / speed_increment));
+    
+    if (N_speed_steps == 0 || strategy->reference_speed >= max_speed)
     {
-      strategy->goal_point = Point(PointFrenet(goal_s, goal_d));
+      N_speed_steps = 1;
+    }
+    
+    if (N_speed_steps == 0) LOG(logERROR) << "Behavior::UpdateState() - N_speed_steps = 0 !!!!!";
 
-      LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
-        << strategy->goal_point;
-      
-      LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
-      strategy->GenerateTrajectory();
-      
-      double temp_cost = cost.CalculateCost(strategy->trajectory);
-      LOG(logDEBUG3) << "Behavior::UpdateState() - temp_cost = " << temp_cost;
-      
-      // Update best values
-      if (temp_cost < min_cost)
+    const int N_s_steps = 6;
+    
+    for (int j = 0; j < N_s_steps; ++j)
+    {
+      for (int i = 0; i < N_speed_steps; ++i)
       {
-        min_cost = temp_cost;
-        best_trajectory = strategy->trajectory;
-        best_state = next_possible_state;
+        // Store strategy temporary as we are going to stomp on it
+        TrajectoryStrategy* strategy_copy = new SplineStrategy();
+        *strategy_copy = *strategy;
+        LOG(logDEBUG5) << "Behavior::UpdateState() - strategy->trajectory = " << strategy->trajectory;
+        
+        strategy->reference_speed += i*speed_increment;
+        
+        if (strategy->reference_speed >= max_speed)
+        {
+          strategy->reference_speed -= (i+1)*speed_increment;
+        }
+        
+        const double perturbed_goal_s = goal_s - road.ego.lenght/2.0 + j * 1.0/N_s_steps * road.ego.lenght;
+        strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
+
+        LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
+          << strategy->goal_point;
+        LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->reference_speed = "
+          << strategy->reference_speed;
+        LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
+        strategy->GenerateTrajectory();
+        
+        double temp_cost = cost.CalculateCost(strategy->trajectory);
+        LOG(logDEBUG3) << "Behavior::UpdateState() - temp_cost = " << temp_cost;
+        
+        // Update best values
+        if (temp_cost < min_cost)
+        {
+          min_cost = temp_cost;
+          best_trajectory = strategy->trajectory;
+          *best_strategy = *strategy;
+          best_state = next_possible_state;
+          best_speed = strategy->reference_speed;
+        }
+        
+        // Reset strategy with the copy
+        *strategy = *strategy_copy;
+        delete strategy_copy;
       }
     }
   }
+  
+  // Update object state and best trajectory
+  *strategy = *best_strategy;
+  delete best_strategy;
+  best_trajectory_ = best_trajectory;
+  state = best_state;
+  LOG(logDEBUG3) << "Behavior::UpdateState() - best_state = " << best_state;
+  LOG(logDEBUG4) << "Behavior::UpdateState() - best_trajectory = " << best_trajectory;
+  
+  // DEBUG
+  // const double T_simulator = 0.02;
+  // Trajectory speed_trajectory = best_trajectory.GetDerivative(T_simulator);
+  // const double tol = 0.001;
+  // for (const Point& p : speed_trajectory)
+  // {
+    // if (Magnitude(p.GetX(), p.GetY()) < tol)
+    // {
+      // LOG(logDEBUG2) << "Behavior::UpdateState() - speed = 0. point duplicated? = ";
+    // }
+  // }
+}
+
+// ----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, const Behavior::BehaviorState state)
+{
+  map<Behavior::BehaviorState, const char*> state_str;
+  
+  state_str[Behavior::BehaviorState::KEEP_LANE] = "KEEP_LANE";
+  state_str[Behavior::BehaviorState::PREPARE_CHANGE_LANE_LEFT] = "PREPARE_CHANGE_LANE_LEFT";
+  state_str[Behavior::BehaviorState::PREPARE_CHANGE_LANE_RIGHT] = "PREPARE_CHANGE_LANE_RIGHT";
+  state_str[Behavior::BehaviorState::CHANGE_LANE_LEFT] = "CHANGE_LANE_LEFT";
+  state_str[Behavior::BehaviorState::CHANGE_LANE_RIGHT] = "CHANGE_LANE_RIGHT";
+  
+  os << state_str[state]; // TODO: use find() and check for invalid state
+  
+  return os;
 }
 
 // ----------------------------------------------------------------------------
@@ -228,18 +320,26 @@ void Behavior::SetPossibleTransitions()
 
   // Keep Lane transitions allowed
   state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::KEEP_LANE);
-  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_LEFT);
-  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_RIGHT);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::KEEP_LANE);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::PREPARE_CHANGE_LANE_LEFT);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::CHANGE_LANE_LEFT);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::KEEP_LANE);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::PREPARE_CHANGE_LANE_RIGHT);
-  state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::CHANGE_LANE_RIGHT);
-  state_transitions[BehaviorState::CHANGE_LANE_LEFT].insert(BehaviorState::KEEP_LANE);
+  
+  // No mid state
+  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::CHANGE_LANE_LEFT);
+  state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::CHANGE_LANE_RIGHT);
+  
+  // PREPARE_CHANGE_LANE mid state
+  // state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_LEFT);
+  // state_transitions[BehaviorState::KEEP_LANE].insert(BehaviorState::PREPARE_CHANGE_LANE_RIGHT);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::KEEP_LANE);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::PREPARE_CHANGE_LANE_LEFT);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_LEFT].insert(BehaviorState::CHANGE_LANE_LEFT);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::KEEP_LANE);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::PREPARE_CHANGE_LANE_RIGHT);
+  // state_transitions[BehaviorState::PREPARE_CHANGE_LANE_RIGHT].insert(BehaviorState::CHANGE_LANE_RIGHT);
+  
+  
   state_transitions[BehaviorState::CHANGE_LANE_LEFT].insert(BehaviorState::CHANGE_LANE_LEFT);
-  state_transitions[BehaviorState::CHANGE_LANE_RIGHT].insert(BehaviorState::KEEP_LANE);
+  state_transitions[BehaviorState::CHANGE_LANE_LEFT].insert(BehaviorState::KEEP_LANE);
   state_transitions[BehaviorState::CHANGE_LANE_RIGHT].insert(BehaviorState::CHANGE_LANE_RIGHT);
+  state_transitions[BehaviorState::CHANGE_LANE_RIGHT].insert(BehaviorState::KEEP_LANE);
 }
 
 

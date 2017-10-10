@@ -42,8 +42,14 @@ public:
   //! Destructor
   virtual ~Vehicle();
   
+  //! Moves vehicle based on kinematic model (assuming constant speed and yaw)
+  void Move(double delta_t);
+  
   //! Predicts position of vehicle in delta_t seconds (assuming constant speed)
   Point PredictPosition(double delta_t) const;
+  
+  //! Translates the vehicle to the specified point. Updates yaw based on the new point position
+  void Translate(Point new_pos);
   
   //! Updates sensor data from the environment
   void UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& data);

@@ -27,6 +27,7 @@ enum TLogLevel {
   logDEBUG2, 
   logDEBUG3, 
   logDEBUG4,
+  logDEBUG5,
   logALL
 };
 

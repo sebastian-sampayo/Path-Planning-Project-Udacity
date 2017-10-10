@@ -50,12 +50,14 @@ DONE Design CostFunction
 DONE Design high level of the loop of the trajectory generation: 
   Behavior should calculate several trajectories (perturbed goals) for each possible state (d_desired), calculate the cost for each one and keep the best one.
 DONE Code some cost functions (collision detection)
-
-Design how to pass the best trajectory detected to the path planner
-Test behavior algorithm without perturbed goal
-
-Design road prediction
-Integrate road prediction
+DONE Design how to pass the best trajectory detected to the path planner
+DONE   TrajectoryStrategy assumes membr "trajectory" contains the previous trajectory.
+DONE   Create a new strategy (copy) each time we generate a trajectory
+DONE Bug with the collision detection algorithm. Design how to measure distance so that it doesn't detect collision with vehicles in other lanes when it is keeping its lane... consider using the yaw
+DONE  consider the yaw is measured in degrees. Convert in the beginning.
+DONE Test behavior algorithm without perturbed goal
+DONE Design road prediction
+DONE Integrate road prediction
 
 Add perturbed goals logic
 Test behavior

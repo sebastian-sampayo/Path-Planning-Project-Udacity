@@ -138,7 +138,7 @@ void Map::SetWaypoints(string map_filename)
 // ----------------------------------------------------------------------------
 Map& Map::GetInstance()
 {
-  LOG(logDEBUG4) << "Map& Map::GetInstance()";
+  LOG(logDEBUG5) << "Map& Map::GetInstance()";
   static Map instance;
   
   return instance;

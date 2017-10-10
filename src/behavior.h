@@ -44,6 +44,9 @@ public:
   Trajectory GetTrajectory();
   void UpdateState();
   
+  //! Print state to stdout
+  friend ostream& operator<<(ostream& os, const BehaviorState state);
+  
 private:
   void SetDDesired();
   void SetPossibleTransitions();
@@ -53,6 +56,9 @@ private:
   
   // A double-key map to store the desired d-coordinate for each combination of lane-state
   map<LaneStateKey, double> d_desired_by_lane_and_state;
+  
+  //! Store the best trajectory temporary
+  Trajectory best_trajectory_;
 };
 
 #endif

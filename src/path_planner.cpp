@@ -41,12 +41,6 @@ void PathPlanner::SetEgoData(EgoSensorData data)
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.d = " << data.d;
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.x = " << data.x;
   LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.y = " << data.y;
-  this->ego_data.x = data.x;
-  this->ego_data.y = data.y;
-  this->ego_data.s = data.s;
-  this->ego_data.d = data.d;
-  this->ego_data.speed = data.speed;
-  this->ego_data.yaw = data.yaw;
   
   // Under the hood also set the start point of the trajectory with this data
   // PointCartesian pc(data.x, data.y);

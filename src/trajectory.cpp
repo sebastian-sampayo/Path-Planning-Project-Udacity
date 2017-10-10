@@ -19,6 +19,29 @@ vector<double> Trajectory::GetSvalues() { return GetValues(&Point::GetS); }
 vector<double> Trajectory::GetDvalues() { return GetValues(&Point::GetD); }
 
 // ----------------------------------------------------------------------------
+Trajectory Trajectory::GetDerivative(double delta_t) const
+{
+  Trajectory derivative;
+  
+  const int size = this->size();
+  
+  for (int i = 0; i < size-1; ++i)
+  {
+    Point p0 = this->at(i);
+    Point p1 = this->at(i+1);
+    
+    const double dx = (p1.GetX() - p0.GetX()) / delta_t;
+    const double dy = (p1.GetY() - p0.GetY()) / delta_t;
+    
+    Point dp = PointCartesian(dx, dy);
+    
+    derivative.push_back(dp);
+  }
+  
+  return derivative;
+}
+
+// ----------------------------------------------------------------------------
 ostream& operator<<(ostream& os, const Trajectory& t)
 {
   // Format:

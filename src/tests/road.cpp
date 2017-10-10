@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 int main()
 {
-  SET_LOG_LEVEL(logDEBUG3);
+  SET_LOG_LEVEL(logDEBUG4);
   LOG(logINFO) << "----- Test Road -----";
   
   Road road;
@@ -43,23 +43,14 @@ int main()
   
   // Print
   LOG(logINFO) << "Print Traffic";
-  for (auto& vehicle_pair : road.vehicles)
-  {
-    int id = vehicle_pair.first;
-    Vehicle& vehicle = vehicle_pair.second;
-    
-    double x = vehicle.position.GetX();
-    double y = vehicle.position.GetY();
-    
-    cout << "id: " << id << " | x: " << x << " | y: " << y << endl;
-  }
+  road.LogVehicles();
   
   // Second chunk of sensor data
   EnvironmentSensorData environment_data2;
   
   // Convert Sensor fusion data from json to SensorData class:
   LOG(logINFO) << "Get environment sensor data 2";
-  for (const auto& sensed_vehicle : stub_environment_data2)
+  for (const auto& sensed_vehicle : stub_environment_cost_function)
   {
     EnvironmentSensorData::SensedVehicleData data;
     data.id = sensed_vehicle[0];
@@ -77,16 +68,17 @@ int main()
   
   // Print
   LOG(logINFO) << "Print Traffic";
-  for (auto& vehicle_pair : road.vehicles)
-  {
-    int id = vehicle_pair.first;
-    Vehicle& vehicle = vehicle_pair.second;
-    
-    double x = vehicle.position.GetX();
-    double y = vehicle.position.GetY();
-    
-    cout << "id: " << id << " | x: " << x << " | y: " << y << endl;
-  }
+  road.LogVehicles();
   
+  // Predicts future road
+  Road future_road = road.PredictRoadTraffic(1);
+  future_road.ego.Translate(PointFrenet(69, 1));
+  future_road.LogVehicles();
+  
+  cout << "road.IsEgoColliding(): " << road.IsEgoColliding() << endl;
+  cout << "future_road.IsEgoColliding(): " << future_road.IsEgoColliding() << endl;
+  
+  road.PlotVehicles("../img/road_plot.png");
+  future_road.PlotVehicles("../img/future_road_plot.png");
   return 0;
 }

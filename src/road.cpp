@@ -2,6 +2,8 @@
 #include "vehicle.h"
 
 #include "logger.h"
+#include "matplotlibcpp.h"
+#include "utils.h"
 
 #include <iostream>
 #include <iostream>
@@ -38,6 +40,12 @@ Road::Road(double width, vector<double> lane_speeds)
 Road::~Road() {}
 
 // ----------------------------------------------------------------------------
+int Road::DToLane(double d) const
+{
+  return int(d / LANE_WIDTH);
+}
+
+// ----------------------------------------------------------------------------
 double Road::GetCenterDByLane(int lane) const
 {
   // Note: "lane" starts (is 0) at the left most lane on the road.
@@ -71,10 +79,146 @@ vector<int> Road::GetVehiclesInSpace(RoadSpace space) const
   
   return ids;
 }
+
+// ----------------------------------------------------------------------------
+bool Road::IsEgoColliding() const
+{
+  // This algorithm considers that each vehicle is an ellipse with major axis
+  // equals to lenght/2 and minor axis equals LANE_WIDTH/2
+  bool collision = false;
+  
+  for (auto& vehicle_pair : vehicles)
+  {
+    Vehicle vehicle = vehicle_pair.second;
+    
+    // Calculates the distance between the vehicle and the ego vehicle
+    const double dist_x = vehicle.position.GetX() - ego.position.GetX();
+    const double dist_y = vehicle.position.GetY() - ego.position.GetY();
+    const double dist = Magnitude(dist_x, dist_y);
+    
+    // Calculates the angle of the distance vector
+    const double delta_ego = atan2(dist_y, dist_x);
+    const double theta_ego = delta_ego - ego.yaw;
+    const double delta_vehicle = delta_ego + pi();
+    const double theta_vehicle = delta_vehicle - vehicle.yaw;
+    
+    // Calculates border point of the ego vehicle using ellipse equation
+    const double a = vehicle.lenght / 2.0; 
+    const double b = LANE_WIDTH / 2.0;
+    const double d_ego = Magnitude(a * cos(theta_ego), b * sin(theta_ego));
+    
+    // Calculates border point of the other vehicle using ellipse equation
+    const double d_vehicle = Magnitude(a * cos(theta_vehicle), b * sin(theta_vehicle));
+    
+    // Detect collision
+    collision |= (dist < d_ego + d_vehicle);
+    
+    LOG(logDEBUG4) << "Road::IsEgoColliding() - Vehicles debug: \n"
+        << "     id: " << vehicle_pair.first << " | dist: " << dist << endl
+        << "  d_ego: " << d_ego << " | d_vehicle: " << d_vehicle << endl
+        << "    ego: " << ego.position << endl
+        << "vehicle: " << vehicle.position;
+    
+    if (collision) 
+    {
+      LOG(logDEBUG2) << "Road::IsEgoColliding() - Collision detected! Vehicle Id: " << vehicle_pair.first << endl 
+        << "     id: " << vehicle_pair.first << " | dist: " << dist << endl
+        << "  d_ego: " << d_ego << " | d_vehicle: " << d_vehicle << " | theta_ego: " << theta_ego << endl
+        << "    ego: " << ego.position << endl
+        << "vehicle: " << vehicle.position;
+      break; // Collision detected, stop searching
+    }
+  }
+  
+  return collision;
+}
+
 // ----------------------------------------------------------------------------
 bool Road::IsEmptySpace(RoadSpace space) const
 {
   return GetVehiclesInSpace(space).empty();
+}
+
+// ----------------------------------------------------------------------------
+bool Road::IsEgoRightSideEmpty() const
+{
+  // If the ego is in the right most lane, space is not empty
+  if (ego.lane == 2) return false;
+  
+  RoadSpace space;
+  
+  const double safe_distance = ego.lenght * 2;
+  space.s_down = ego.position.GetS() - ego.lenght/2.0;
+  space.s_up = space.s_down + safe_distance;
+  space.d_right = (ego.lane + 1) * LANE_WIDTH;
+  space.d_left = space.d_right + LANE_WIDTH;
+  
+  return IsEmptySpace(space);
+}
+
+// ----------------------------------------------------------------------------
+bool Road::IsEgoLeftSideEmpty() const
+{
+  // If the ego is in the left most lane, space is not empty
+  if (ego.lane == 0) return false;
+  
+  RoadSpace space;
+  
+  const double safe_distance = ego.lenght * 2;
+  space.s_down = ego.position.GetS() - ego.lenght/2.0;
+  space.s_up = space.s_down + safe_distance;
+  space.d_right = ego.lane * LANE_WIDTH;
+  space.d_left = space.d_right - LANE_WIDTH;
+  
+  return IsEmptySpace(space);
+}
+// ----------------------------------------------------------------------------
+void Road::LogVehicles(TLogLevel log_level) const
+{
+  LOG(log_level) << "Road::PrintVehicles() - Vehicles: ";
+  
+  LOG(log_level) << "ego: " << ego.position << " | yaw: " << ego.yaw;
+  
+  for (auto& vehicle_pair : vehicles)
+  {
+    const int id = vehicle_pair.first;
+    Vehicle vehicle = vehicle_pair.second;
+    
+    LOG(log_level) << "id: " << id << " | " << vehicle.position 
+      << " | yaw: " << vehicle.yaw;
+  }
+}
+
+// ----------------------------------------------------------------------------
+void Road::PlotVehicles(const char* filename) const
+{
+  namespace plt = matplotlibcpp;
+  
+  plt::figure();
+  for (auto& vehicle_pair : vehicles)
+  {
+    Vehicle vehicle = vehicle_pair.second;
+    
+    vector<double> s, d;
+    s.push_back(vehicle.position.GetS());
+    d.push_back(vehicle.position.GetD());
+    plt::plot(d, s, "r*");
+    string str("id: ");
+    str += std::to_string(vehicle_pair.first);
+    plt::annotate(str.c_str(), d[0], s[0]);
+  }
+  
+  vector<double> s, d;
+  s.push_back(ego.position.GetS());
+  d.push_back(ego.position.GetD());
+  plt::plot(d, s, "g*");
+  string str("ego");
+  plt::annotate(str.c_str(), d[0], s[0]);
+  
+  plt::xlabel("d");
+  plt::ylabel("s");
+  plt::title("Vehicles on the road in Frenet coordinates");
+  plt::save(filename);
 }
 
 // ----------------------------------------------------------------------------
@@ -86,7 +230,6 @@ void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
   // Then, for each sensed vehicle in the environment data, check if it is already in the current road (this->vehicles)
   //    if it is not, add it
   
-  LOG(logDEBUG3) << "Road::PopulateTraffic() - Fill a map with the environment data";
   // First fill a map with the environment vehicles in order to search easily.
   map<int, EnvironmentSensorData::SensedVehicleData> environment_sensed_vehicles;
   
@@ -126,7 +269,6 @@ void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
     vehicles.erase(id);
   }
   
-  LOG(logDEBUG3) << "Road::PopulateTraffic() - Add new vehicles in the environment onto the road";
   for (const auto& sensed_vehicle : environment_sensed_vehicles)
   {
     const int id = sensed_vehicle.first;
@@ -135,6 +277,7 @@ void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
     
     if (!is_on_the_road)
     {
+      LOG(logDEBUG3) << "Road::PopulateTraffic() - Add new vehicles in the environment onto the road";
       // Add it
       auto vehicle_pair = make_pair(id, Vehicle(sensed_vehicle.second, this));
       vehicles.insert(vehicle_pair);
@@ -143,11 +286,25 @@ void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
 }
 
 // ----------------------------------------------------------------------------
+Road Road::PredictRoadTraffic(double t) const
+{
+  Road future_road = *this;
+  
+  for (auto& vehicle_pair : future_road.vehicles)
+  {
+    Vehicle& vehicle = vehicle_pair.second;
+    vehicle.Move(t);
+  }
+  
+  return future_road;
+}
+
+// ----------------------------------------------------------------------------
 void Road::UpdateEgoKinematics(EgoSensorData& data)
 {
   ego.position = PointCartesian(data.x, data.y);
   // ego.position.SetFrenet(data.s, data.d); // Ignore Frenet. I trust Cartesian more!
-  ego.yaw = data.yaw;
+  ego.yaw = deg2rad(data.yaw); // Sensor data is in degrees
   ego.speed = data.speed;
   
   // TODO: Update ego lane
@@ -155,5 +312,5 @@ void Road::UpdateEgoKinematics(EgoSensorData& data)
   //          1 if ego_d is in [LANE_WIDTH, LANE_WIDTH*2)
   //          2 if ego_d is in [LANE_WIDTH*2, LANE_WIDTH*3)
   const double ego_d = ego.position.GetD();
-  ego.lane = int(ego_d / LANE_WIDTH);
+  ego.lane = DToLane(ego_d);
 }

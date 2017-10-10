@@ -39,7 +39,7 @@ string hasData(string s) {
 int main() {
   uWS::Hub h;
 
-  SET_LOG_LEVEL(logDEBUG2);
+  SET_LOG_LEVEL(logDEBUG3);
   // SET_LOG_LEVEL(logERROR);
   PathPlanner path_planner;
 
@@ -88,7 +88,7 @@ int main() {
           ego_data.s = car_s;
           ego_data.d = car_d;
           ego_data.speed = car_speed;
-          ego_data.yaw = car_yaw;
+          ego_data.yaw = car_yaw; // degrees
           path_planner.SetEgoData(ego_data);
           
           // Convert previous path from json to Trajectory class

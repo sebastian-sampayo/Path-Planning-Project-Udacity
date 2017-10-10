@@ -14,6 +14,9 @@ public:
   vector<double> GetYvalues();
   vector<double> GetSvalues();
   vector<double> GetDvalues();
+  
+  //! Calculates the derivative of the trajectory
+  Trajectory GetDerivative(double delta_t) const;
 
   //! Overload << to print the trajectory
   friend ostream& operator<<(ostream& os, const Trajectory& t);
