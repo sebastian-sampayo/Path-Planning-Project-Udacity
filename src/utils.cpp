@@ -20,7 +20,7 @@ double Magnitude(double x, double y)
 }
 
 // ----------------------------------------------------------------------------
-int ClosestWaypoint(double x, double y, vector<double> maps_x, vector<double> maps_y)
+int ClosestWaypoint(double x, double y, const vector<double>& maps_x, const vector<double>& maps_y)
 {
 
   double closestLen = 100000; //large number
@@ -44,7 +44,7 @@ int ClosestWaypoint(double x, double y, vector<double> maps_x, vector<double> ma
 }
 
 // ----------------------------------------------------------------------------
-int NextWaypoint(double x, double y, double theta, vector<double> maps_x, vector<double> maps_y)
+int NextWaypoint(double x, double y, double theta, const vector<double>& maps_x, const vector<double>& maps_y)
 {
 
   int closestWaypoint = ClosestWaypoint(x,y,maps_x,maps_y);
