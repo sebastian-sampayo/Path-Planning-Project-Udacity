@@ -9,7 +9,6 @@
 #include "logger.h"
 #include "utils.h"
 
-#include <ctime>
 #include <math.h>
 #include <utility>      // std::pair, std::make_pair
 #include <vector>
@@ -82,7 +81,7 @@ Trajectory Behavior::GetTrajectory()
 // ----------------------------------------------------------------------------
 void Behavior::UpdateState()
 {
-  clock_t begin_clock = clock();
+  Timer timer;
   
   const double MPH2MPS = 0.44704; // TODO: Move this to a config file
   LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
@@ -266,8 +265,8 @@ void Behavior::UpdateState()
       // LOG(logDEBUG2) << "Behavior::UpdateState() - speed = 0. point duplicated? = ";
     // }
   // }
-  clock_t end_clock = clock();
-  const double elapsed_secs = double(begin_clock - end_clock) / CLOCKS_PER_SEC;
+
+  const double elapsed_secs = timer.GetElapsedSeconds();
   LOG(logDEBUG2) << "Behavior::UpdateState() - elapsed_secs = " << elapsed_secs;
 }
 
