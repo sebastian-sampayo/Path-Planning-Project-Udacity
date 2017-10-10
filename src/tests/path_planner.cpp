@@ -33,6 +33,8 @@ int main()
   
   PathPlanner path_planner;
   
+  Timer timer;
+  
   LOG(logINFO) << "Get ego vehicle sensor data";
   EgoSensorData ego_data;
   ego_data.x = stub_ego_data["x"];
@@ -74,6 +76,8 @@ int main()
   // next_y_values = next_path.GetYvalues();
   
   // LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
+  
+  cout << "Test elapsed time: " << timer.GetElapsedSeconds() << "s" << endl;
 
   return 0;
 }
