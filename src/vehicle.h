@@ -49,7 +49,7 @@ public:
   Point PredictPosition(double delta_t) const;
   
   //! Translates the vehicle to the specified point. Updates yaw based on the new point position
-  void Translate(Point new_pos);
+  void Translate(const Point& new_pos);
   
   //! Updates sensor data from the environment
   void UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& data);
