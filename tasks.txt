@@ -62,6 +62,7 @@ DONE Integrate road prediction
 Potential BUG: velocity of vehicles in MPH o MPS? reference_speed in MPH!
 Check if we are always passing objects as references in function arguments.
 Measure time
+Potential BUG: when we run the trajectory generation with a different reference speed there might be a sudden change in speed which might turn into a high acceleration and jerk. Speed increments should be small enough to overcome this.
 Try the front vehicle tracking algorithm
 Refactor: Use some data structure for the vehicles in the road so that we always start iterating by the closest vehicle to the ego vehicle. A sorted list for example. Or maybe just ignore vehicles that are far away when we populate the road.
 Test adding more waypoints to the spline strategy
