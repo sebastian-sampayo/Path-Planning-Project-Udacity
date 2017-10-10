@@ -80,6 +80,7 @@ Trajectory Behavior::GetTrajectory()
 // ----------------------------------------------------------------------------
 void Behavior::UpdateState()
 {
+  const double MPH2MPS = 0.44704; // TODO: Move this to a config file
   LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
 
   Road& road = *road_ptr; // alias
@@ -112,7 +113,7 @@ void Behavior::UpdateState()
   road.LogVehicles(logDEBUG3);
   
   double max_speed = road.lane_speeds[road.ego.lane];
-  const double speed_increment = 2; //.224; // MPH
+  const double speed_increment = .224 * MPH2MPS; // [m/s]
   
   // Vehicle ahead detection - slow down
   if (!road.IsEmptySpace(space_ahead))
@@ -120,6 +121,18 @@ void Behavior::UpdateState()
     // Match front vehicle's speed using a proportional control
     auto id_vector = road.GetVehiclesInSpace(space_ahead);
     strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
+      // TODO: Try this: 
+      // const double kv = 0.05;
+      // const double desired_speed = road.vehicles[id_vector[0]].speed;
+      // strategy->reference_speed += kv*(desired_speed - road.ego.speed);
+      // TODO: To track position, try this:
+      // const double kp = 0.05;
+      // const double follow_vehicle_distance = 15;
+      // const double desired_position = road.vehicles[id_vector[0]].position.GetS() - follow_vehicle_distance;
+      // double position_error = desired_position - road.ego.position.GetS();
+      // if (position_error < 0) position_error += Map::GetInstance().MAX_S;
+      // strategy->reference_speed += kp*(position_error);
+          
     LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
       << " strategy->reference_speed: " << strategy->reference_speed;
     // TODO: try to make the transitions smoother (why not use a PID?)
