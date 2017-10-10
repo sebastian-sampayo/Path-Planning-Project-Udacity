@@ -45,6 +45,10 @@ class Timer
       const double end = clock();
       return double(end - begin_) / CLOCKS_PER_SEC;
     };
+    
+    double GetElapsedMiliSeconds() {
+      return 1000*GetElapsedSeconds();
+    };
   
     void Reset() {begin_ = clock();};
   

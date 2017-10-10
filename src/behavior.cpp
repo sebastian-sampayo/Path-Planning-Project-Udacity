@@ -270,8 +270,8 @@ void Behavior::UpdateState()
     // }
   // }
 
-  const double elapsed_secs = timer.GetElapsedSeconds();
-  LOG(logDEBUG2) << "Behavior::UpdateState() - elapsed_secs = " << elapsed_secs << "s";
+  const double elapsed_time = timer.GetElapsedMiliSeconds();
+  LOG(logDEBUG2) << "Behavior::UpdateState() - elapsed_time = " << elapsed_time << "ms";
 }
 
 // ----------------------------------------------------------------------------

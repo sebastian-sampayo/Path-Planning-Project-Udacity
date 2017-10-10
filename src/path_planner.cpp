@@ -19,6 +19,14 @@ PathPlanner::PathPlanner()
     behavior(Behavior(&road))
 {
   LOG(logDEBUG4) << "PathPlanner::PathPlanner()";
+  
+  const double MPH2MPS = 0.44704; // TODO: Move this to a config file
+  
+  // Convert speed limits from mph to m/s
+  for (double& speed : road.lane_speeds)
+  {
+    speed *= MPH2MPS;
+  }
 }
 
 // ----------------------------------------------------------------------------

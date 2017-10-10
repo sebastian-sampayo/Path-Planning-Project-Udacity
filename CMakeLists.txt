@@ -72,6 +72,7 @@ add_executable(point_test ${TEST_POINT_SRC} ${POINT_SRC})
 add_executable(road_test ${TEST_ROAD_SRC} ${ROAD_SRC})
 
 target_link_libraries(path_planning z ssl uv uWS python2.7)
+target_link_libraries(path_planner_test z ssl uv uWS python2.7)
 target_link_libraries(point_test z ssl uv uWS python2.7)
 target_link_libraries(road_test z ssl uv uWS python2.7)
 target_link_libraries(strategy_test z ssl uv uWS python2.7)

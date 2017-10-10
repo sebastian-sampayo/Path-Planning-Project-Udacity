@@ -32,11 +32,11 @@ TrajectoryCost::TrajectoryCost(Road* road)
   // TODO: Move this to a configuration file
 
   // Cost Functions
-  // functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
-  // functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
+  functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
+  functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
   functions[CostFunctions::DETECT_COLLISION] = &TrajectoryCost::DetectCollision;
   functions[CostFunctions::EMPTY_SPACE] = &TrajectoryCost::EmptySpace;
-  functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
+  // functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
   
   // Weights
   weights[CostFunctions::MAX_ACCEL] = 1;
@@ -66,8 +66,8 @@ double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
     cost += weight * (this->*(it.second))();
   }
   
-  const double elapsed_secs = timer.GetElapsedSeconds();
-  LOG(logDEBUG3) << "TrajectoryCost::CalculateCost - elapsed_secs: " << elapsed_secs << "s";
+  const double elapsed_time = timer.GetElapsedMiliSeconds();
+  LOG(logDEBUG3) << "TrajectoryCost::CalculateCost - elapsed_time: " << elapsed_time << "ms";
 
   return cost;
 }
