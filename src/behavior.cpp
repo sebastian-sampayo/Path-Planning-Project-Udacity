@@ -206,6 +206,8 @@ void Behavior::UpdateState()
     
     for (int j = 0; j < N_s_steps; ++j)
     {
+      // Warning, this loop could lead to high acceleration and jerk transitions. 
+      // May be we could limit it to just 3 values: -speed_inc, 0, +speed_inc
       for (int i = 0; i < N_speed_steps; ++i)
       {
         LOG(logDEBUG5) << "Behavior::UpdateState() - strategy->trajectory = " << strategy->trajectory;
