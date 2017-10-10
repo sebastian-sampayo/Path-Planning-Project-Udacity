@@ -72,4 +72,4 @@ Test the algorithm
 Refactor: TrajectoryStrategy -> TrajectoryGenerator
 Refactor: TrajectoryStratgy::GenerateTrajectory() : returns Trajectory
 Refactor: remove "using namespace std" from all header files.
-Refactor: Use some data structure for the vehicles in the road so that we always start iterating by the closest vehicle to the ego vehicle. A sorted list for example.
+Refactor: Use some data structure for the vehicles in the road so that we always start iterating by the closest vehicle to the ego vehicle. A sorted list for example. Or maybe just ignore vehicles that are far away when we populate the road.
