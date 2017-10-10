@@ -171,7 +171,7 @@ void Behavior::UpdateState()
     // TODO: perturb goal
     // for (each perturbed goal)
     double best_speed = strategy->reference_speed;
-    int N_speed_steps = 5; //min(5, int((max_speed - strategy->reference_speed) / speed_increment));
+    int N_speed_steps = 1; //min(5, int((max_speed - strategy->reference_speed) / speed_increment));
     
     if (N_speed_steps == 0 || strategy->reference_speed >= max_speed)
     {
