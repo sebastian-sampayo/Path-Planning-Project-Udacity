@@ -53,7 +53,7 @@ TrajectoryCost::~TrajectoryCost()
 }
 
 // ----------------------------------------------------------------------------
-double TrajectoryCost::CalculateCost(Trajectory trajectory)
+double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
 {
   clock_t begin_clock = clock();
   
