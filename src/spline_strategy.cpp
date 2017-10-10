@@ -24,7 +24,6 @@ void SplineStrategy::GenerateTrajectory()
   const double goal_s = goal_point.GetS();
   const double goal_d = goal_point.GetD();
   const double T_simulator = 0.02; // TODO: Move to a configuration file
-  const double MPH2MS = 0.44704;
   const double spline_mid_point = 1;
   double prev_size =  previous_path.size();
   N_points_passed = trajectory.size() - prev_size;
@@ -35,7 +34,7 @@ void SplineStrategy::GenerateTrajectory()
   // Calculate how to break up spline points so that we travel at our desired reference velocity
   // reference_speed = delta_s / T_simulator
   // reference_speed * T_simulator = delta_s = distance between trajectory points
-  const double delta_s = reference_speed * MPH2MS * T_simulator;
+  const double delta_s = reference_speed * T_simulator;
 
   // // Reset the trajectory with the previous path
   // trajectory = previous_path;
