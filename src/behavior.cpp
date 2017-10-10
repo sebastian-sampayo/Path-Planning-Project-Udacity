@@ -127,10 +127,10 @@ void Behavior::UpdateState()
       // strategy->reference_speed += kv*(desired_speed - road.ego.speed);
       // TODO: To track position, try this:
       // const double kp = 0.05;
-      // const double follow_vehicle_distance = 15;
-      // const double desired_position = road.vehicles[id_vector[0]].position.GetS() - follow_vehicle_distance;
-      // double position_error = desired_position - road.ego.position.GetS();
-      // if (position_error < 0) position_error += Map::GetInstance().MAX_S;
+      // const double desired_front_vehicle_distance = 15;
+      // const double front_vehicle_distance = road.vehicles[id_vector[0]].position.GetS() - road.ego.position.GetS();
+      // if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
+      // double position_error = desired_front_vehicle_distance - front_vehicle_distance;
       // strategy->reference_speed += kp*(position_error);
           
     LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
