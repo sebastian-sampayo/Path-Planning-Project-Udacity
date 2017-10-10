@@ -73,7 +73,7 @@ void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& d
   // Point p(pc, pf);
   Point p(pc);
   position = p;
-  speed = Magnitude(data.vx, data.vy);
+  speed = Magnitude(data.vx, data.vy); // [m/s]
   
   if (data.vx > 0.001)
   {
