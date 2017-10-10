@@ -7,7 +7,6 @@
 #include "logger.h"
 #include "utils.h"
 
-#include <ctime>
 #include <iostream>
 #include <map>
 
@@ -55,7 +54,7 @@ TrajectoryCost::~TrajectoryCost()
 // ----------------------------------------------------------------------------
 double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
 {
-  clock_t begin_clock = clock();
+  Timer timer;
   
   this->trajectory = trajectory;
 
@@ -67,8 +66,7 @@ double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
     cost += weight * (this->*(it.second))();
   }
   
-  clock_t end_clock = clock();
-  const double elapsed_secs = double(end_clock - begin_clock) / CLOCKS_PER_SEC;
+  const double elapsed_secs = timer.GetElapsedSeconds();
   LOG(logDEBUG3) << "TrajectoryCost::CalculateCost - elapsed_secs: " << elapsed_secs << "s";
 
   return cost;
