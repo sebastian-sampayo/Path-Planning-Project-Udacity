@@ -101,6 +101,8 @@ void Behavior::UpdateState()
   // const double safe_distance = 30; // This should depend on the speed. We might think of a safe "time" distance better.
   const double safe_time = 2; // seconds
   const double safe_distance = 30; //safe_time * strategy->reference_speed; // meters
+  const double perturbed_s_range = road.ego.lenght * 2;
+  
   const double ego_s = road.ego.position.GetS();
   const double ego_d = road.ego.position.GetD();
   
@@ -215,7 +217,7 @@ void Behavior::UpdateState()
           strategy->reference_speed -= (i+1)*speed_increment;
         }
         
-        const double perturbed_goal_s = goal_s - road.ego.lenght/2.0 + j * 1.0/N_s_steps * road.ego.lenght;
+        const double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
         strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
 
         LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
