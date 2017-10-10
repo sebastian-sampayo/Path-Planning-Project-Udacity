@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <ctime>
 #include <math.h>
 #include <vector>
 
@@ -33,5 +34,22 @@ vector<Tout> CArrayToVector(const Tin* c_array, const int length)
   
   return output_vector;
 }
+
+class Timer
+{
+  public:
+    Timer() : begin_(clock()) {};
+    ~Timer() {};
+  
+    double GetElapsedSeconds() {
+      const double end = clock();
+      return double(end - begin_) / CLOCKS_PER_SEC;
+    };
+  
+    void Reset() {begin_ = clock();};
+  
+  private:
+    double begin_; // Begin time of the timer
+};
 
 #endif
