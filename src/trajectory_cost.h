@@ -39,7 +39,7 @@ public:
   Road* road_ptr;
   
   //! Calculate overall cost for the specified trajectory
-  double CalculateCost(Trajectory trajectory);
+  double CalculateCost(const Trajectory& trajectory);
   
   // Cost functions
   
