@@ -7,8 +7,9 @@
 #include "logger.h"
 #include "utils.h"
 
-#include <map>
+#include <ctime>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -54,6 +55,8 @@ TrajectoryCost::~TrajectoryCost()
 // ----------------------------------------------------------------------------
 double TrajectoryCost::CalculateCost(Trajectory trajectory)
 {
+  clock_t begin_clock = clock();
+  
   this->trajectory = trajectory;
 
   double cost = 0;
@@ -63,6 +66,10 @@ double TrajectoryCost::CalculateCost(Trajectory trajectory)
     double weight = weights[it.first]; // TODO: use find and check for valid key
     cost += weight * (this->*(it.second))();
   }
+  
+  clock_t end_clock = clock();
+  const double elapsed_secs = double(end_clock - begin_clock) / CLOCKS_PER_SEC;
+  LOG(logDEBUG3) << "TrajectoryCost::CalculateCost - elapsed_secs: " << elapsed_secs << "s";
 
   return cost;
 }
