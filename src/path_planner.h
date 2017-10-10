@@ -50,7 +50,7 @@ public:
   // //! Generates a Circle path
   // void GenerateCircle();
 
-  void SetEgoData(EgoSensorData data);
+  void SetEgoData(const EgoSensorData& data);
   void SetEnvironmentData(const EnvironmentSensorData& data);
   void SetPointsAlreadyPassed(int n);
   void SetPreviousPath(json previous_path_x, json previous_path_y);
