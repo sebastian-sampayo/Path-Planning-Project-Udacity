@@ -21,12 +21,9 @@ vector<double> Trajectory::GetDvalues() { return GetValues(&Point::GetD); }
 // ----------------------------------------------------------------------------
 Trajectory Trajectory::GetDerivative(double delta_t) const
 {
-  LOG(logDEBUG3) << "--- Trajectory::GetDerivative() ---";
   Trajectory derivative;
-  LOG(logDEBUG3) << "Trajectory::GetDerivative() - object instantiation done";
   
   const int size = this->size();
-  LOG(logDEBUG3) << "Trajectory::GetDerivative() - size done";
   
   for (int i = 0; i < size-1; ++i)
   {
@@ -42,8 +39,6 @@ Trajectory Trajectory::GetDerivative(double delta_t) const
     
     derivative.push_back(dp);
   }
-  
-  LOG(logDEBUG3) << "Trajectory::GetDerivative() - loop done";
   
   return derivative;
 }

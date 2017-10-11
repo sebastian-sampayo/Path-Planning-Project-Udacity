@@ -64,7 +64,7 @@ double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
   {
     double weight = weights[it.first]; // TODO: use find and check for valid key
     cost += weight * (this->*(it.second))();
-    if (cost > MAX_COST) break;
+    if (cost >= MAX_COST) break;
   }
   
   const double elapsed_time = timer.GetElapsedMiliSeconds();
@@ -130,6 +130,8 @@ double TrajectoryCost::EmptySpace()
   Point end_point = trajectory.back();
   int lane = future_road.DToLane(end_point.GetD());
   
+  LOG(logDEBUG3) << "TrajectoryCost::EmptySpace() - trajectory end_point: \n" << end_point;
+  
   RoadSpace space_ahead;
   space_ahead.s_down = end_point.GetS();
   space_ahead.s_up = space_ahead.s_down + MAX_DISTANCE;
@@ -141,6 +143,10 @@ double TrajectoryCost::EmptySpace()
   double min_dist = MAX_DISTANCE;
   for (int id : ids)
   {
+    LOG(logDEBUG3) << "TrajectoryCost::EmptySpace() - Vehicle ahead id: " << id << endl
+      << end_point << endl
+      << future_road.vehicles[id].position << endl;
+      
     double vehicle_x = future_road.vehicles[id].position.GetX();
     double vehicle_y = future_road.vehicles[id].position.GetY();
     double dist = distance(end_point.GetX(), end_point.GetY(), vehicle_x, vehicle_y);
@@ -152,9 +158,9 @@ double TrajectoryCost::EmptySpace()
   }
   
   // double cost = max(0.0, 1 - min_dist / MAX_DISTANCE);
-  double cost = InvLogistic(min_dist);
+  double cost = exp(-min_dist/10);
   
-  LOG(logDEBUG3) << "TrajectoryCost::EmptySpace() - Cost = " << cost;
+  LOG(logDEBUG3) << "TrajectoryCost::EmptySpace() - Cost = " << cost << " | min_dist: " << min_dist;
   
   return cost;
 }
@@ -169,6 +175,7 @@ double TrajectoryCost::MaxAcceleration()
   Trajectory accel_trajectory = speed_trajectory.GetDerivative(T_simulator);
   
   double cost = 0;
+  int t = 0;
   
   for (const Point& p : accel_trajectory)
   {
@@ -176,10 +183,12 @@ double TrajectoryCost::MaxAcceleration()
     
     if (accel >= MAX_ACCEL)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel = " << accel << "m/s^2";
+      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel = " << accel << "m/s^2 | t = " << t;
       cost = 1;
       break;
     }
+    
+    t += T_simulator;
   }
   
   return cost;
@@ -192,13 +201,11 @@ double TrajectoryCost::MaxJerk()
   
   // Get the derivative of the trajectory
   Trajectory speed_trajectory = trajectory.GetDerivative(T_simulator);
-  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - speed_trajectory done | size: " << speed_trajectory.size();
   Trajectory accel_trajectory = speed_trajectory.GetDerivative(T_simulator);
-  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - accel_trajectory done | size: " << accel_trajectory.size();
   Trajectory jerk_trajectory = accel_trajectory.GetDerivative(T_simulator);
-  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - jerk_trajectory done | size: " << jerk_trajectory.size();
   
   double cost = 0;
+  int t = 0;
   
   for (const Point& p : jerk_trajectory)
   {
@@ -206,10 +213,12 @@ double TrajectoryCost::MaxJerk()
     
     if (jerk >= MAX_JERK)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk = " << jerk << "m/s^3";
+      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk = " << jerk << "m/s^3 | t = " << t;
       cost = 1;
       break;
     }
+    
+    t += T_simulator;
   }
   
   return cost;

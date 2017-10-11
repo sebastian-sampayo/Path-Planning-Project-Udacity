@@ -45,10 +45,10 @@ Trajectory PathPlanner::Generate()
 // ----------------------------------------------------------------------------
 void PathPlanner::SetEgoData(const EgoSensorData& data)
 {
-  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.s = " << data.s;
-  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.d = " << data.d;
-  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.x = " << data.x;
-  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - data.y = " << data.y;
+  LOG(logDEBUG4) << "PathPlanner::SetEgoData() - data.s = " << data.s;
+  LOG(logDEBUG4) << "PathPlanner::SetEgoData() - data.d = " << data.d;
+  LOG(logDEBUG4) << "PathPlanner::SetEgoData() - data.x = " << data.x;
+  LOG(logDEBUG4) << "PathPlanner::SetEgoData() - data.y = " << data.y;
   
   // Under the hood also set the start point of the trajectory with this data
   // PointCartesian pc(data.x, data.y);
@@ -58,7 +58,7 @@ void PathPlanner::SetEgoData(const EgoSensorData& data)
   // road.ego.speed = data.speed;
   road.UpdateEgoKinematics(data);
   
-  LOG(logDEBUG3) << "PathPlanner::SetEgoData() - ego position = " << road.ego.position;
+  LOG(logDEBUG4) << "PathPlanner::SetEgoData() - ego position = " << road.ego.position;
 }
 
 // ----------------------------------------------------------------------------

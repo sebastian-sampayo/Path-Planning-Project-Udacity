@@ -29,7 +29,7 @@ void SplineStrategy::GenerateTrajectory()
   N_points_passed = trajectory.size() - prev_size;
   
   LOG(logDEBUG2) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed;
-  LOG(logDEBUG2) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
+  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
 
   // Calculate how to break up spline points so that we travel at our desired reference velocity
   // reference_speed = delta_s / T_simulator
@@ -44,7 +44,7 @@ void SplineStrategy::GenerateTrajectory()
   prev_size =  previous_path.size();
   
   // Remove some points at the end so the trajectory generated is more flexible
-  const int N_end_points_removed = 0; //int(trajectory.size() * 3.0/4.0); // 85
+  const int N_end_points_removed = 100;//0; //int(trajectory.size() * 3.0/4.0); // 85
   
   if (N_end_points_removed < trajectory.size())
   {
@@ -53,7 +53,7 @@ void SplineStrategy::GenerateTrajectory()
     prev_size =  previous_path.size();
   }
 
-  LOG(logDEBUG3) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
+  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - previous_path = " << previous_path;
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - start_s = " << start_s;
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - delta_s = " << delta_s;

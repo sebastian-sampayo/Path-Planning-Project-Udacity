@@ -177,7 +177,7 @@ void Road::LogVehicles(TLogLevel log_level) const
 {
   LOG(log_level) << "Road::PrintVehicles() - Vehicles: ";
   
-  LOG(log_level) << "ego: " << ego.position << " | yaw: " << ego.yaw;
+  LOG(log_level) << "ego: " << ego.position << " | yaw: " << ego.yaw << " | speed: " << ego.speed << "m/s";
   
   for (auto& vehicle_pair : vehicles)
   {
@@ -185,7 +185,7 @@ void Road::LogVehicles(TLogLevel log_level) const
     Vehicle vehicle = vehicle_pair.second;
     
     LOG(log_level) << "id: " << id << " | " << vehicle.position 
-      << " | yaw: " << vehicle.yaw;
+      << " | yaw: " << vehicle.yaw << " | speed: " << vehicle.speed << "m/s";
   }
 }
 

@@ -1,4 +1,5 @@
 #include "behavior.h"
+#include "map.h"
 #include "road.h"
 #include "trajectory.h"
 #include "trajectory_strategy.h"
@@ -45,7 +46,7 @@ Behavior::Behavior(Road* road)
   // strategy = new StraightLineStrategy();
   // strategy = new WalkthroughStrategy();
   strategy = new SplineStrategy();
-  // strategy->reference_speed = 20;
+  strategy->reference_speed = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -121,12 +122,33 @@ void Behavior::UpdateState()
   const double speed_increment = .224 * MPH2MPS; // [m/s]
   
   // Vehicle ahead detection - slow down
-  const bool free_space_ahead = !road.IsEmptySpace(space_ahead);
-  if (free_space_ahead)
+  const bool free_space_ahead = road.IsEmptySpace(space_ahead);
+  if (!free_space_ahead)
   {
     // Match front vehicle's speed using a proportional control
     auto id_vector = road.GetVehiclesInSpace(space_ahead);
-    strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
+    
+    // Front vehicle speed tracking
+    // strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
+    const double desired_speed = road.vehicles[id_vector[0]].speed;
+    const double error_speed = (desired_speed - road.ego.speed);
+    // const double error_speed_sign = (error_speed > 0 ? 1.0 : 0.0);
+    // strategy->reference_speed += error_speed_sign * speed_increment;
+    const double kv = 0.02;
+    strategy->reference_speed += kv * error_speed;
+    LOG(logDEBUG2) << "Behavior::UpdateState() - kv * error_speed: " << kv * error_speed;
+    
+    // Front vehicle distance tracking
+    const double desired_front_vehicle_distance = 15; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
+    double front_vehicle_distance = road.vehicles[id_vector[0]].position.GetS() - road.ego.position.GetS();
+    if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
+    const double error_position = desired_front_vehicle_distance - front_vehicle_distance;
+    // const double error_position_sign = (error_position > 0 ? 1.0 : 0.0);
+    // strategy->reference_speed += error_position_sign * speed_increment;
+    const double kp = 3e-3;
+    strategy->reference_speed -= kp * error_position; // Notice the minus sign is because the control force (ref_speed) is not proportional to the controlled variable (position)
+    LOG(logDEBUG2) << "Behavior::UpdateState() - kp * error_position: " << kp * error_position;
+    
       // TODO: Try this: 
       // const double kv = 0.05;
       // const double desired_speed = road.vehicles[id_vector[0]].speed;
@@ -162,6 +184,7 @@ void Behavior::UpdateState()
   //   calculate the cost associated with it
   //   keep track of the best one (state, trajectory and cost)
   double min_cost = 10000;
+  const double min_cost_tol = 1e-4;
   Trajectory best_trajectory;
   BehaviorState best_state = BehaviorState::KEEP_LANE;
   TrajectoryStrategy* best_strategy = new SplineStrategy();
@@ -173,6 +196,7 @@ void Behavior::UpdateState()
     // If there are no vehicles ahead just keep lane, don't even generate trajectories for other states.
     if (free_space_ahead && next_possible_state != BehaviorState::KEEP_LANE)
     {
+      LOG(logDEBUG2) << "Behavior::UpdateState() - Free space ahead! Keep lane";
       continue;
     }
     
@@ -183,6 +207,7 @@ void Behavior::UpdateState()
     if (goal_d < 0 || goal_d > (road.GetNumberOfLanes()*road.LANE_WIDTH))
     {
       // this state is invalid
+      LOG(logDEBUG2) << "Behavior::UpdateState() - Goal out of the road, skip state";
       continue;
     }
     
@@ -206,7 +231,7 @@ void Behavior::UpdateState()
     
     if (N_speed_steps == 0) LOG(logERROR) << "Behavior::UpdateState() - N_speed_steps = 0 !!!!!";
 
-    const int N_s_steps = 6;
+    const int N_s_steps = 1;
     
     // Store strategy temporary as we are going to stomp on it
     TrajectoryStrategy* strategy_copy = new SplineStrategy();
@@ -227,7 +252,11 @@ void Behavior::UpdateState()
           strategy->reference_speed -= (i+1)*speed_increment;
         }
         
-        const double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
+        // Range centered in goal_s
+        // const double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
+        // Range beginning in goal_s
+        const double perturbed_goal_s = goal_s + j * perturbed_s_range / N_s_steps;
+        
         strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
 
         LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
@@ -240,9 +269,10 @@ void Behavior::UpdateState()
         double temp_cost = cost.CalculateCost(strategy->trajectory);
         LOG(logDEBUG3) << "Behavior::UpdateState() - temp_cost = " << temp_cost;
         
-        // Update best values
-        if (temp_cost < min_cost)
+        // Update best values, only if the new cost is really smaller than the current min_cost (there might be an erratic behavior because of very small numeric errors)
+        if (temp_cost < min_cost - min_cost_tol)
         {
+          LOG(logDEBUG3) << "Behavior::UpdateState() - Best cost updated! | prev min_cost: " << min_cost << " | new temp_cost: " << temp_cost;
           min_cost = temp_cost;
           best_trajectory = strategy->trajectory;
           *best_strategy = *strategy;

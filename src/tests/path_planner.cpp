@@ -50,7 +50,7 @@ int main()
   LOG(logINFO) << "Get environment sensor data";
   EnvironmentSensorData environment_data;
 
-  for (const auto& sensed_vehicle : stub_environment_cost_function)
+  for (const auto& sensed_vehicle : stub_front_vehicle)
   {
     EnvironmentSensorData::SensedVehicleData data;
     data.id = sensed_vehicle[0];
@@ -63,7 +63,10 @@ int main()
     environment_data.sensed_vehicle_list.push_back(data);
   }
 
-  // path_planner.SetEnvironmentData(environment_data);
+  path_planner.SetEnvironmentData(environment_data);
+  
+  path_planner.behavior.strategy->reference_speed = path_planner.road.ego.speed;
+  path_planner.behavior.state = Behavior::BehaviorState::CHANGE_LANE_LEFT;
 
   LOG(logINFO) << "Generate next path";
   Trajectory next_path = path_planner.Generate();
@@ -72,8 +75,8 @@ int main()
   vector<double> next_y_values;
 
   LOG(logINFO) << "Setting next_values ";
-  // next_x_values = next_path.GetXvalues();
-  // next_y_values = next_path.GetYvalues();
+  next_x_values = next_path.GetXvalues();
+  next_y_values = next_path.GetYvalues();
   
   // LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
   

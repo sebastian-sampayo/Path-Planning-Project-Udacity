@@ -10,7 +10,7 @@
 class TrajectoryStrategy {
 public:
   //! Number of points in the trajectory
-  int N_points = 50;
+  int N_points = 150;
   
   //! Starting point
   Point start_point;
