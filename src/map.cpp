@@ -55,7 +55,7 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
     const double s1 = CycleS(s+ds);
     const double qx0 = qx_s_(s);
     const double qy0 = qy_s_(s);
-    const double qx1 = qx_s_(s1);
+    const double qx1 = qx_s_(s1); // Bug here! (Vehicle stopped)
     const double qy1 = qy_s_(s1);
     const double theta = atan2(qy1-qy0, qx1-qx0);
     // Let r(s) = q'(s) = (rx(s), ry(s))

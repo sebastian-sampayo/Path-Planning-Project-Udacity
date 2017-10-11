@@ -63,7 +63,7 @@ int main()
     environment_data.sensed_vehicle_list.push_back(data);
   }
 
-  path_planner.SetEnvironmentData(environment_data);
+  // path_planner.SetEnvironmentData(environment_data);
 
   LOG(logINFO) << "Generate next path";
   Trajectory next_path = path_planner.Generate();
@@ -77,7 +77,7 @@ int main()
   
   // LOG(logDEBUG3) << "next_path: " << endl << next_path << endl;
   
-  cout << "Test elapsed time: " << timer.GetElapsedSeconds() << "s" << endl;
+  cout << "Test elapsed time: " << timer.GetElapsedMiliSeconds() << "ms" << endl;
 
   return 0;
 }

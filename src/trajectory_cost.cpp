@@ -32,17 +32,17 @@ TrajectoryCost::TrajectoryCost(Road* road)
   // TODO: Move this to a configuration file
 
   // Cost Functions
-  functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
-  functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
   functions[CostFunctions::DETECT_COLLISION] = &TrajectoryCost::DetectCollision;
   functions[CostFunctions::EMPTY_SPACE] = &TrajectoryCost::EmptySpace;
+  functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
+  functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
   // functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
   
   // Weights
+  weights[CostFunctions::DETECT_COLLISION] = 1000;
+  weights[CostFunctions::EMPTY_SPACE] = 1;
   weights[CostFunctions::MAX_ACCEL] = 1;
   weights[CostFunctions::MAX_JERK] = 1;
-  weights[CostFunctions::DETECT_COLLISION] = 3;
-  weights[CostFunctions::EMPTY_SPACE] = 1;
   weights[CostFunctions::SPEED] = 1;
 }
 
@@ -64,6 +64,7 @@ double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
   {
     double weight = weights[it.first]; // TODO: use find and check for valid key
     cost += weight * (this->*(it.second))();
+    if (cost > MAX_COST) break;
   }
   
   const double elapsed_time = timer.GetElapsedMiliSeconds();
@@ -104,10 +105,12 @@ double TrajectoryCost::DetectCollision()
   const double collision_cost = (collision ? 1 : 0);
   
   // Penalize the time of collision as well. If the collision is further away may be we can avoid it in a future step.
-  const double max_T = trajectory.size() * T_simulator;
-  const double time_cost = 1 - t/max_T;
+  // const double max_T = trajectory.size() * T_simulator;
+  // const double time_cost = 1 - t/max_T;
   
-  cost = 0.7 * collision_cost + 0.3 * time_cost;
+  // cost = 0.7 * collision_cost + 0.3 * time_cost;
+  
+  cost = collision_cost;
   
   return cost;
 }
@@ -173,7 +176,7 @@ double TrajectoryCost::MaxAcceleration()
     
     if (accel >= MAX_ACCEL)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration!";
+      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel = " << accel << "m/s^2";
       cost = 1;
       break;
     }
@@ -189,8 +192,11 @@ double TrajectoryCost::MaxJerk()
   
   // Get the derivative of the trajectory
   Trajectory speed_trajectory = trajectory.GetDerivative(T_simulator);
+  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - speed_trajectory done | size: " << speed_trajectory.size();
   Trajectory accel_trajectory = speed_trajectory.GetDerivative(T_simulator);
+  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - accel_trajectory done | size: " << accel_trajectory.size();
   Trajectory jerk_trajectory = accel_trajectory.GetDerivative(T_simulator);
+  LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - jerk_trajectory done | size: " << jerk_trajectory.size();
   
   double cost = 0;
   
@@ -200,7 +206,7 @@ double TrajectoryCost::MaxJerk()
     
     if (jerk >= MAX_JERK)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk!";
+      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk = " << jerk << "m/s^3";
       cost = 1;
       break;
     }

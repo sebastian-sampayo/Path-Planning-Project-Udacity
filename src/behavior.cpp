@@ -121,7 +121,8 @@ void Behavior::UpdateState()
   const double speed_increment = .224 * MPH2MPS; // [m/s]
   
   // Vehicle ahead detection - slow down
-  if (!road.IsEmptySpace(space_ahead))
+  const bool free_space_ahead = !road.IsEmptySpace(space_ahead);
+  if (free_space_ahead)
   {
     // Match front vehicle's speed using a proportional control
     auto id_vector = road.GetVehiclesInSpace(space_ahead);
@@ -168,6 +169,13 @@ void Behavior::UpdateState()
   for (BehaviorState next_possible_state : state_transitions[state])
   {
     LOG(logDEBUG3) << "Behavior::UpdateState() - Next possible state = " << next_possible_state;
+    
+    // If there are no vehicles ahead just keep lane, don't even generate trajectories for other states.
+    if (free_space_ahead && next_possible_state != BehaviorState::KEEP_LANE)
+    {
+      continue;
+    }
+    
     goal_d = GetDDesired(road.ego.lane, next_possible_state);
 
     // Don't get off the road!

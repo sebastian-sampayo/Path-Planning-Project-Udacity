@@ -21,22 +21,29 @@ vector<double> Trajectory::GetDvalues() { return GetValues(&Point::GetD); }
 // ----------------------------------------------------------------------------
 Trajectory Trajectory::GetDerivative(double delta_t) const
 {
+  LOG(logDEBUG3) << "--- Trajectory::GetDerivative() ---";
   Trajectory derivative;
+  LOG(logDEBUG3) << "Trajectory::GetDerivative() - object instantiation done";
   
   const int size = this->size();
+  LOG(logDEBUG3) << "Trajectory::GetDerivative() - size done";
   
   for (int i = 0; i < size-1; ++i)
   {
-    Point p0 = this->at(i);
-    Point p1 = this->at(i+1);
+    if (i >= size -1) LOG(logERROR) << "Trajectory::GetDerivative() - Index out of range! i: " << i;
+    const Point p0 = this->at(i);
+    const Point p1 = this->at(i+1);
     
     const double dx = (p1.GetX() - p0.GetX()) / delta_t;
     const double dy = (p1.GetY() - p0.GetY()) / delta_t;
     
-    Point dp = PointCartesian(dx, dy);
+    // Fix for stopped :
+    Point dp = Point(PointCartesian(dx, dy), PointFrenet(-1, -1)); // Problem here
     
     derivative.push_back(dp);
   }
+  
+  LOG(logDEBUG3) << "Trajectory::GetDerivative() - loop done";
   
   return derivative;
 }

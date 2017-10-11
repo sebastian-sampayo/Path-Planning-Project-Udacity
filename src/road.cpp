@@ -103,8 +103,8 @@ bool Road::IsEgoColliding() const
     const double theta_vehicle = delta_vehicle - vehicle.yaw;
     
     // Calculates border point of the ego vehicle using ellipse equation
-    const double a = vehicle.lenght / 2.0 * 1.5; // = half_lenght * 1.5 
-    const double b = LANE_WIDTH / 2.0;
+    const double a = vehicle.lenght / 2.0; // = half_lenght
+    const double b = LANE_WIDTH / 2.0 * 0.9;
     const double d_ego = Magnitude(a * cos(theta_ego), b * sin(theta_ego));
     
     // Calculates border point of the other vehicle using ellipse equation

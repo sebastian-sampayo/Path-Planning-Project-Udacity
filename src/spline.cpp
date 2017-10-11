@@ -295,7 +295,7 @@ double spline::operator() (double x) const
     size_t n=m_x.size();
     // find the closest point m_x[idx] < x, idx=0 even if x<m_x[0]
     std::vector<double>::const_iterator it;
-    it=std::lower_bound(m_x.begin(),m_x.end(),x);
+    it=std::lower_bound(m_x.begin(),m_x.end(),x); // Bug here! (Vehicle stopped) m_x = waypoints
     int idx=std::max( int(it-m_x.begin())-1, 0);
 
     double h=x-m_x[idx];
