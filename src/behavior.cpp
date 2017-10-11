@@ -256,6 +256,7 @@ void Behavior::UpdateState()
         // const double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
         // Range beginning in goal_s
         double perturbed_goal_s = goal_s + j * perturbed_s_range / N_s_steps;
+        if (perturbed_goal_s - ego_s < 0) perturbed_goal_s += Map::GetInstance().MAX_S;
         strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
 
         LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
