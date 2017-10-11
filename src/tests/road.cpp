@@ -50,7 +50,7 @@ int main()
   
   // Convert Sensor fusion data from json to SensorData class:
   LOG(logINFO) << "Get environment sensor data 2";
-  for (const auto& sensed_vehicle : stub_environment_cost_function)
+  for (const auto& sensed_vehicle : stub_front_vehicle)
   {
     EnvironmentSensorData::SensedVehicleData data;
     data.id = sensed_vehicle[0];
@@ -71,7 +71,7 @@ int main()
   road.LogVehicles();
   
   // Predicts future road
-  Road future_road = road.PredictRoadTraffic(1);
+  Road future_road = road.PredictRoadTraffic(5);
   future_road.ego.Translate(PointFrenet(69, 1));
   future_road.LogVehicles();
   

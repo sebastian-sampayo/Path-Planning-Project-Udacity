@@ -45,14 +45,52 @@ void Vehicle::Move(double delta_t)
 // ----------------------------------------------------------------------------
 Point Vehicle::PredictPosition(double delta_t) const
 {
-  const double current_x = this->position.GetX();
-  const double current_y = this->position.GetY();
-  const double current_vx = speed * cos(yaw);
-  const double current_vy = speed * sin(yaw);
-  const double future_x = current_x + current_vx * delta_t;
-  const double future_y = current_y + current_vy * delta_t;
+  // The idea here is to assume constant velocity and constant yaw
+  // However, the yaw must be transformed into Frenet coordinate system
+  // so that the vehicle follow a line in that system.
+  // Algorithm:
+  //  Let pc0 be the current position of the vehicle in cartesian coordinates
+  //  and pf0 the same position in frenet. At the same time, let vc be the
+  //  velocity in cartesian coordinates. Then let pc1 be a point such:
+  //  pc1 = pc0 + normalize(vc) * 0.001
+  //  pf1 = Frenet(pc1)
+  //  Then we can calculate the angle in Frenet coordinates as the orientation
+  //  of the difference vector: 
+  //    vf = pf1 - pf0:
+  //  So,
+  //    yaw_frenet = atan2(vf.d, vf.s);
   
-  return PointCartesian(future_x, future_y);
+  // Current position in Cartesian coordinates
+  const double pc0x = this->position.GetX();
+  const double pc0y = this->position.GetY();
+  // Current velocity
+  const double vcx = speed * cos(yaw);
+  const double vcy = speed * sin(yaw);
+  // Scaled velocity
+  const double ds = 0.001;
+  const double vcsx = ds * vcx/speed;
+  const double vcsy = ds * vcy/speed;
+  // Aux position in Cartesian coordinates
+  const double pc1x = pc0x + vcsx;
+  const double pc1y = pc0y + vcsy;
+  // Current position in Frenet coordinates
+  const double pf0s = this->position.GetS();
+  const double pf0d = this->position.GetD();
+  // Aux position in Frenet coordinates
+  const PointFrenet pf1 = PointCartesian(pc1x, pc1y);
+  const double pf1s = pf1.s;
+  const double pf1d = pf1.d;
+  
+  // Orientation in Frenet system
+  const double yaw_frenet = atan2(pf1d - pf0d, pf1s - pf0s);
+  
+  // Prediction in Frenet system
+  const double vfs = speed * cos(yaw_frenet);
+  const double vfd = speed * sin(yaw_frenet);
+  const double future_s = pf0s + vfs * delta_t;
+  const double future_d = pf0d + vfd * delta_t;
+  
+  return PointFrenet(future_s, future_d);
 }
 
 // ----------------------------------------------------------------------------
