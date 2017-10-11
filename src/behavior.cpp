@@ -183,7 +183,7 @@ void Behavior::UpdateState()
   //   generate the trajectory
   //   calculate the cost associated with it
   //   keep track of the best one (state, trajectory and cost)
-  double min_cost = 10000;
+  double min_cost = TrajectoryCost::MAX_COST;
   const double min_cost_tol = 1e-4;
   Trajectory best_trajectory;
   BehaviorState best_state = BehaviorState::KEEP_LANE;
@@ -255,8 +255,7 @@ void Behavior::UpdateState()
         // Range centered in goal_s
         // const double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
         // Range beginning in goal_s
-        const double perturbed_goal_s = goal_s + j * perturbed_s_range / N_s_steps;
-        
+        double perturbed_goal_s = goal_s + j * perturbed_s_range / N_s_steps;
         strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
 
         LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->goal_point = \n"
@@ -296,18 +295,13 @@ void Behavior::UpdateState()
   LOG(logDEBUG3) << "Behavior::UpdateState() - best_state = " << best_state;
   LOG(logDEBUG4) << "Behavior::UpdateState() - best_trajectory = " << best_trajectory;
   
-  // DEBUG
-  // const double T_simulator = 0.02;
-  // Trajectory speed_trajectory = best_trajectory.GetDerivative(T_simulator);
-  // const double tol = 0.001;
-  // for (const Point& p : speed_trajectory)
+  // If the best cost is too high, slow down
+  // if (min_cost >= TrajectoryCost::MAX_COST) 
   // {
-    // if (Magnitude(p.GetX(), p.GetY()) < tol)
-    // {
-      // LOG(logDEBUG2) << "Behavior::UpdateState() - speed = 0. point duplicated? = ";
-    // }
+    // LOG(logDEBUG2) << "Behavior::UpdateState() - Cost too high! Slow down!";
+    // strategy->reference_speed -= speed_increment;
   // }
-
+  
   const double elapsed_time = timer.GetElapsedMiliSeconds();
   LOG(logDEBUG2) << "Behavior::UpdateState() - elapsed_time = " << elapsed_time << "ms";
 }

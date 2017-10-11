@@ -21,7 +21,7 @@ void SplineStrategy::GenerateTrajectory()
   // Useful constants
   double start_s = start_point.GetS();
   double start_d = start_point.GetD();
-  const double goal_s = goal_point.GetS();
+  double goal_s = goal_point.GetS();
   const double goal_d = goal_point.GetD();
   const double T_simulator = 0.02; // TODO: Move to a configuration file
   const double spline_mid_point = 1;
@@ -71,6 +71,7 @@ void SplineStrategy::GenerateTrajectory()
   if (prev_size < 2)
   {
     waypoints_s.push_back(Map::GetInstance().CycleS(start_s - spline_mid_point));
+    // waypoints_s.push_back(start_s - spline_mid_point);
     waypoints_d.push_back(start_d);
   }
   else if (previous_path[prev_idx].GetS() >= previous_path[prev_idx+1].GetS())
@@ -80,6 +81,7 @@ void SplineStrategy::GenerateTrajectory()
       << " prev_idx = " << prev_idx << endl
       << " previous_path[prev_idx+1] = " << previous_path[prev_idx+1] << endl
       << " previous_path[prev_idx] = " << previous_path[prev_idx];
+    // This should not happen!!    
   }
   else // use the previous path's end point as starting reference
   {
@@ -88,26 +90,32 @@ void SplineStrategy::GenerateTrajectory()
       << " previous_path[prev_idx+1] = " << previous_path[prev_idx+1] << endl
       << " previous_path[prev_idx] = " << previous_path[prev_idx];
 
-    waypoints_s.push_back(previous_path[prev_idx].GetS());
+    const double prev_s = previous_path[prev_idx].GetS();
+    waypoints_s.push_back(prev_s);
     waypoints_d.push_back(previous_path[prev_idx].GetD());
     
     start_s = previous_path[prev_idx+1].GetS();
     start_d = previous_path[prev_idx+1].GetD();
+    
+    // Prevent from decreasing values at the end of the circuit
+    if (start_s - prev_s < 0) start_s += Map::GetInstance().MAX_S;
   }
 
   waypoints_s.push_back(start_s);
   waypoints_d.push_back(start_d);
 
   // Goal point
+  // Prevent from decreasing values at the end of the circuit
+  if (goal_s - start_s < 0) goal_s += Map::GetInstance().MAX_S;
   waypoints_s.push_back(goal_s);
   waypoints_d.push_back(goal_d);
 
   waypoints_s.push_back(Map::GetInstance().CycleS(goal_s + spline_mid_point));
-  // waypoints_s.push_back(Map::GetInstance().CycleS(goal_s + delta_s));
+  // waypoints_s.push_back(goal_s + spline_mid_point);
   waypoints_d.push_back(goal_d);
 
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s = " << goal_s;
-  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s + spline_mid_point = " << Map::GetInstance().CycleS(goal_s + spline_mid_point);
+  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s + spline_mid_point = " << (goal_s + spline_mid_point);
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_d = " << goal_d;
 
   // Generate a spline
