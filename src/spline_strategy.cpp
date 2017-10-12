@@ -28,7 +28,9 @@ void SplineStrategy::GenerateTrajectory()
   double prev_size =  previous_path.size();
   N_points_passed = trajectory.size() - prev_size;
   
-  // If the ego hasn't passed any point since the last update, then don't do anything!
+  // If the ego hasn't passed any point since the last update:
+  // This happens when the previous planner loop lasted less than T_simulator (check this)
+  // So, to overcome the problem of passing again the same trajectory (that would lead to a stop), lets fake N_points_passed to 1, so we move on by 1 point
   if (N_points_passed == 0)
   {
     LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed;
@@ -38,8 +40,6 @@ void SplineStrategy::GenerateTrajectory()
     
     if (trajectory.size() > 0)
     {
-      // This happens when the previous planner loop lasted less than T_simulator
-      // So, to overcome the problem of passing again the same trajectory, lets fake N_points_passed to 1, so we move on
       prev_size -= 1;
       N_points_passed = 1;
       // return; // early return
