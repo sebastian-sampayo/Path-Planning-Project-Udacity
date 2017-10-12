@@ -22,7 +22,7 @@ public:
   // Program Parameters
   static constexpr double LANE_WIDTH = 4;
   static constexpr int NUM_LANES = 3;
-  static constexpr int SPEED_LIMITS[] = {47, 47, 47}; // [mph]
+  static constexpr int SPEED_LIMITS[] = {45, 45, 45}; // [mph]
 
   // The sensor_fusion variable contains all the information about the cars on the right-hand side of the road.
   // The data format for each car is: [ id, x, y, vx, vy, s, d]. The id is a unique identifier for that car. The x, y values are in global map coordinates, and the vx, vy values are the velocity components, also in reference to the global map. Finally s and d are the Frenet coordinates for that car.

@@ -60,37 +60,42 @@ Point Vehicle::PredictPosition(double delta_t) const
   //  So,
   //    yaw_frenet = atan2(vf.d, vf.s);
   
-  // Current position in Cartesian coordinates
-  const double pc0x = this->position.GetX();
-  const double pc0y = this->position.GetY();
-  // Current velocity
-  const double vcx = speed * cos(yaw);
-  const double vcy = speed * sin(yaw);
-  // Scaled velocity
-  const double ds = 0.001;
-  const double vcsx = ds * vcx/speed;
-  const double vcsy = ds * vcy/speed;
-  // Aux position in Cartesian coordinates
-  const double pc1x = pc0x + vcsx;
-  const double pc1y = pc0y + vcsy;
-  // Current position in Frenet coordinates
-  const double pf0s = this->position.GetS();
-  const double pf0d = this->position.GetD();
-  // Aux position in Frenet coordinates
-  const PointFrenet pf1 = PointCartesian(pc1x, pc1y);
-  const double pf1s = pf1.s;
-  const double pf1d = pf1.d;
+  // // Current position in Cartesian coordinates
+  // const double pc0x = this->position.GetX();
+  // const double pc0y = this->position.GetY();
+  // // Current velocity
+  // const double vcx = speed * cos(yaw);
+  // const double vcy = speed * sin(yaw);
+  // // Scaled velocity
+  // const double ds = 0.001;
+  // const double vcsx = ds * vcx/speed;
+  // const double vcsy = ds * vcy/speed;
+  // // Aux position in Cartesian coordinates
+  // const double pc1x = pc0x + vcsx;
+  // const double pc1y = pc0y + vcsy;
+  // // Current position in Frenet coordinates
+  // const double pf0s = this->position.GetS();
+  // const double pf0d = this->position.GetD();
+  // // Aux position in Frenet coordinates
+  // const PointFrenet pf1 = PointCartesian(pc1x, pc1y);
+  // const double pf1s = pf1.s;
+  // const double pf1d = pf1.d;
   
-  // Orientation in Frenet system
-  const double yaw_frenet = atan2(pf1d - pf0d, pf1s - pf0s);
+  // // Orientation in Frenet system
+  // const double yaw_frenet = atan2(pf1d - pf0d, pf1s - pf0s);
   
-  // Prediction in Frenet system
-  const double vfs = speed * cos(yaw_frenet);
-  const double vfd = speed * sin(yaw_frenet);
-  const double future_s = pf0s + vfs * delta_t;
-  const double future_d = pf0d + vfd * delta_t;
+  // // Prediction in Frenet system
+  // const double vfs = speed * cos(yaw_frenet);
+  // const double vfd = speed * sin(yaw_frenet);
+  // const double future_s = pf0s + vfs * delta_t;
+  // const double future_d = pf0d + vfd * delta_t;
   
-  return PointFrenet(future_s, future_d);
+  // Algorithm 2: Assume yaw_frenet = 0, so the vehicle will stay in the same lane (constant d-coordinate).
+  const double s = this->position.GetS();
+  const double d = this->position.GetD();
+  const double future_s = s + speed * delta_t;
+  
+  return PointFrenet(future_s, d);
 }
 
 // ----------------------------------------------------------------------------
@@ -118,7 +123,7 @@ void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& d
   }
   else
   {
-    yaw = 0;
+    yaw = (data.vy > 0 ? pi()/2.0 : -pi()/2.0);
   }
   
   // Update current Lane

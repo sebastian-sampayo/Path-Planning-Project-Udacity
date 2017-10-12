@@ -129,8 +129,8 @@ void SplineStrategy::GenerateTrajectory()
   waypoints_s.push_back(goal_s);
   waypoints_d.push_back(goal_d);
 
-  waypoints_s.push_back(Map::GetInstance().CycleS(goal_s + spline_mid_point));
-  // waypoints_s.push_back(goal_s + spline_mid_point);
+  // waypoints_s.push_back(Map::GetInstance().CycleS(goal_s + spline_mid_point));
+  waypoints_s.push_back(goal_s + spline_mid_point);
   waypoints_d.push_back(goal_d);
 
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s = " << goal_s;

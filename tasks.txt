@@ -64,6 +64,10 @@ DONE Measure time
 DONE Potential BUG: when we run the trajectory generation with a different reference speed there might be a sudden change in speed which might turn into a high acceleration and jerk. Speed increments should be small enough to overcome this.
 DONE Try the front vehicle tracking algorithm
 
+Jerk is in x and y, not just magnitude
+  same for acceleration
+Penalize going out of the lane
+Penalize not being on the center lane (lane = 1) or not being in the center of the lane (d = 2, 6, 10)
 // Warning, the speed loop (in Behavior::UpdateState()) could lead to high acceleration and jerk transitions. 
       // May be we could limit it to just 3 values: -speed_inc, 0, +speed_inc
 Test adding more waypoints to the spline strategy
@@ -75,6 +79,9 @@ Update UML
 Code lanes_available detection inside Vehicle::UpdateState()
 Test the algorithm
 
+
+Refactor: Road::DToLane() => Road::GetLane()
+Refactor:  Move the whole "space ahead vehicle detection" to a method inside road or vehicle.
 Refactor: In the PathPlanner class set directly how many points has the ego vehicle passed, instead of copying the previous_path vector over and over. We are not using it, we are just using it's size. This way we can know from outside of TrajectoryStrategy, if N_points_passed is 0 and skip all the trajectory generation algorithm.
 Refactor: Use some data structure for the vehicles in the road so that we always start iterating by the closest vehicle to the ego vehicle. A sorted list for example. Or maybe just ignore vehicles that are far away when we populate the road.
 Refactor: TrajectoryStrategy -> TrajectoryGenerator

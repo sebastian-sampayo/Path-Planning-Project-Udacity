@@ -24,14 +24,13 @@ class Vehicle {
 public:
 
   double lenght = 5; // [m]
+  double width = 3; // [m]
   Point position;
   double yaw;
   double speed;
   int lane;
   int lanes_available;
-  // double target_speed;
-  // int goal_lane;
-  // double goal_s;
+
   // The vehicle can see the road in which it is driving.
   Road* road_ptr;
 
