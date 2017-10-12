@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <ctime>
+#include <chrono>
 #include <math.h>
 #include <vector>
 
@@ -38,22 +38,26 @@ vector<Tout> CArrayToVector(const Tin* c_array, const int length)
 class Timer
 {
   public:
-    Timer() : begin_(clock()) {};
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::time_point<Clock> ClockMeasure;
+    
+    Timer() : begin_(Clock::now()) {};
     ~Timer() {};
   
     double GetElapsedSeconds() {
-      const double end = clock();
-      return double(end - begin_) / CLOCKS_PER_SEC;
+      ClockMeasure end = Clock::now();
+      std::chrono::duration<double> diff = end - begin_;
+      return diff.count();
     };
     
     double GetElapsedMiliSeconds() {
       return 1000*GetElapsedSeconds();
     };
   
-    void Reset() {begin_ = clock();};
+    void Reset() {begin_ = Clock::now();};
   
   private:
-    double begin_; // Begin time of the timer
+    ClockMeasure begin_; // Begin time of the timer
 };
 
 #endif

@@ -86,6 +86,16 @@ void Behavior::UpdateState()
   
   const double MPH2MPS = 0.44704; // TODO: Move this to a config file
   LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
+  
+  // ---- Horrible hack! -----
+  // If the ego vehicle hasn't passed any points, skip this whole process, as there is not so much to do...
+  // const double N_points_passed = strategy->trajectory.size() - strategy->previous_path.size();
+  // if (N_points_passed == 0)
+  // {
+    // LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed << "! | Don't generate!";
+    // return; // early return
+  // }
+  // -------------------------
 
   Road& road = *road_ptr; // alias
 
@@ -112,7 +122,7 @@ void Behavior::UpdateState()
   space_ahead.s_up = space_ahead.s_down + safe_distance;
   space_ahead.d_left = ego_d - 2;
   space_ahead.d_right = space_ahead.d_left + 4;
-  double goal_s = ego_s + 60; // TODO: design carefully goal_s
+  double goal_s = ego_s + 60; // TODO: design carefully goal_s.
   double goal_d = ego_d;
   
   LOG(logDEBUG3) << "Behavior::UpdateState() - Current state = " << state;
@@ -174,16 +184,16 @@ void Behavior::UpdateState()
     strategy->reference_speed -= speed_increment;
   }
   
-  if (strategy->reference_speed < speed_increment || road.ego.speed < speed_increment)
+  if (strategy->reference_speed < speed_increment/2.0 || road.ego.speed < speed_increment/2.0)
   {
-    LOG(logWARNING) << "Behavior::UpdateState() - Vehicle stopped!";
+    LOG(logWARNING) << "Behavior::UpdateState() - Vehicle stopped! | prev trajectory: " << strategy->trajectory;
   }
   
   // For each possible state, perturb the goal point associated with it, 
   //   generate the trajectory
   //   calculate the cost associated with it
   //   keep track of the best one (state, trajectory and cost)
-  double min_cost = TrajectoryCost::MAX_COST;
+  double min_cost = TrajectoryCost::MAX_COST + 1; // This value will always be greater than the trajectory cost
   const double min_cost_tol = 1e-4;
   Trajectory best_trajectory;
   BehaviorState best_state = BehaviorState::KEEP_LANE;
@@ -288,13 +298,19 @@ void Behavior::UpdateState()
     delete strategy_copy;
   }
   
-  // Update object state and best trajectory
+  // Update object state and best trajectory, only if we have found a better trajectory than 
   *strategy = *best_strategy;
   delete best_strategy;
   best_trajectory_ = best_trajectory;
   state = best_state;
   LOG(logDEBUG3) << "Behavior::UpdateState() - best_state = " << best_state;
   LOG(logDEBUG4) << "Behavior::UpdateState() - best_trajectory = " << best_trajectory;
+  
+  if (best_trajectory.size() == 0 || strategy->trajectory.size() ==  0)
+  {
+    LOG(logERROR) << "Behavior::UpdateState() - best_trajectory.size() = 0 !!! ================= \n" << best_trajectory.size();
+    LOG(logERROR) << "Behavior::UpdateState() - strategy->trajectory.size() = 0 !!! ================= \n" << strategy->trajectory.size();
+  }
   
   // If the best cost is too high, slow down
   // if (min_cost >= TrajectoryCost::MAX_COST) 

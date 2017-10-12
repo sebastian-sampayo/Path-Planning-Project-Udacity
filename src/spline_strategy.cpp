@@ -28,8 +28,27 @@ void SplineStrategy::GenerateTrajectory()
   double prev_size =  previous_path.size();
   N_points_passed = trajectory.size() - prev_size;
   
+  // If the ego hasn't passed any point since the last update, then don't do anything!
+  if (N_points_passed == 0)
+  {
+    LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed;
+    // << "! | Don't generate!";
+    LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
+    LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - trajectory.size() = " << trajectory.size();
+    
+    if (trajectory.size() > 0)
+    {
+      // This happens when the previous planner loop lasted less than T_simulator
+      // So, to overcome the problem of passing again the same trajectory, lets fake N_points_passed to 1, so we move on
+      prev_size -= 1;
+      N_points_passed = 1;
+      // return; // early return
+    }
+  }
+  
   LOG(logDEBUG2) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed;
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - prev_size = " << prev_size;
+  LOG(logDEBUG2) << "SplineStrategy::GenerateTrajectory() - trajectory.size() = " << trajectory.size();
 
   // Calculate how to break up spline points so that we travel at our desired reference velocity
   // reference_speed = delta_s / T_simulator
@@ -135,6 +154,7 @@ void SplineStrategy::GenerateTrajectory()
     s += delta_s;
     d = d_spline(s);
     trajectory.push_back(PointFrenet(s, d));
+    if (N_points_passed == 0 && prev_size > 0) LOG(logERROR) << "SplineStrategy::GenerateTrajectory() - N_points_passed = 0 | prev_size = " << prev_size << " ! This shouldn't be executed!";
   }
 
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - trajectory = " << trajectory;

@@ -42,9 +42,13 @@ int main() {
   SET_LOG_LEVEL(logDEBUG3);
   // SET_LOG_LEVEL(logERROR);
   PathPlanner path_planner;
+  
+  Timer timer;
 
-  h.onMessage([&path_planner](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&path_planner, &timer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
+    LOG(logINFO) << "main() - Elapsed time since last message end: " << timer.GetElapsedMiliSeconds() << "ms";
+    timer.Reset();
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -130,6 +134,9 @@ int main() {
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
     }
+    
+    LOG(logINFO) << "main() - Elapsed time of the PathPlanner, h.onMessage(): " << timer.GetElapsedMiliSeconds() << "ms";
+    timer.Reset();
   });
 
   // We don't need this since we're not using HTTP but if it's removed the
