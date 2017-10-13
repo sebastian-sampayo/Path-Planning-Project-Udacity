@@ -88,13 +88,13 @@ void Map::ToCartesian(double s_in, double d, double& x, double& y)
   // y += dy;
   
   // Algorithm 2
-  double ds = 0.001;
+  double ds = 1e-3;
   double s1 = CycleS(s+ds);
   double dx = qx_s_(s1)-x;
   double dy = qy_s_(s1)-y;
 
-  double theta = atan2(dy, dx);
-
+  double theta = atan3(dy, dx);
+  
   x += d*sin(theta);
   y -= d*cos(theta);
 }

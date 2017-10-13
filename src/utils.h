@@ -7,10 +7,15 @@
 
 using namespace std;
 
+constexpr double ATAN3_TOL = 1e-5;
+
 // For converting back and forth between radians and degrees.
 inline constexpr double pi() { return M_PI; }
 inline double deg2rad(double x) { return x * pi() / 180; }
 inline double rad2deg(double x) { return x * 180 / pi(); }
+
+//! Wraps atan2() but guards against low values
+double atan3(double y, double x);
 
 //! Calculates the Euclidean distance between (x1,y1) and (x2,y2)
 double distance(double x1, double y1, double x2, double y2);

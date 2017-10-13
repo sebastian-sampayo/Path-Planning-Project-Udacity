@@ -8,6 +8,34 @@
 using namespace std;
 
 // ----------------------------------------------------------------------------
+double atan3(double y, double x)
+{
+  double theta = 0;
+  const double small_x = fabs(x) < ATAN3_TOL;
+  const double small_y = fabs(y) < ATAN3_TOL;
+  
+  if ( (!small_x && !small_y) || (small_x && small_y) )
+  {
+    theta = atan2(y, x);
+  }
+  else if (small_x)
+  {
+    theta = (y > 0 ? pi()/2.0 : -pi()/2.0);
+  }
+  else if (small_y)
+  {
+    theta = (x > 0 ? 0 : -pi());
+  }
+  else
+  {
+    // All possible cases are above. This should never be executed
+    theta = atan2(y, x);
+  }
+
+  return theta;
+}
+
+// ----------------------------------------------------------------------------
 double distance(double x1, double y1, double x2, double y2)
 {
   return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));

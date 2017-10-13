@@ -41,12 +41,12 @@ public:
   Map(Map const&)               = delete;
   void operator=(Map const&)    = delete;
 
-private:
   // Splines for the components of the parametric curve q(s) = (qx(s), qy(s))
   tk::spline qx_s_; // qx(s)
   tk::spline qy_s_; // qy(s)
   tk::spline dx_s_; // dx(s)
   tk::spline dy_s_; // dy(s)
+private:
   
   Map();
 };

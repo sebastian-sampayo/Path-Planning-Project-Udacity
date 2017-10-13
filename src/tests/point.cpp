@@ -15,10 +15,15 @@ int main()
   SET_LOG_LEVEL(logDEBUG3);
   
   // Print some points
-  cout << Point(PointCartesian(1105, 1180.27));
-  cout << Point(PointCartesian(1109.98, 1178.01));
-  cout << Point(PointFrenet(328.072, 6));
-  cout << Point(PointFrenet(332.78, 9));
+  cout << Point(PointCartesian(1105, 1180.27)) << endl;
+  cout << Point(PointCartesian(1109.98, 1178.01)) << endl;
+  cout << Point(PointFrenet(328.072, 6)) << endl;
+  cout << Point(PointFrenet(332.78, 9)) << endl;
+  cout << "Initial point: " << endl;
+  cout << Point(PointFrenet(0, 0)) << endl;
+  cout << Point(PointFrenet(0, 10)) << endl;
+  cout << Point(PointFrenet(Map::GetInstance().MAX_S, 0)) << endl;
+  cout << Point(PointFrenet(Map::GetInstance().MAX_S, 10)) << endl;
   
   // {1, 804.479, 1129.09, 0, 0, 20, 6},
   // {2, 834.597, 1132.9, 0, 0, 50, 2},
@@ -27,13 +32,17 @@ int main()
   // PointCartesian pc(804.479, 1129.09); // 20, 6
   // PointCartesian pc(834.597, 1132.9); // 50, 2
   // PointCartesian pc(789.336, 1125.44); // 5, 10
-  PointFrenet pf0(18, 0);
+  PointFrenet pf0(Map::GetInstance().MAX_S*0.02, 10);
   PointCartesian pc(pf0);
+  cout << "qx_s_(0): " << Map::GetInstance().qx_s_(0) << endl;
+  cout << "qx_s_(max-0.1): " << Map::GetInstance().qx_s_(Map::GetInstance().MAX_S-0.1) << endl;
+  cout << "qy_s_(0): " << Map::GetInstance().qy_s_(0) << endl;
+  cout << "qy_s_(max-0.1): " << Map::GetInstance().qy_s_(Map::GetInstance().MAX_S-0.1) << endl;
   Point p(pc);
   
-  cout << pc << endl;
-  cout << pf0 << endl;
-  cout << p << endl;
+  cout << "pf0: " << pf0 << endl;
+  cout << " pc: " << pc << endl;
+  cout << "  p: " << p << endl;
   
   cout << "p.GetS() = " << p.GetS() << endl;
   
@@ -43,8 +52,8 @@ int main()
   {
     pf = PointFrenet(pc);
     pc = PointCartesian(pf);
-    cout << pc << endl;
     cout << pf << endl;
+    cout << pc << endl;
   }
   
   // p.SetXY(1,1);

@@ -117,14 +117,7 @@ void Vehicle::UpdateSensorData(const EnvironmentSensorData::SensedVehicleData& d
   position = p;
   speed = Magnitude(data.vx, data.vy); // [m/s]
   
-  if (data.vx > 0.001)
-  {
-    yaw = atan2(data.vy, data.vx);
-  }
-  else
-  {
-    yaw = (data.vy > 0 ? pi()/2.0 : -pi()/2.0);
-  }
+  yaw = atan3(data.vy, data.vx);
   
   // Update current Lane
   lane = int(p.GetD() / road_ptr->LANE_WIDTH);
