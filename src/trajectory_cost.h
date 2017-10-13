@@ -24,6 +24,7 @@ public:
   //! These are the cost functions available. The constructor must initialize weights and function pointers
   enum class CostFunctions
   {
+    CENTERED,
     DETECT_COLLISION,
     EMPTY_SPACE,
     MAX_ACCEL,
@@ -43,6 +44,9 @@ public:
   double CalculateCost(const Trajectory& trajectory);
   
   // Cost functions
+  
+  //! Penalizes not being in the center of the lane
+  double Centered();
   
   //! Binary cost function which penalizes collisions. Return 0 if no collision, else 1
   double DetectCollision();

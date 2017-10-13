@@ -148,7 +148,7 @@ bool Road::IsEgoRightSideEmpty() const
   RoadSpace space;
   
   const double safe_distance = ego.lenght * 2;
-  space.s_down = ego.position.GetS() - ego.lenght;
+  space.s_down = ego.position.GetS() - ego.lenght * 1.2;
   space.s_up = space.s_down + safe_distance;
   space.d_right = (ego.lane + 1) * LANE_WIDTH;
   space.d_left = space.d_right + LANE_WIDTH;
@@ -165,7 +165,7 @@ bool Road::IsEgoLeftSideEmpty() const
   RoadSpace space;
   
   const double safe_distance = ego.lenght * 2;
-  space.s_down = ego.position.GetS() - ego.lenght/2.0;
+  space.s_down = ego.position.GetS() - ego.lenght * 1.2;
   space.s_up = space.s_down + safe_distance;
   space.d_right = ego.lane * LANE_WIDTH;
   space.d_left = space.d_right - LANE_WIDTH;

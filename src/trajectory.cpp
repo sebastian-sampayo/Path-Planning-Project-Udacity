@@ -33,9 +33,11 @@ Trajectory Trajectory::GetDerivative(double delta_t) const
     
     const double dx = (p1.GetX() - p0.GetX()) / delta_t;
     const double dy = (p1.GetY() - p0.GetY()) / delta_t;
+    const double ds = (p1.GetS() - p0.GetS()) / delta_t;
+    const double dd = (p1.GetD() - p0.GetD()) / delta_t;
     
     // Fix for stopped :
-    Point dp = Point(PointCartesian(dx, dy), PointFrenet(-1, -1)); // Problem here
+    Point dp = Point(PointCartesian(dx, dy), PointFrenet(ds, dd)); // Problem here
     
     derivative.push_back(dp);
   }

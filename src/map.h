@@ -32,7 +32,7 @@ public:
   //! Convert back and forth between Frenet and Cartesian coordinates
   void ToFrenet(double x, double y, double &s, double &d);
   void ToCartesian(double s, double d, double &x, double &y);
-  double CycleS(double s) { return fmod(s, MAX_S); }
+  double CycleS(double s) { return fmod(s, MAX_S) + (s<0 ? MAX_S:0); }
   
   //! Load the waypoints from file
   void SetWaypoints(string map_filename);

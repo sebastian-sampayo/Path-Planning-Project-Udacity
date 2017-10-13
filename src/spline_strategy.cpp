@@ -53,7 +53,7 @@ void SplineStrategy::GenerateTrajectory()
   // Calculate how to break up spline points so that we travel at our desired reference velocity
   // reference_speed = delta_s / T_simulator
   // reference_speed * T_simulator = delta_s = distance between trajectory points
-  const double delta_s = reference_speed * T_simulator;
+  double delta_s = reference_speed * T_simulator;
 
   // // Reset the trajectory with the previous path
   // trajectory = previous_path;
@@ -129,12 +129,14 @@ void SplineStrategy::GenerateTrajectory()
   waypoints_s.push_back(goal_s);
   waypoints_d.push_back(goal_d);
 
-  // waypoints_s.push_back(Map::GetInstance().CycleS(goal_s + spline_mid_point));
-  waypoints_s.push_back(goal_s + spline_mid_point);
+  double goal_s_bis = goal_s + spline_mid_point;
+  // Prevent from decreasing values at the end of the circuit
+  if (goal_s_bis - goal_s < 0) goal_s_bis += Map::GetInstance().MAX_S;
+  waypoints_s.push_back(goal_s_bis);
   waypoints_d.push_back(goal_d);
 
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s = " << goal_s;
-  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s + spline_mid_point = " << (goal_s + spline_mid_point);
+  LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_s + spline_mid_point = " << goal_s_bis;
   LOG(logDEBUG4) << "SplineStrategy::GenerateTrajectory() - goal_d = " << goal_d;
 
   // Generate a spline
@@ -151,6 +153,9 @@ void SplineStrategy::GenerateTrajectory()
 
   for (int i = 0; i < N_points - prev_size; ++i)
   {
+    delta_s += reference_accel * T_simulator * T_simulator / 2;
+    // Hack to make impossible to exceed speed limit
+    delta_s = min(delta_s, 48*0.44704*T_simulator);
     s += delta_s;
     d = d_spline(s);
     trajectory.push_back(PointFrenet(s, d));

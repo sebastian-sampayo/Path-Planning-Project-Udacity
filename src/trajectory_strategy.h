@@ -22,6 +22,9 @@ public:
   //! Reference speed (defines the space between points)
   double reference_speed = 49.5 * 0.44704; // [m/s]
   
+  //! Reference acceleration
+  double reference_accel = 0; // [m/s^2]
+  
   //! Generated trajectory
   Trajectory trajectory;
   

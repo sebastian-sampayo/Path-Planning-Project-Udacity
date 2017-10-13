@@ -32,18 +32,20 @@ TrajectoryCost::TrajectoryCost(Road* road)
   // TODO: Move this to a configuration file
 
   // Cost Functions
+  // functions[CostFunctions::CENTERED] = &TrajectoryCost::Centered;
   functions[CostFunctions::DETECT_COLLISION] = &TrajectoryCost::DetectCollision;
   functions[CostFunctions::EMPTY_SPACE] = &TrajectoryCost::EmptySpace;
   functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
   functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
-  // functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
+  functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
   
   // Weights
+  // weights[CostFunctions::CENTERED] = .5;
   weights[CostFunctions::DETECT_COLLISION] = 1000;
   weights[CostFunctions::EMPTY_SPACE] = 1;
   weights[CostFunctions::MAX_ACCEL] = 1;
   weights[CostFunctions::MAX_JERK] = 1;
-  weights[CostFunctions::SPEED] = 1;
+  weights[CostFunctions::SPEED] = 0.5;
 }
 
 // ----------------------------------------------------------------------------
@@ -70,6 +72,29 @@ double TrajectoryCost::CalculateCost(const Trajectory& trajectory)
   const double elapsed_time = timer.GetElapsedMiliSeconds();
   LOG(logDEBUG3) << "TrajectoryCost::CalculateCost - elapsed_time: " << elapsed_time << "ms";
 
+  return cost;
+}
+
+// ----------------------------------------------------------------------------
+double TrajectoryCost::Centered()
+{
+  Road& road = *road_ptr; // alias
+  
+  double cost;
+  double t = 0; // time
+  const double T_simulator = 0.02; // TODO: Move to a configuration file
+  
+  for (const Point& point : trajectory)
+  {
+    const double d = point.GetD();
+    const double lane = road.DToLane(d);
+    const double d_lane_centered = road.GetCenterDByLane(lane);
+    const double offset = d - d_lane_centered;
+    cost += fabs(offset) * T_simulator;
+  }
+  
+  LOG(logDEBUG3) << "TrajectoryCost::Centered() - Cost = Avg Offset: " << cost;
+  
   return cost;
 }
 
@@ -179,12 +204,12 @@ double TrajectoryCost::MaxAcceleration()
   
   for (const Point& p : accel_trajectory)
   {
-    const double accel = Magnitude(p.GetX(), p.GetY());
     
-    if (accel >= MAX_ACCEL)
+    if (p.GetS() > MAX_ACCEL || p.GetD() > MAX_ACCEL)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel = " << accel << "m/s^2 | t = " << t;
-      cost = 1;
+      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel_s = " << p.GetS() << "m/s^2 | accel_d = " << p.GetD() << "m/s^2 | t = " << t;
+      const double accel = Magnitude(p.GetX(), p.GetY());
+      cost = Logistic(accel/MAX_ACCEL);
       break;
     }
     
@@ -209,12 +234,12 @@ double TrajectoryCost::MaxJerk()
   
   for (const Point& p : jerk_trajectory)
   {
-    const double jerk = Magnitude(p.GetX(), p.GetY());
     
-    if (jerk >= MAX_JERK)
+    if (p.GetS() > MAX_JERK || p.GetD() > MAX_JERK)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk = " << jerk << "m/s^3 | t = " << t;
-      cost = 1;
+      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk_s = " << p.GetS() << "m/s^3 | jerk_d = " << p.GetD() << "m/s^3 | t = " << t;
+      const double jerk = Magnitude(p.GetX(), p.GetY());
+      cost = Logistic(jerk/MAX_JERK);
       break;
     }
     
@@ -227,7 +252,7 @@ double TrajectoryCost::MaxJerk()
 // ----------------------------------------------------------------------------
 double TrajectoryCost::Speed()
 {
-  const double typical_distance = 30;
+  const double typical_distance = 60;
   Point first = trajectory.front();
   Point last = trajectory.back();
   
@@ -240,7 +265,7 @@ double TrajectoryCost::Speed()
   
   double cost = Logistic(s_distance / typical_distance);
   
-  LOG(logDEBUG3) << "TrajectoryCost::Speed() - Cost = " << cost;
+  LOG(logDEBUG3) << "TrajectoryCost::Speed() - s_distance: "  << s_distance << " | Cost: " << cost;
   
   return cost;
 }

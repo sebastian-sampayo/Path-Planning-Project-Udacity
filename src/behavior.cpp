@@ -47,6 +47,7 @@ Behavior::Behavior(Road* road)
   // strategy = new WalkthroughStrategy();
   strategy = new SplineStrategy();
   strategy->reference_speed = 0;
+  strategy->reference_accel = 5;
 }
 
 // ----------------------------------------------------------------------------
@@ -85,6 +86,8 @@ void Behavior::UpdateState()
   Timer timer;
   
   const double MPH2MPS = 0.44704; // TODO: Move this to a config file
+  const double T_simulator = 0.02; // TODO: Move this constant to a common configuration file
+  
   LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
   
   // ---- Horrible hack! -----
@@ -107,12 +110,16 @@ void Behavior::UpdateState()
     << road.ego.position;
   LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->start.position = \n"
     << strategy->start_point;
+  LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->reference_speed = "
+          << strategy->reference_speed;
+  
+  strategy->reference_accel = 0;
   
   // Define the space ahead
   // const double safe_distance = 30; // This should depend on the speed. We might think of a safe "time" distance better.
-  const double safe_time = 2; // seconds
-  const double safe_distance = 30; //safe_time * strategy->reference_speed; // meters
-  const double perturbed_s_range = road.ego.lenght * 2;
+  // const double safe_time = 2; // seconds
+  const double target_range = 30; //safe_time * strategy->reference_speed; // meters
+  const double perturbed_s_range = road.ego.lenght * 4;
   
   const double ego_s = road.ego.position.GetS();
   const double ego_d = road.ego.position.GetD();
@@ -120,8 +127,9 @@ void Behavior::UpdateState()
   RoadSpace space_ahead;
   space_ahead.s_down = ego_s;
   space_ahead.s_up = space_ahead.s_down + 100; // + 30
-  space_ahead.d_left = ego_d - road.ego.width/2;
-  space_ahead.d_right = space_ahead.d_left + road.ego.width;
+  space_ahead.d_left = road.ego.lane * road.LANE_WIDTH;
+  space_ahead.d_right = space_ahead.d_left + road.LANE_WIDTH;
+  // double goal_s = ego_s + 40; // TODO: design carefully goal_s.
   double goal_s = ego_s + 60; // TODO: design carefully goal_s.
   double goal_d = road.GetCenterDByLane(road.ego.lane); // Center of the lane
   
@@ -130,6 +138,14 @@ void Behavior::UpdateState()
   
   const double max_speed = road.lane_speeds[road.ego.lane];
   const double speed_increment = .224 * MPH2MPS; // [m/s]
+  
+  if (road.ego.speed >= max_speed)
+    LOG(logWARNING) << "Behavior::UpdateState() - Speed too high!! ego.speed: " << road.ego.speed << "m/s | " << road.ego.speed / MPH2MPS << "mph";
+  
+  // Flag to hit the emergency brake in case a vehicle in front of us is going really slow
+  bool emergency_brake = false;
+  const double emergency_diff_speed = road.ego.speed/2;
+  const double  emergency_dist = road.ego.lenght * 2;
   
   // Vehicle ahead detection - slow down
   const bool free_space_ahead = road.IsEmptySpace(space_ahead);
@@ -154,50 +170,80 @@ void Behavior::UpdateState()
       }
     }
     
-    if (id_closest == -1) LOG(logERROR) << "Behavior::UpdateState() - id_closest = -1 !! - closest vehicle ahead not found!";
-    
+    const double front_vehicle_speed = road.vehicles[id_closest].speed;
+    const double diff_speed = front_vehicle_speed - road.ego.speed;
+    emergency_brake = ( (diff_speed < 0 && -diff_speed > emergency_diff_speed) || (min_dist_ahead < emergency_dist) );
+
     LOG(logDEBUG3) << "Behavior::UpdateState() - min_dist_ahead: " << min_dist_ahead << " | id_closest: " << id_closest;
     
-    // Front vehicle speed tracking
-    // strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
-    const double desired_speed = road.vehicles[id_closest].speed;
-    const double error_speed = (desired_speed - road.ego.speed);
-    // const double error_speed_sign = (error_speed > 0 ? 1.0 : 0.0);
-    // strategy->reference_speed += error_speed_sign * speed_increment;
-    const double kv = 0.02;
-    strategy->reference_speed += kv * error_speed;
-    LOG(logDEBUG2) << "Behavior::UpdateState() - kv * error_speed: " << kv * error_speed;
-    
-    // Front vehicle distance tracking
-    const double desired_front_vehicle_distance = 15; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
-    double front_vehicle_distance = road.vehicles[id_closest].position.GetS() - road.ego.position.GetS();
-    if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
-    const double error_position = desired_front_vehicle_distance - front_vehicle_distance;
-    // const double error_position_sign = (error_position > 0 ? 1.0 : 0.0);
-    // strategy->reference_speed += error_position_sign * speed_increment;
-    const double kp = 0.9e-3; //3e-3 for space ahead = 30
-    strategy->reference_speed -= kp * error_position; // Notice the minus sign is because the control force (ref_speed) is not proportional to the controlled variable (position)
-    LOG(logDEBUG2) << "Behavior::UpdateState() - kp * error_position: " << kp * error_position;
-    
-      // TODO: Try this: 
-      // const double kv = 0.05;
-      // const double desired_speed = road.vehicles[id_vector[0]].speed;
-      // strategy->reference_speed += kv*(desired_speed - road.ego.speed);
-      // TODO: To track position, try this:
-      // const double kp = 0.05;
-      // const double desired_front_vehicle_distance = 15; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
-      // const double front_vehicle_distance = road.vehicles[id_vector[0]].position.GetS() - road.ego.position.GetS();
-      // if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
-      // double position_error = desired_front_vehicle_distance - front_vehicle_distance;
-      // strategy->reference_speed += kp*(position_error);
-          
-    LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
-      << " strategy->reference_speed: " << strategy->reference_speed;
-    // TODO: try to make the transitions smoother (why not use a PID?)
+    // Track front vehicle only if it is within a minor range
+    if (min_dist_ahead < target_range)
+    {
+      if (id_closest == -1) LOG(logERROR) << "Behavior::UpdateState() - id_closest = -1 !! - closest vehicle ahead not found!";
+      
+      // Front vehicle speed tracking
+      // strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
+      const double desired_speed = front_vehicle_speed;
+      const double error_speed = (desired_speed - road.ego.speed);
+      // const double error_speed_sign = (error_speed > 0 ? 1.0 : 0.0);
+      // strategy->reference_speed += error_speed_sign * speed_increment;
+      const double kv = 0.02;
+      strategy->reference_speed += kv * error_speed;
+      LOG(logDEBUG2) << "Behavior::UpdateState() - kv * error_speed: " << kv * error_speed;
+      
+      // Front vehicle distance tracking
+      const double desired_front_vehicle_distance = 50*road.ego.speed*T_simulator; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
+      double front_vehicle_distance = road.vehicles[id_closest].position.GetS() - road.ego.position.GetS();
+      if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
+      const double error_position = desired_front_vehicle_distance - front_vehicle_distance;
+      // const double error_position_sign = (error_position > 0 ? 1.0 : 0.0);
+      // strategy->reference_speed += error_position_sign * speed_increment;
+      const double kp = 0.9e-3; //3e-3 for space ahead = 30
+      strategy->reference_speed -= kp * error_position; // Notice the minus sign is because the control force (ref_speed) is not proportional to the controlled variable (position)
+      LOG(logDEBUG2) << "Behavior::UpdateState() - kp * error_position: " << kp * error_position;
+      
+        // TODO: Try this: 
+        // const double kv = 0.05;
+        // const double desired_speed = road.vehicles[id_vector[0]].speed;
+        // strategy->reference_speed += kv*(desired_speed - road.ego.speed);
+        // TODO: To track position, try this:
+        // const double kp = 0.05;
+        // const double desired_front_vehicle_distance = 15; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
+        // const double front_vehicle_distance = road.vehicles[id_vector[0]].position.GetS() - road.ego.position.GetS();
+        // if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
+        // double position_error = desired_front_vehicle_distance - front_vehicle_distance;
+        // strategy->reference_speed += kp*(position_error);
+            
+      LOG(logDEBUG2) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
+        << " strategy->reference_speed: " << strategy->reference_speed;
+      // TODO: try to make the transitions smoother (why not use a PID?)
+    }
+    else if (road.ego.speed < max_speed - speed_increment && strategy->reference_speed < max_speed - speed_increment)
+    {
+      const double error_speed = max_speed - road.ego.speed;
+      const double kv = speed_increment / max_speed * 2;
+      
+      strategy->reference_speed += max(speed_increment, kv*error_speed);
+      // strategy->reference_speed += speed_increment;
+    }
+    else
+    {
+      strategy->reference_speed -= speed_increment;
+    }
   }
   else if (road.ego.speed < max_speed - speed_increment && strategy->reference_speed < max_speed - speed_increment)
   {
-    strategy->reference_speed += speed_increment;
+    const double error_speed = max_speed - road.ego.speed;
+    const double kv = speed_increment / max_speed * 2;
+    
+    strategy->reference_speed += max(speed_increment, kv*error_speed);
+      
+    // If the ego vehicle is going to slow, speed up quickly
+    if (road.ego.speed < max_speed/3)
+    {
+      strategy->reference_speed += speed_increment/2;
+      strategy->reference_accel = 5;
+    }
   }
   else
   {
@@ -207,8 +253,10 @@ void Behavior::UpdateState()
   if (strategy->reference_speed < speed_increment/2.0 || road.ego.speed < speed_increment/2.0)
   {
     LOG(logWARNING) << "Behavior::UpdateState() - Vehicle stopped! | prev trajectory: " << strategy->trajectory;
+    
   }
   
+  // ------------------- Analyze each state -----------------------
   // For each possible state, perturb the goal point associated with it, 
   //   generate the trajectory
   //   calculate the cost associated with it
@@ -249,19 +297,18 @@ void Behavior::UpdateState()
       continue;
     }
 
+    // ------------------- Perturb goal ------------------
     // TODO: perturb goal
     // for (each perturbed goal)
-    double best_speed = strategy->reference_speed;
-    int N_speed_steps = 1; //min(5, int((max_speed - strategy->reference_speed) / speed_increment));
+    const int N_s_steps = 2;
+    int N_accel_steps = 3;
+    const double accel_range = 10;
     
-    if (N_speed_steps == 0 || strategy->reference_speed >= max_speed)
+    // If the ego vehicle is stopped, don't iterate acceleration values
+    if (road.ego.speed < max_speed/5)
     {
-      N_speed_steps = 1;
+      N_accel_steps = 1;
     }
-    
-    if (N_speed_steps == 0) LOG(logERROR) << "Behavior::UpdateState() - N_speed_steps = 0 !!!!!";
-
-    const int N_s_steps = 1;
     
     // Store strategy temporary as we are going to stomp on it
     TrajectoryStrategy* strategy_copy = new SplineStrategy();
@@ -271,21 +318,26 @@ void Behavior::UpdateState()
     {
       // Warning, this loop could lead to high acceleration and jerk transitions. 
       // May be we could limit it to just 3 values: -speed_inc, 0, +speed_inc
-      for (int i = 0; i < N_speed_steps; ++i)
+      for (int i = 0; i < N_accel_steps; ++i)
       {
         LOG(logDEBUG5) << "Behavior::UpdateState() - strategy->trajectory = " << strategy->trajectory;
         
-        strategy->reference_speed += i*speed_increment;
-        
-        if (strategy->reference_speed >= max_speed)
+        if (road.ego.speed > max_speed/5)
         {
-          strategy->reference_speed -= (i+1)*speed_increment;
+          strategy->reference_accel = -accel_range/2 + i/N_accel_steps*accel_range;
+        }
+        
+        if (emergency_brake)
+        {
+          LOG(logWARNING) << "Behavior::UpdateState() - Activating emergency brake!!!";
+          strategy->reference_accel -= 6;
+          strategy->reference_speed -= speed_increment;
         }
         
         // Range centered in goal_s
         // double perturbed_goal_s = goal_s - perturbed_s_range/2.0 + j * perturbed_s_range / N_s_steps;
         // Range beginning in goal_s
-        double perturbed_goal_s = goal_s + j * perturbed_s_range / N_s_steps;
+        double perturbed_goal_s = goal_s - j * perturbed_s_range / N_s_steps;
         if (perturbed_goal_s - ego_s < 0) perturbed_goal_s += Map::GetInstance().MAX_S;
         strategy->goal_point = Point(PointFrenet(perturbed_goal_s, goal_d));
 
@@ -293,6 +345,8 @@ void Behavior::UpdateState()
           << strategy->goal_point;
         LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->reference_speed = "
           << strategy->reference_speed;
+        LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->reference_accel = "
+          << strategy->reference_accel;
         LOG(logDEBUG3) << "Behavior::UpdateState() - calling GenerateTrajectory()";
         strategy->GenerateTrajectory();
         
@@ -307,7 +361,6 @@ void Behavior::UpdateState()
           best_trajectory = strategy->trajectory;
           *best_strategy = *strategy;
           best_state = next_possible_state;
-          best_speed = strategy->reference_speed;
         }
         
         // Reset strategy with the copy
@@ -333,11 +386,14 @@ void Behavior::UpdateState()
   }
   
   // If the best cost is too high, slow down
-  if (min_cost >= TrajectoryCost::MAX_COST && road.ego.speed > max_speed/2) 
-  {
-    LOG(logDEBUG2) << "Behavior::UpdateState() - Cost too high! Slow down!";
-    strategy->reference_speed -= speed_increment;
-  }
+  // if (min_cost >= TrajectoryCost::MAX_COST && road.ego.speed > max_speed/2) 
+  // {
+    // LOG(logDEBUG2) << "Behavior::UpdateState() - Cost too high! Slow down!";
+    // strategy->reference_speed -= speed_increment;
+  // }
+  
+  LOG(logDEBUG3) << "Behavior::UpdateState() - strategy->reference_speed = "
+          << strategy->reference_speed;
   
   const double elapsed_time = timer.GetElapsedMiliSeconds();
   LOG(logDEBUG2) << "Behavior::UpdateState() - elapsed_time = " << elapsed_time << "ms";

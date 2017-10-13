@@ -39,7 +39,8 @@ string hasData(string s) {
 int main() {
   uWS::Hub h;
 
-  SET_LOG_LEVEL(logDEBUG3);
+  // SET_LOG_LEVEL(logDEBUG2);
+  SET_LOG_LEVEL(logWARNING);
   // SET_LOG_LEVEL(logERROR);
   PathPlanner path_planner;
   
