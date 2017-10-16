@@ -10,7 +10,7 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [UML]: ./img/UML-diagram.png
 [arch]: ./img/software-architecture.png
 [video]: ./img/40secs_7fps.gif
-[p]: ./img/p.png
+[p]: ./img/p.gif
 
 
 ## Results
