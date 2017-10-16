@@ -8,3 +8,4 @@ s^*
 \theta
 \bf q \rm '(s) = (\cos(\theta), \sin(\theta)) \ \ \ \ \ (2)
 d = |(\bf p - q \rm (s^*))|
+d = (x - q_x (s^*)) * \sin(\theta^*) - (y - q_y(s^*)) * \cos(\theta^*) \ \ \ \ \ (3)

@@ -93,7 +93,7 @@ be the curve angle at point
 *s*
 , then
 
-![][condition1]
+![][condition2]
 
 [//]: # (see -link to paper-)
 
