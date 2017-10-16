@@ -23,11 +23,11 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [eq3]: ./img/eq3.gif
 
 
-## Results
-
 ![Simulator][simulator]
 
-The algorithms have been tested in a simulator provided by Udacity for about 10 minutes without incidents, driving more than 6 miles. 
+## Results
+
+The algorithms have been tested in a simulator provided by Udacity for about 10 minutes without incidents, driving more than 6 miles.
 [A realization of this has been uploaded to YouTube in this link,](https://youtu.be/a_IoRniavFc)
 and here you can see a short example:
 
