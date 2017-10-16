@@ -16,6 +16,8 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [q_s_star]: ./img/q_s_star.gif
 [qs_s_star]: ./img/qd_s_star.gif
 [condition1]: ./img/condition1.gif
+[condition2]: ./img/condition2.gif
+[theta]: ./img/theta.gif
 
 
 ## Results
@@ -79,32 +81,29 @@ and
 is perpendicular to 
 ![][qd_s_star]
 where 
-*TODO: LaTex this
-q'(s*) 
+![][qd_s_star]
 is actually the tangent vector of the curve at point 
-*TODO: LaTex this
-s*.
+![][s_star].
 Let 
-*TODO: LaTex this
-theta 
+![][theta].
 be the curve angle at point 
-**s**
+*s*
 , then
-*TODO: LaTex this
-q'(s) = (cos(theta), sin(theta)) (2)
-(see -link to paper-)
+
+![][condition1]
+
+[//]: # (see -link to paper-)
+
 The condition (1) could have multiple roots in a global domain, but only one is
 the closest point to 
 **p**. 
 However, it can be shown that if 
-*TODO: LaTex this
-s* 
+![][s_star]
 is unique and we constrain to a local domain around
 the closest waypoint to 
 **p**
 , then (1) is sufficient to find a unique 
-*TODO: LaTex this
-s*.
+![][s_star].
 
 Having said that, in order to implement the conversion from Cartesian to Frenet I first find the closest waypoint, get the *s* value and start moving in a gradient-decent fashion until eq. (1) is zero (within some defined tolerance). Then the *d* coordinate is the distance between the point and the curve 
 *TODO: LaTex this

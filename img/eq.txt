@@ -1,3 +1,9 @@
 \bf{p} \rm = (x,y)
 \bf{q} \rm = (q_x(s), q_y(s))
 s^*
+\bf q \rm (s^*)
+\bf p
+(\bf p - q \rm (s*)) \bf q \rm '(s*) = 0 \ \ \ \ \ (1)
+\bf q \rm '(s^*)
+\theta
+\bf q \rm '(s) = (\cos(\theta), \sin(\theta)) \ \ \ \ \ (2)
