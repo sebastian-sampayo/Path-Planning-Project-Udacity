@@ -14,6 +14,7 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [q]: ./img/q.gif
 [s_star]: ./img/s_star.gif
 [q_s_star]: ./img/q_s_star.gif
+[condition1]: ./img/condition1.gif
 
 
 ## Results
@@ -67,8 +68,9 @@ is closest to
 **p**
 , then the
 following condition must be satisfied:
-*TODO: LaTex this
-(p - q(s*)) q'(s*) = 0  (1)
+
+![][condition1]     (1)
+
 which means that the distance between 
 **p** 
 and 
