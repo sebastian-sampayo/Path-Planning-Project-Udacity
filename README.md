@@ -69,7 +69,7 @@ is closest to
 , then the
 following condition must be satisfied:
 
-![][condition1]     (1)
+![][condition1]
 
 which means that the distance between 
 **p** 
