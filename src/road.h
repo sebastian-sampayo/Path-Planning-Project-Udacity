@@ -58,7 +58,7 @@ public:
   vector<int> GetVehiclesInSpace(const RoadSpace& space) const;
   
   //! Check if the ego vehicle is colliding with other vehicle
-  bool IsEgoColliding() const;
+  bool IsEgoColliding(double lenght_offset = 0) const;
   
   //! Check if the specified space on the road is empty (no vehicles)
   bool IsEmptySpace(const RoadSpace& space) const;

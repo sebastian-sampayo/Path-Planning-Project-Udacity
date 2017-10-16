@@ -12,6 +12,7 @@ public:
 private:
   void GenerateXYTrajectory();
   void GenerateSDTrajectory();
+  void GenerateSDTrajectory2();
 };
 
 #endif

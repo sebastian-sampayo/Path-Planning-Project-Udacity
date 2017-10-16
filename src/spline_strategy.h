@@ -8,6 +8,9 @@ public:
   void GenerateTrajectory();
 
   SplineStrategy();
+private:
+  void GenerateXYTrajectory();
+  void GenerateSDTrajectory();
 };
 
 #endif

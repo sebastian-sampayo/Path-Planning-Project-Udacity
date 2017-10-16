@@ -65,7 +65,8 @@ int main()
 
   path_planner.SetEnvironmentData(environment_data);
   
-  path_planner.behavior.strategy->reference_speed = path_planner.road.ego.speed;
+  // path_planner.behavior.strategy->reference_speed = path_planner.road.ego.speed;
+  path_planner.behavior.strategy->reference_speed = 0;
   // path_planner.behavior.state = Behavior::BehaviorState::CHANGE_LANE_LEFT;
   path_planner.behavior.state = Behavior::BehaviorState::KEEP_LANE;
 

@@ -23,7 +23,7 @@ void WalkthroughStrategy::GenerateTrajectory()
   // Clear previous trajectory
   trajectory.clear();
   
-  double ref_vel = 49.5;
+  double ref_vel = 48.9;
   
   vector<double> previous_path_x(previous_path.GetXvalues());
   vector<double> previous_path_y(previous_path.GetYvalues());

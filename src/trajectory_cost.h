@@ -12,6 +12,7 @@ class TrajectoryCost {
 public:
   static constexpr double MAX_JERK = 10; // [m/s^3]
   static constexpr double MAX_ACCEL = 10; // [m/s^2]
+  static constexpr double MAX_SPEED = 49*0.44704; // [m/s^3]
   static constexpr double MAX_COST = 1000; // If the cost reaches this value, stop calculating
 
   //! Constructors
@@ -27,8 +28,10 @@ public:
     CENTERED,
     DETECT_COLLISION,
     EMPTY_SPACE,
+    LANE_PREFERENCE,
     MAX_ACCEL,
     MAX_JERK,
+    MAX_SPEED,
     SPEED,
     
     NUM_COST_FUNCTIONS
@@ -54,11 +57,17 @@ public:
   //! Penalizes trajectories whose end point are closer to a vehicle in the same lane
   double EmptySpace();
   
+  //! Penalizes trajectories that are not in the middle lane
+  double LanePreference();
+  
   //! Penalizes maximum acceleration
   double MaxAcceleration();
   
   //! Penalizes maximum jerk
   double MaxJerk();
+  
+  //! Penalizes maximum speed
+  double MaxSpeed();
   
   //! Penalizes the slowest trajectory
   double Speed();

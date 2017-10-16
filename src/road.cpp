@@ -81,7 +81,7 @@ vector<int> Road::GetVehiclesInSpace(const RoadSpace& space) const
 }
 
 // ----------------------------------------------------------------------------
-bool Road::IsEgoColliding() const
+bool Road::IsEgoColliding(double lenght_offset) const
 {
   // This algorithm considers that each vehicle is an ellipse with major axis
   // equals to lenght/2 and minor axis equals LANE_WIDTH/2
@@ -103,8 +103,9 @@ bool Road::IsEgoColliding() const
     const double theta_vehicle = delta_vehicle - vehicle.yaw;
     
     // Calculates border point of the ego vehicle using ellipse equation
-    const double a = vehicle.lenght / 2.0; // = half_lenght
-    const double b = LANE_WIDTH / 2.0 * 0.9;
+    const double a = vehicle.lenght / 2.0 + lenght_offset; // = half_lenght
+    // const double b = LANE_WIDTH / 2.0 * 0.9;
+    const double b = vehicle.width / 2.0;
     const double d_ego = Magnitude(a * cos(theta_ego), b * sin(theta_ego));
     
     // Calculates border point of the other vehicle using ellipse equation
@@ -147,8 +148,10 @@ bool Road::IsEgoRightSideEmpty() const
   
   RoadSpace space;
   
-  const double safe_distance = ego.lenght * 2;
-  space.s_down = ego.position.GetS() - ego.lenght * 1.2;
+  // const double safe_distance = ego.lenght * 2;
+  const double safe_time = 1;
+  const double safe_distance = safe_time * ego.speed;
+  space.s_down = ego.position.GetS() - safe_distance;
   space.s_up = space.s_down + safe_distance;
   space.d_right = (ego.lane + 1) * LANE_WIDTH;
   space.d_left = space.d_right + LANE_WIDTH;
@@ -164,8 +167,10 @@ bool Road::IsEgoLeftSideEmpty() const
   
   RoadSpace space;
   
-  const double safe_distance = ego.lenght * 2;
-  space.s_down = ego.position.GetS() - ego.lenght * 1.2;
+  // const double safe_distance = ego.lenght * 2;
+  const double safe_time = 1;
+  const double safe_distance = safe_time * ego.speed;
+  space.s_down = ego.position.GetS() - safe_distance;
   space.s_up = space.s_down + safe_distance;
   space.d_right = ego.lane * LANE_WIDTH;
   space.d_left = space.d_right - LANE_WIDTH;

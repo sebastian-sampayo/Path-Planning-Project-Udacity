@@ -4,6 +4,7 @@
 #include "../map.h"
 #include "../point.h"
 #include "../trajectory.h"
+#include "../utils.h"
 
 #include "../matplotlibcpp.h"
 
@@ -32,7 +33,10 @@ int main()
   // PointCartesian pc(804.479, 1129.09); // 20, 6
   // PointCartesian pc(834.597, 1132.9); // 50, 2
   // PointCartesian pc(789.336, 1125.44); // 5, 10
-  PointFrenet pf0(Map::GetInstance().MAX_S*0.02, 10);
+  // PointFrenet pf0(1037.03, 10.0461); // This point has issues with speed!!
+  // PointFrenet pf0(1037, 10); // This point has issues with speed!!
+  PointFrenet pf0(300, 10); // This point has issues with speed!!
+  // PointFrenet pf0(Map::GetInstance().MAX_S-0.1, 10);
   PointCartesian pc(pf0);
   cout << "qx_s_(0): " << Map::GetInstance().qx_s_(0) << endl;
   cout << "qx_s_(max-0.1): " << Map::GetInstance().qx_s_(Map::GetInstance().MAX_S-0.1) << endl;
@@ -43,8 +47,14 @@ int main()
   cout << "pf0: " << pf0 << endl;
   cout << " pc: " << pc << endl;
   cout << "  p: " << p << endl;
-  
-  cout << "p.GetS() = " << p.GetS() << endl;
+
+  double delta_s = 18*0.02;
+  PointFrenet pf2(pf0.s+delta_s, pf0.d);
+  cout << "Point(pf0): " << Point(pf0) << endl;
+  cout << "Point(pf2): " << Point(pf2) << endl;
+  PointCartesian pc2(pf2);
+  PointCartesian vc = PointCartesian(pc2.x - pc.x, pc2.y - pc.y);
+  cout << "delta_s: " << delta_s << " |vc|: " << Magnitude(vc.x, vc.y)/0.02 << " | |vf|: " << delta_s/0.02 << endl;
   
   PointFrenet pf(pc);
   
@@ -72,7 +82,7 @@ int main()
     t.push_back(p);
   }
 
-  cout << "Trajectory t: \n" << t;
+  // cout << "Trajectory t: \n" << t;
   
   
   // Matplotlibcpp

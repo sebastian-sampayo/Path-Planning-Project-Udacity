@@ -35,16 +35,20 @@ TrajectoryCost::TrajectoryCost(Road* road)
   // functions[CostFunctions::CENTERED] = &TrajectoryCost::Centered;
   functions[CostFunctions::DETECT_COLLISION] = &TrajectoryCost::DetectCollision;
   functions[CostFunctions::EMPTY_SPACE] = &TrajectoryCost::EmptySpace;
+  functions[CostFunctions::LANE_PREFERENCE] = &TrajectoryCost::LanePreference;
   functions[CostFunctions::MAX_ACCEL] = &TrajectoryCost::MaxAcceleration;
   functions[CostFunctions::MAX_JERK] = &TrajectoryCost::MaxJerk;
+  functions[CostFunctions::MAX_SPEED] = &TrajectoryCost::MaxSpeed;
   functions[CostFunctions::SPEED] = &TrajectoryCost::Speed;
   
   // Weights
   // weights[CostFunctions::CENTERED] = .5;
   weights[CostFunctions::DETECT_COLLISION] = 1000;
   weights[CostFunctions::EMPTY_SPACE] = 1;
+  weights[CostFunctions::LANE_PREFERENCE] = 0.001;
   weights[CostFunctions::MAX_ACCEL] = 1;
   weights[CostFunctions::MAX_JERK] = 1;
+  weights[CostFunctions::MAX_SPEED] = 10;
   weights[CostFunctions::SPEED] = 0.5;
 }
 
@@ -105,6 +109,7 @@ double TrajectoryCost::DetectCollision()
   
   bool collision = false;
   double cost = 0;
+  const double lenght_offset = road.ego.lenght/8.0;
   
   const double T_simulator = 0.02; // TODO: Move to a configuration file
   double t = 0; // time
@@ -115,7 +120,7 @@ double TrajectoryCost::DetectCollision()
     Road future_road = road.PredictRoadTraffic(t);
     future_road.ego.Translate(point);
     
-    collision = future_road.IsEgoColliding();
+    collision = future_road.IsEgoColliding(lenght_offset);
   
     if (collision) 
     {
@@ -191,6 +196,18 @@ double TrajectoryCost::EmptySpace()
 }
 
 // ----------------------------------------------------------------------------
+double TrajectoryCost::LanePreference()
+{
+  Road& road = *road_ptr; // alias
+  
+  const Point& last = trajectory.back();
+  const int lane = road.DToLane(last.GetD());
+  const double cost = (lane == 1 ? 0 : 1);
+    
+  return cost;
+}
+
+// ----------------------------------------------------------------------------
 double TrajectoryCost::MaxAcceleration()
 {
   const double T_simulator = 0.02;
@@ -207,7 +224,7 @@ double TrajectoryCost::MaxAcceleration()
     
     if (p.GetS() > MAX_ACCEL || p.GetD() > MAX_ACCEL)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel_s = " << p.GetS() << "m/s^2 | accel_d = " << p.GetD() << "m/s^2 | t = " << t;
+      LOG(logDEBUG3) << "TrajectoryCost::MaxAcceleration() - Too much acceleration! | accel_s = " << p.GetS() << "m/s^2 | accel_d = " << p.GetD() << "m/s^2 | t = " << t;
       const double accel = Magnitude(p.GetX(), p.GetY());
       cost = Logistic(accel/MAX_ACCEL);
       break;
@@ -237,9 +254,37 @@ double TrajectoryCost::MaxJerk()
     
     if (p.GetS() > MAX_JERK || p.GetD() > MAX_JERK)
     {
-      LOG(logDEBUG2) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk_s = " << p.GetS() << "m/s^3 | jerk_d = " << p.GetD() << "m/s^3 | t = " << t;
+      LOG(logDEBUG3) << "TrajectoryCost::MaxJerk() - Too much jerk! | jerk_s = " << p.GetS() << "m/s^3 | jerk_d = " << p.GetD() << "m/s^3 | t = " << t;
       const double jerk = Magnitude(p.GetX(), p.GetY());
       cost = Logistic(jerk/MAX_JERK);
+      break;
+    }
+    
+    t += T_simulator;
+  }
+  
+  return cost;
+}
+
+// ----------------------------------------------------------------------------
+double TrajectoryCost::MaxSpeed()
+{
+  const double T_simulator = 0.02;
+  
+  // Get the derivative of the trajectory
+  Trajectory speed_trajectory = trajectory.GetDerivative(T_simulator);
+  
+  double cost = 0;
+  int t = 0;
+  
+  for (const Point& p : speed_trajectory)
+  {
+    const double speed = Magnitude(p.GetX(), p.GetY());
+    
+    if (speed > MAX_SPEED || p.GetS() > MAX_SPEED || p.GetD() > MAX_SPEED)
+    {
+      cost = Logistic(speed/MAX_SPEED);
+      LOG(logDEBUG2) << "TrajectoryCost::MaxSpeed() - Too much speed! speed: " << speed << " | speed_s = " << p.GetS() << "m/s^2 | speed_d = " << p.GetD() << "m/s^2 | t = " << t << " | Cost: " << cost;
       break;
     }
     
@@ -263,7 +308,7 @@ double TrajectoryCost::Speed()
     s_distance += Map::GetInstance().MAX_S;
   }
   
-  double cost = Logistic(s_distance / typical_distance);
+  double cost = InvLogistic(s_distance / typical_distance);
   
   LOG(logDEBUG3) << "TrajectoryCost::Speed() - s_distance: "  << s_distance << " | Cost: " << cost;
   

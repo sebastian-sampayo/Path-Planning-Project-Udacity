@@ -12,6 +12,9 @@ public:
   //! Number of points in the trajectory
   int N_points = 150;
   
+  //!Number of points removed at the end
+  int N_end_points_removed = 100;
+  
   //! Starting point
   Point start_point;
   double start_yaw;

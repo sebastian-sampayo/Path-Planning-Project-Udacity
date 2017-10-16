@@ -36,8 +36,8 @@ void Map::ToFrenet(double x, double y, double& s, double& d)
   s = map_waypoints_s[wp];
   
   // Define an increment size to calculate theta at some point s
-  const double ds = 0.001;
-  const double tolerance = 0.001;
+  const double tolerance = 1e-5;
+  const double ds = tolerance;
   
   // This variables will contain: p - q(s*)
   double pq_dist_x = -1;
@@ -88,7 +88,7 @@ void Map::ToCartesian(double s_in, double d, double& x, double& y)
   // y += dy;
   
   // Algorithm 2
-  double ds = 1e-3;
+  double ds = 1e-5;
   double s1 = CycleS(s+ds);
   double dx = qx_s_(s1)-x;
   double dy = qy_s_(s1)-y;
