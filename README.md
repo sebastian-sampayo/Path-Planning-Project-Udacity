@@ -139,7 +139,27 @@ and then add the d value along the direction of the **d** vector for that point 
 
 The code that implements all this can be found inside `map.cpp`, in the functions `ToFrenet()` and `ToCartesian()`.
 
+## Achievements
 
+**The car drives according to the speed limit**
+In order to achieve this, the algorithm discards trajectories that are going to exceed the speed limit in the future, so it picks a trajectory with a lesser acceleration or overall speed.
+
+**Max Acceleration and Jerk are not Exceeded**
+The acceleration increments implemented by the behavior model were designed carefully so that neither the acceleration nor the jerk are exceeded of 10 m/s^2 and 10 m/s^3 respectively.
+
+**Car does not have collisions.**
+One of the most important cost functions implemented in the trajectory generation algorithm is `TrajectoryCost::DetectCollision()`. This function iterates over the candidate trajectory predicting the future state of the road for each step. Internally, to detect collisions I designed an algorithm that simplifies each vehicle to an ellipse, so it is easier and faster to calculate.
+
+**The car stays in its lane, except for the time between changing lanes.**
+This is one of the hardest points to achieve, because there are times when several trajectories have almost the same cost so it loops between CHANGE LANE and KEEP LANE states. When that happens, the ego vehicle ends up going straight in the line that divides lanes. In order to overcome this problem I added a functionality to allow the ego vehicle to complete the CHANGE LANE state if it has decided to start it (bypassing the possibility to KEEP LANE). This way if it decides to change lanes, it won't stop till it is in the next lane, unless a new vehicle appears and the change suddenly becomes risky.
+
+**The car is able to change lanes**
+As you can see in the GIF and in the 
+[YouTube video](https://youtu.be/a_IoRniavFc)
+the ego vehicle changes lanes very well when there is a vehicle in front of him going slower and there is no traffic in the next lane
+
+
+--------------
 
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases).
