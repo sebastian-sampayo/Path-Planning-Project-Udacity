@@ -14,6 +14,7 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [q]: ./img/q.gif
 [s_star]: ./img/s_star.gif
 [q_s_star]: ./img/q_s_star.gif
+[qs_s_star]: ./img/qs_s_star.gif
 [condition1]: ./img/condition1.gif
 
 
@@ -74,11 +75,9 @@ following condition must be satisfied:
 which means that the distance between 
 **p** 
 and 
-*TODO: LaTex this
-q(s*) 
+![][q_s_star]
 is perpendicular to 
-*TODO: LaTex this
-q'(s*)
+![][qd_s_star]
 where 
 *TODO: LaTex this
 q'(s*) 
