@@ -113,9 +113,7 @@ Having said that, in order to implement the conversion from Cartesian to Frenet 
 ![][d]
 
 However, this won't give us the sign correctly. So what I do is to calculate it as the 3rd component of the vector product between 
-
 ![][p_q]
-
 and the oriented tangent, eq. (2). So the formula is:
 
 ![][eq3]

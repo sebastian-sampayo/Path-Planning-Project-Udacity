@@ -2,7 +2,7 @@
 #include "vehicle.h"
 
 #include "logger.h"
-#include "matplotlibcpp.h"
+// #include "matplotlibcpp.h"
 #include "utils.h"
 
 #include <iostream>
@@ -195,36 +195,36 @@ void Road::LogVehicles(TLogLevel log_level) const
 }
 
 // ----------------------------------------------------------------------------
-void Road::PlotVehicles(const char* filename) const
-{
-  namespace plt = matplotlibcpp;
+// void Road::PlotVehicles(const char* filename) const
+// {
+  // namespace plt = matplotlibcpp;
   
-  plt::figure();
-  for (auto& vehicle_pair : vehicles)
-  {
-    Vehicle vehicle = vehicle_pair.second;
+  // plt::figure();
+  // for (auto& vehicle_pair : vehicles)
+  // {
+    // Vehicle vehicle = vehicle_pair.second;
     
-    vector<double> s, d;
-    s.push_back(vehicle.position.GetS());
-    d.push_back(vehicle.position.GetD());
-    plt::plot(d, s, "r*");
-    string str("id: ");
-    str += std::to_string(vehicle_pair.first);
-    plt::annotate(str.c_str(), d[0], s[0]);
-  }
+    // vector<double> s, d;
+    // s.push_back(vehicle.position.GetS());
+    // d.push_back(vehicle.position.GetD());
+    // plt::plot(d, s, "r*");
+    // string str("id: ");
+    // str += std::to_string(vehicle_pair.first);
+    // plt::annotate(str.c_str(), d[0], s[0]);
+  // }
   
-  vector<double> s, d;
-  s.push_back(ego.position.GetS());
-  d.push_back(ego.position.GetD());
-  plt::plot(d, s, "g*");
-  string str("ego");
-  plt::annotate(str.c_str(), d[0], s[0]);
+  // vector<double> s, d;
+  // s.push_back(ego.position.GetS());
+  // d.push_back(ego.position.GetD());
+  // plt::plot(d, s, "g*");
+  // string str("ego");
+  // plt::annotate(str.c_str(), d[0], s[0]);
   
-  plt::xlabel("d");
-  plt::ylabel("s");
-  plt::title("Vehicles on the road in Frenet coordinates");
-  plt::save(filename);
-}
+  // plt::xlabel("d");
+  // plt::ylabel("s");
+  // plt::title("Vehicles on the road in Frenet coordinates");
+  // plt::save(filename);
+// }
 
 // ----------------------------------------------------------------------------
 void Road::PopulateTraffic(const EnvironmentSensorData& environment_data)
