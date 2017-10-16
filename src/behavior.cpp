@@ -204,18 +204,6 @@ void Behavior::UpdateState()
       
       LOG(logDEBUG1) << "Behavior::UpdateState() - kv * error_speed: " << kv * error_speed << " | kp * error_position: " << kp * error_position;
       
-        // TODO: Try this: 
-        // const double kv = 0.05;
-        // const double desired_speed = road.vehicles[id_vector[0]].speed;
-        // strategy->reference_speed += kv*(desired_speed - road.ego.speed);
-        // TODO: To track position, try this:
-        // const double kp = 0.05;
-        // const double desired_front_vehicle_distance = 15; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
-        // const double front_vehicle_distance = road.vehicles[id_vector[0]].position.GetS() - road.ego.position.GetS();
-        // if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
-        // double position_error = desired_front_vehicle_distance - front_vehicle_distance;
-        // strategy->reference_speed += kp*(position_error);
-            
       LOG(logINFO) << "Behavior::UpdateState() - Vehicle detected ahead!! Slowing down..."
         << " strategy->reference_speed: " << strategy->reference_speed;
       // TODO: try to make the transitions smoother (why not use a PID?)
@@ -338,8 +326,6 @@ void Behavior::UpdateState()
     
 
     // ------------------- Perturb goal ------------------
-    // TODO: perturb goal
-    // for (each perturbed goal)
     const int N_s_steps = 2;
     int N_accel_steps = 5; // Must be odd, so that we get accel = 0 as a candidate
     const double accel_range = 8;

@@ -49,10 +49,10 @@ set(ROAD_SRC
             src/map.cpp
             src/vehicle.cpp)
 
-set(TEST_PATH_PLANNER_SRC src/tests/path_planner.cpp)
-set(TEST_STRATEGY_SRC src/tests/strategy.cpp)
-set(TEST_POINT_SRC src/tests/point.cpp)
-set(TEST_ROAD_SRC src/tests/road.cpp)
+# set(TEST_PATH_PLANNER_SRC src/tests/path_planner.cpp)
+# set(TEST_STRATEGY_SRC src/tests/strategy.cpp)
+# set(TEST_POINT_SRC src/tests/point.cpp)
+# set(TEST_ROAD_SRC src/tests/road.cpp)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
@@ -66,8 +66,18 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
 add_executable(path_planning ${MAIN_SOURCE} ${COMMON_SOURCES})
+# add_executable(path_planner_test ${TEST_PATH_PLANNER_SRC} ${COMMON_SOURCES})
+# add_executable(strategy_test ${TEST_STRATEGY_SRC} ${STRATEGY_SRC})
+# add_executable(point_test ${TEST_POINT_SRC} ${POINT_SRC})
+# add_executable(road_test ${TEST_ROAD_SRC} ${ROAD_SRC})
 
 target_link_libraries(path_planning z ssl uv uWS)
+# target_link_libraries(path_planning z ssl uv uWS python2.7)
+# target_link_libraries(path_planner_test z ssl uv uWS python2.7)
+# target_link_libraries(point_test z ssl uv uWS python2.7)
+# target_link_libraries(road_test z ssl uv uWS python2.7)
+# target_link_libraries(strategy_test z ssl uv uWS python2.7)
+
 
 # Add an option for debug version. Allows gdb debugging and defines macro DEBUG.
 # If the option is not set, define a macro NDEBUG, so the asserts won't take effect.

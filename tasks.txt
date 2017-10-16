@@ -70,14 +70,14 @@ Penalize going out of the lane
 Penalize not being on the center lane (lane = 1) or not being in the center of the lane (d = 2, 6, 10)
 // Warning, the speed loop (in Behavior::UpdateState()) could lead to high acceleration and jerk transitions. 
       // May be we could limit it to just 3 values: -speed_inc, 0, +speed_inc
-Test adding more waypoints to the spline strategy
-Add perturbed goals logic
+DONE Test adding more waypoints to the spline strategy
+DONE Add perturbed goals logic
 Test behavior
-Code more cost functions
-Set weights
-Update UML
+DONE Code more cost functions
+DONE Set weights
+DONE Update UML
 Code lanes_available detection inside Vehicle::UpdateState()
-Test the algorithm
+DONE Test the algorithm
 
 
 Refactor: Road::DToLane() => Road::GetLane()
@@ -87,3 +87,4 @@ Refactor: Use some data structure for the vehicles in the road so that we always
 Refactor: TrajectoryStrategy -> TrajectoryGenerator
 Refactor: TrajectoryStratgy::GenerateTrajectory() : returns Trajectory
 Refactor: remove "using namespace std" from all header files.
+Refactor: Move duplicated constant parameters to a configuration file.
