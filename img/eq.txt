@@ -1,0 +1,3 @@
+\bf{p} \rm = (x,y)
+\bf{q} \rm = (q_x(s), q_y(s))
+s^*

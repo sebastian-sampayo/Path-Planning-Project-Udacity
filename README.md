@@ -11,6 +11,9 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [arch]: ./img/software-architecture.png
 [video]: ./img/40secs_7fps.gif
 [p]: ./img/p.gif
+[q]: ./img/q.gif
+[s_star]: ./img/s_star.gif
+[q_s_star]: ./img/q_s_star.gif
 
 
 ## Results
@@ -54,15 +57,12 @@ In order to convert from Cartesian to Frenet coordinate system and vice-versa, a
 Let 
 ![p eq][p]
 be the point in cartesian coordinates, and 
-*TODO: LaTex this
-q = (qx(s), qy(s))
+![q eq][q]
 the parametric formula of the curve.
 Also, let 
-*TODO: LaTex this
-s* 
+![][s_star]
 be the parameter for which 
-*TODO: LaTex this
-q(s*) 
+![][q_s_star]
 is closest to 
 **p**
 , then the
