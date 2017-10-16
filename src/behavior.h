@@ -16,8 +16,8 @@ class Behavior {
 public:
   enum class BehaviorState {
     KEEP_LANE,
-    PREPARE_CHANGE_LANE_LEFT,
-    PREPARE_CHANGE_LANE_RIGHT,
+    PREPARE_CHANGE_LANE_LEFT, // Not used for the moment
+    PREPARE_CHANGE_LANE_RIGHT, // Not used for the moment
     CHANGE_LANE_LEFT,
     CHANGE_LANE_RIGHT,
     
@@ -26,7 +26,7 @@ public:
   
   BehaviorState state;
   map<BehaviorState, set<BehaviorState> > state_transitions;
-  TrajectoryStrategy* strategy;
+  TrajectoryStrategy* strategy; // TODO: <Refactor> Rename to generator
   TrajectoryCost cost;
   
   // The behavior model can see the road in which it is being applied.
@@ -41,7 +41,7 @@ public:
   double GetDDesired(int lane, BehaviorState state) const;
   
   //! Get the generated trajectory
-  Trajectory GetTrajectory();
+  const Trajectory& GetTrajectory();
   void UpdateState();
   
   //! Print state to stdout

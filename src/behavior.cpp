@@ -43,6 +43,7 @@ Behavior::Behavior(Road* road)
   // Set d-coordinate desired for each combination of lane and state
   SetDDesired();
   
+  // Init trajectory generator strategy
   // strategy = new StraightLineStrategy();
   // strategy = new WalkthroughStrategy();
   strategy = new SplineStrategy();
@@ -75,7 +76,7 @@ double Behavior::GetDDesired(int lane, BehaviorState state) const
 }
 
 // ----------------------------------------------------------------------------
-Trajectory Behavior::GetTrajectory()
+const Trajectory& Behavior::GetTrajectory()
 {
   return best_trajectory_;
 }
@@ -90,29 +91,23 @@ void Behavior::UpdateState()
   
   LOG(logDEBUG3) << "------ Behavior::UpdateState() -------";
   
-  // ---- Horrible hack! -----
+  // ---- Hack! -----
   // Update the reference_speed with whatever the speed is at the point where we are going to add points
   const double N_points_passed = strategy->trajectory.size() - strategy->previous_path.size();
   const double N_future = strategy->N_points - strategy->N_end_points_removed; // - N_points_passed;
   LOG(logDEBUG2) << "Behavior::UpdateState() - N_future: " << N_future;
   if (strategy->trajectory.size() > N_future)
   {
-    // strategy->N_end_points_removed = 1; //N_points_passed; // ONLY FOR SplineStrategyXY
     Trajectory speed_trajectory = strategy->trajectory.GetDerivative(T_simulator);
     Point p = speed_trajectory[N_future-1];
     const double speed = Magnitude(p.GetX(), p.GetY());
     strategy->reference_speed = speed;
   }
-  // if (N_points_passed == 0)
-  // {
-    // LOG(logWARNING) << "SplineStrategy::GenerateTrajectory() - N_points_passed = " << N_points_passed << "! | Don't generate!";
-    // return; // early return
-  // }
   // -------------------------
 
   Road& road = *road_ptr; // alias
 
-  // Set starting point with the input road (add Road in the input)
+  // Set starting point with the ego position
   strategy->start_point = road.ego.position;
   strategy->start_yaw = road.ego.yaw;
 
@@ -123,11 +118,8 @@ void Behavior::UpdateState()
   strategy->reference_accel = 0;
   const double prev_ref_speed = strategy->reference_speed;
 
-  // Define the space ahead
-  // const double safe_distance = 30; // This should depend on the speed. We might think of a safe "time" distance better.
+  // Define the space ahead. If nobody is there, the ego will keep lane
   const double safe_time = 1; // seconds
-  // const double target_range = 30; //safe_time * strategy->reference_speed; // meters
-  // const double target_range = safe_time*road.ego.speed;
   const double target_range = 30;
   const double perturbed_s_range = road.ego.lenght * 4;
   
@@ -136,11 +128,10 @@ void Behavior::UpdateState()
   
   RoadSpace space_ahead;
   space_ahead.s_down = ego_s;
-  space_ahead.s_up = space_ahead.s_down + 100; // + 30
+  space_ahead.s_up = space_ahead.s_down + 100;
   space_ahead.d_left = road.ego.lane * road.LANE_WIDTH;
   space_ahead.d_right = space_ahead.d_left + road.LANE_WIDTH;
-  // double goal_s = ego_s + 40; // TODO: design carefully goal_s.
-  double goal_s = ego_s + 60; // TODO: design carefully goal_s.
+  double goal_s = ego_s + 60;
   double goal_d = road.GetCenterDByLane(road.ego.lane); // Center of the lane
   
   LOG(logINFO) << "Behavior::UpdateState() - Current state = " << state;
@@ -186,24 +177,23 @@ void Behavior::UpdateState()
 
     LOG(logINFO) << "Behavior::UpdateState() - min_dist_ahead: " << min_dist_ahead << " | id_closest: " << id_closest;
     
-    // Track front vehicle only if it is within a minor range
+    // Track front vehicle only if it is within a minor range, using a Proportional controller
     if (min_dist_ahead < target_range)
     {
       if (id_closest == -1) LOG(logERROR) << "Behavior::UpdateState() - id_closest = -1 !! - closest vehicle ahead not found!";
       
       // Front vehicle speed tracking
-      // strategy->reference_speed -= 0.05*(strategy->reference_speed - road.vehicles[id_vector[0]].speed);
       const double desired_speed = front_vehicle_speed;
       const double error_speed = (desired_speed - road.ego.speed);
-      // const double error_speed_sign = (error_speed > 0 ? 1.0 : 0.0);
-      // strategy->reference_speed += error_speed_sign * speed_increment;
-      const double kv = 0.02;
-      // strategy->reference_speed += kv * error_speed;
+      const double kv = 1e-3; //0.02;
+      strategy->reference_speed += kv * error_speed;
       
       // Front vehicle distance tracking
+      // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
       // This value means that the desired distance is 50 points behind. This allows the generated trajectory to add points before the vehicle
-      // const double desired_front_vehicle_distance = 50*road.ego.speed*T_simulator; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
-      const double desired_front_vehicle_distance = safe_time*road.ego.speed; // This value should be lower than space_ahead.s_up, otherwise it could crash with the front vehicle
+      // const double desired_front_vehicle_distance = 50*road.ego.speed*T_simulator;
+      // This way, the distance is defined in terms of time. It is always a distance such that there are "safe_time" seconds between both vehicles.
+      const double desired_front_vehicle_distance = safe_time*road.ego.speed;
       double front_vehicle_distance = road.vehicles[id_closest].position.GetS() - road.ego.position.GetS();
       if (front_vehicle_distance < 0) front_vehicle_distance += Map::GetInstance().MAX_S;
       const double error_position = desired_front_vehicle_distance - front_vehicle_distance;

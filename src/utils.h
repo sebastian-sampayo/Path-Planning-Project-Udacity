@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Tolerance value for atan3()
 constexpr double ATAN3_TOL = 1e-5;
 
 // For converting back and forth between radians and degrees.
@@ -23,11 +24,14 @@ double distance(double x1, double y1, double x2, double y2);
 //! Calculates the magnitude of the vector (x,y)
 double Magnitude(double x, double y);
 
+//! Gets the closest waypoint to the specified point x,y
 int ClosestWaypoint(double x, double y, const vector<double>& maps_x, const vector<double>& maps_y);
 
+//! Gets the next waypoint for the specified x,y
 int NextWaypoint(double x, double y, double theta
   , const vector<double>& maps_x, const vector<double>& maps_y);
   
+//! A helper function that takes in a c-style array and convert it to a c++ vector
 template<class Tin, class Tout>
 vector<Tout> CArrayToVector(const Tin* c_array, const int length)
 {
@@ -40,6 +44,7 @@ vector<Tout> CArrayToVector(const Tin* c_array, const int length)
   return output_vector;
 }
 
+//! A helper class to measure elapsed time for debugging and optimization purposes
 class Timer
 {
   public:

@@ -46,8 +46,8 @@ public:
   tk::spline qy_s_; // qy(s)
   tk::spline dx_s_; // dx(s)
   tk::spline dy_s_; // dy(s)
-private:
   
+private:
   Map();
 };
 

@@ -6,28 +6,36 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 ---
 
 [//]: # (Image References)
+[simulator]: ./img/5miles.png
 [UML]: ./img/UML-diagram.png
 [arch]: ./img/software-architecture.png
-[u]: ./img/u.gif
+[video]: ./img/40secs_7fps.gif
 
-*Project in progress*
+## Results
+
+![Simulator][simulator]
+
+The algorithms have been tested in a simulator provided by Udacity for about 10 minutes without incidents, driving more than 6 miles. 
+[A realization of this has been uploaded to YouTube in this link,](https://youtu.be/a_IoRniavFc)
+and here you can see a short example:
+
+![GIF Example][video]
 
 
-## Software Architecture - *In progress*
+## Software Architecture
 
 In the following picture we can see a high-level diagram of the modules required and the way they relate to each other:
 
 ![Software Architecture][arch]
 
-Basically, the simulator sends sensor data of the ego vehicle and the surrounding environment. With this I model the road with the kinematic state of each vehicle sensed and predict how this is going to change in the near future using a kinematic model. Based on that, the behavior model loops over several goal points and generates trajectories. For each trajectory, it calculates a cost, which represents how safe it is. The best one is sent back to the simulator
+Basically, the simulator sends sensor data of the ego vehicle and the surrounding environment. With this in mind, I model the road with the kinematic state of each vehicle sensed and predict how this is going to change in the near future using a kinematic model. Based on that, the behavior model loops over several goal points and generates trajectories. For each trajectory, it calculates a cost, which represents how safe it is. The best one is sent back to the simulator. Most of the core logic is coded in the method `Behavior::UpdateState()`, in the file `behavior.cpp`.
 
 
-## UML - *In progress*
+## UML
 
-Here we can see the classes that are implemented (*in progress*) to accomplish the mission.
+Here we can see the classes that are implemented to accomplish the mission.
 
 ![UML diagram][UML]
-
 
 ## Map
 

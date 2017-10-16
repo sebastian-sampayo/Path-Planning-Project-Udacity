@@ -41,8 +41,8 @@ int main() {
 
   // SET_LOG_LEVEL(logDEBUG2);
   // SET_LOG_LEVEL(logWARNING);
-  SET_LOG_LEVEL(logINFO);
-  // SET_LOG_LEVEL(logERROR);
+  // SET_LOG_LEVEL(logINFO);
+  SET_LOG_LEVEL(logERROR);
   PathPlanner path_planner;
   
   Timer timer;
