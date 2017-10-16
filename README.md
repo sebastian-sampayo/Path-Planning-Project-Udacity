@@ -10,6 +10,8 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [UML]: ./img/UML-diagram.png
 [arch]: ./img/software-architecture.png
 [video]: ./img/40secs_7fps.gif
+[p]: ./img/p.png
+
 
 ## Results
 
@@ -50,8 +52,7 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 In order to convert from Cartesian to Frenet coordinate system and vice-versa, a new algorithm is designed:
 
 Let 
-*TODO: LaTex this
-p = (x,y)
+![p eq][p]
 be the point in cartesian coordinates, and 
 *TODO: LaTex this
 q = (qx(s), qy(s))
