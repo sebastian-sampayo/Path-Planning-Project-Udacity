@@ -142,7 +142,7 @@ The code that implements all this can be found inside `map.cpp`, in the function
 ## Achievements
 
 **The car drives according to the speed limit**
-In order to achieve this, the algorithm discards trajectories that are going to exceed the speed limit in the future, so it picks a trajectory with a lesser acceleration or overall speed.
+In order to achieve this, the algorithm discards trajectories that are going to exceed the speed limit in the future, so it picks a trajectory with less acceleration or overall speed.
 
 **Max Acceleration and Jerk are not Exceeded**
 The acceleration increments implemented by the behavior model were designed carefully so that neither the acceleration nor the jerk are exceeded of 10 m/s^2 and 10 m/s^3 respectively.
