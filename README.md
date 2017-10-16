@@ -18,6 +18,9 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity
 [condition1]: ./img/condition1.gif
 [condition2]: ./img/condition2.gif
 [theta]: ./img/theta.gif
+[d]: ./img/d.gif
+[p_q]: ./img/p_q.gif
+[eq3]: ./img/eq3.gif
 
 
 ## Results
@@ -106,14 +109,16 @@ the closest waypoint to
 ![][s_star].
 
 Having said that, in order to implement the conversion from Cartesian to Frenet I first find the closest waypoint, get the *s* value and start moving in a gradient-decent fashion until eq. (1) is zero (within some defined tolerance). Then the *d* coordinate is the distance between the point and the curve 
-*TODO: LaTex this
-d = |(p - q(s*))|
+
+![][d]
+
 However, this won't give us the sign correctly. So what I do is to calculate it as the 3rd component of the vector product between 
-*TODO: LaTex this
-(p - q(s*))
+
+![][p_q]
+
 and the oriented tangent, eq. (2). So the formula is:
-*TODO: LaTex this
-d = (x - qx(s*)) * sin(theta*) - (y - qy(s*)) * cos(theta*)
+
+![][eq3]
 
 In conclusion, the algorithm goes like this:
 ```
@@ -129,8 +134,9 @@ d <- eq. (3)
 In order to get q(s) I store splines with the x and y coordinates as a function of the s parameter based on the provided waypoints.
 
 The Frenet to Cartesian conversion is really straight forward. Using the given *s* parameter I calculate the cartesian point along the waypoint track:
-*TODO: LaTex this
-q = (qx(s), qy(s))
+
+![q eq][q]
+
 and then add the d value along the direction of the **d** vector for that point (which is also provided for each waypoint).
 
 The code that implements all this can be found inside `map.cpp`, in the functions `ToFrenet()` and `ToCartesian()`.

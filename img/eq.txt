@@ -7,3 +7,4 @@ s^*
 \bf q \rm '(s^*)
 \theta
 \bf q \rm '(s) = (\cos(\theta), \sin(\theta)) \ \ \ \ \ (2)
+d = |(\bf p - q \rm (s^*))|
