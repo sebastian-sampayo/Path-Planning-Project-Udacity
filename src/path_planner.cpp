@@ -10,9 +10,6 @@
 
 using namespace std;
 
-// Static attributes
-constexpr int PathPlanner::SPEED_LIMITS[];
-
 // ----------------------------------------------------------------------------
 PathPlanner::PathPlanner()
   : road(Road(LANE_WIDTH, CArrayToVector<int, double>(SPEED_LIMITS, NUM_LANES))), 

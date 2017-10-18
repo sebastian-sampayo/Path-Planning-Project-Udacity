@@ -15,10 +15,10 @@ using namespace std;
 class Map {
 public:
   //! Name of the waypoints file
-  static constexpr const char* MAP_FILENAME = "../data/highway_map.csv";
+  const char* MAP_FILENAME = "../data/highway_map.csv";
   
   // The max s value before wrapping around the track back to 0
-  static constexpr double MAX_S = 6945.554;
+  double MAX_S = 6945.554;
   
   //! Waypoints of the center line of the road in the global map coordinates
   vector<double> map_waypoints_x;

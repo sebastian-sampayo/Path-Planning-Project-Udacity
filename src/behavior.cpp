@@ -250,7 +250,7 @@ void Behavior::UpdateState()
   //   generate the trajectory
   //   calculate the cost associated with it
   //   keep track of the best one (state, trajectory and cost)
-  double min_cost = TrajectoryCost::MAX_COST + 1; // This value will always be greater than the trajectory cost
+  double min_cost = cost.MAX_COST + 1; // This value will always be greater than the trajectory cost
   const double min_cost_tol = 1e-4;
   Trajectory best_trajectory;
   BehaviorState best_state = BehaviorState::KEEP_LANE;

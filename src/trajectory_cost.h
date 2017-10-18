@@ -10,10 +10,10 @@ using namespace std;
 
 class TrajectoryCost {
 public:
-  static constexpr double MAX_JERK = 10; // [m/s^3]
-  static constexpr double MAX_ACCEL = 10; // [m/s^2]
-  static constexpr double MAX_SPEED = 49*0.44704; // [m/s^3]
-  static constexpr double MAX_COST = 1000; // If the cost reaches this value, stop calculating
+  double MAX_JERK = 10; // [m/s^3]
+  double MAX_ACCEL = 10; // [m/s^2]
+  double MAX_SPEED = 49*0.44704; // [m/s^3]
+  double MAX_COST = 1000; // If the cost reaches this value, stop calculating
 
   //! Constructors
   TrajectoryCost();
