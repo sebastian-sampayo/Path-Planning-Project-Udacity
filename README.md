@@ -40,7 +40,7 @@ In the following picture we can see a high-level diagram of the modules required
 
 ![Software Architecture][arch]
 
-Basically, the simulator sends sensor data of the ego vehicle and the surrounding environment. With this in mind, I model the road with the kinematic state of each vehicle sensed and predict how this is going to change in the near future using a kinematic model. Based on that, the behavior model loops over several goal points and generates trajectories. For each trajectory, it calculates a cost, which represents how safe it is. The best one is sent back to the simulator. Most of the core logic is coded in the method `Behavior::UpdateState()`, in the file `behavior.cpp`.
+Basically, the simulator sends sensor data of the ego vehicle and the surrounding environment. With this in mind, I model the road with the kinematic state of each vehicle sensed and predict how this is going to change in the near future using a kinematic model. Based on that, the behavior model loops over several goal points and generates trajectories. For each trajectory, it calculates a cost, which represents how safe it is (including max-jerk penalization, max-speed, collision detection, etc). The best one is sent back to the simulator. Most of the core logic is coded in the method `Behavior::UpdateState()`, in the file `behavior.cpp`.
 
 
 ## UML
